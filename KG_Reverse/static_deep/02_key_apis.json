@@ -1,0 +1,93 @@
+{
+  "CreateFileMappingA": [
+    {
+      "dll": "KERNEL32.dll",
+      "iat_va": 4858224,
+      "iat_offset": 663920
+    }
+  ],
+  "MapViewOfFile": [
+    {
+      "dll": "KERNEL32.dll",
+      "iat_va": 4858228,
+      "iat_offset": 663924
+    }
+  ],
+  "CreateToolhelp32Snapshot": [
+    {
+      "dll": "KERNEL32.dll",
+      "iat_va": 4858260,
+      "iat_offset": 663956
+    }
+  ],
+  "TerminateProcess": [
+    {
+      "dll": "KERNEL32.dll",
+      "iat_va": 4858272,
+      "iat_offset": 663968
+    }
+  ],
+  "OpenProcess": [
+    {
+      "dll": "KERNEL32.dll",
+      "iat_va": 4858276,
+      "iat_offset": 663972
+    }
+  ],
+  "CreateMutexA": [
+    {
+      "dll": "KERNEL32.dll",
+      "iat_va": 4858296,
+      "iat_offset": 663992
+    }
+  ],
+  "SuspendThread": [
+    {
+      "dll": "KERNEL32.dll",
+      "iat_va": 4858304,
+      "iat_offset": 664000
+    }
+  ],
+  "VirtualProtect": [
+    {
+      "dll": "KERNEL32.dll",
+      "iat_va": 4858456,
+      "iat_offset": 664152
+    }
+  ],
+  "VirtualAlloc": [
+    {
+      "dll": "KERNEL32.dll",
+      "iat_va": 4858472,
+      "iat_offset": 664168
+    }
+  ],
+  "LoadLibraryA": [
+    {
+      "dll": "KERNEL32.dll",
+      "iat_va": 4858624,
+      "iat_offset": 664320
+    }
+  ],
+  "GetModuleHandleA": [
+    {
+      "dll": "KERNEL32.dll",
+      "iat_va": 4858692,
+      "iat_offset": 664388
+    }
+  ],
+  "GetProcAddress": [
+    {
+      "dll": "KERNEL32.dll",
+      "iat_va": 4858696,
+      "iat_offset": 664392
+    }
+  ],
+  "GetTickCount": [
+    {
+      "dll": "KERNEL32.dll",
+      "iat_va": 4858708,
+      "iat_offset": 664404
+    }
+  ]
+}

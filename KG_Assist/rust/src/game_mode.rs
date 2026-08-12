@@ -318,17 +318,16 @@ fn get_tick_count64() -> u64 {
 }
 
 /// bot.dll 路径 (exe 同级目录)
+/// 用 W 版 (GetModuleFileNameW) 支持中文路径, A 版会破坏非 ASCII 路径
 fn get_bot_dll_path() -> String {
     unsafe {
-        let mut buf = [0u8; 260];
-        let len = get_module_file_name(buf.as_mut_ptr(), buf.len() as u32);
+        let mut buf = [0u16; 260];
+        let len = get_module_file_name_w(buf.as_mut_ptr(), buf.len() as u32);
         if len == 0 {
             return "bot.dll".to_string();
         }
 
-        let path = core::str::from_utf8(&buf[..len as usize])
-            .unwrap_or("bot.dll")
-            .to_string();
+        let path = String::from_utf16_lossy(&buf[..len as usize]);
 
         let mut last_sep = path.len();
         for (i, c) in path.char_indices() {
@@ -343,15 +342,15 @@ fn get_bot_dll_path() -> String {
     }
 }
 
-unsafe fn get_module_file_name(buf: *mut u8, size: u32) -> u32 {
+unsafe fn get_module_file_name_w(buf: *mut u16, size: u32) -> u32 {
     extern "system" {
-        fn GetModuleFileNameA(
+        fn GetModuleFileNameW(
             h: *mut core::ffi::c_void,
-            buf: *mut u8,
+            buf: *mut u16,
             size: u32,
         ) -> u32;
     }
-    GetModuleFileNameA(core::ptr::null_mut(), buf, size as u32)
+    GetModuleFileNameW(core::ptr::null_mut(), buf, size as u32)
 }
 
 fn file_exists(path: &str) -> bool {

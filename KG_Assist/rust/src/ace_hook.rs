@@ -25,22 +25,59 @@
 //! 注: inline hook 是给 bot.dll 用的 (在游戏进程内运行),
 //!     IAT hook 只保护 KG 自身进程。
 
-use crate::ffi::{LogCallback, log, log_warn, log_error, log_debug};
+use crate::ffi::{LogCallback, log, log_warn, log_debug};
 use windows_sys::Win32::{
-    Foundation::{HANDLE, HMODULE, BOOL},
+    Foundation::{HANDLE, HMODULE, BOOL, FARPROC},
     System::LibraryLoader::{GetModuleHandleA, GetProcAddress, LoadLibraryA},
     System::Memory::{VirtualProtect, PAGE_READWRITE},
-    System::Diagnostics::ToolHelp::{TH32CS_SNAPPROCESS, TH32CS_SNAPMODULE},
 };
+
+// 原始 GetProcAddress 地址 (hook 安装前保存, 避免 IAT patch 后死循环)
+static mut ORIG_GET_PROC_ADDRESS: Option<unsafe extern "system" fn(HMODULE, *const u8) -> FARPROC> = None;
+// 原始 LoadLibraryA 地址 (hook 后转发需要)
+static mut ORIG_LOAD_LIBRARY_A: Option<unsafe extern "system" fn(*const u8) -> HMODULE> = None;
+static mut ORIG_GET_MODULE_HANDLE_A: Option<unsafe extern "system" fn(*const u8) -> HMODULE> = None;
 
 // ---- 常量 ----
 const INVALID_HANDLE_VALUE: HANDLE = -1;
 
 // 需要过滤的 DLL 名关键字 (LoadLibrary / GetModuleHandle)
+// 对照 KG.exe 字符串表里实际出现的 ACE 组件名:
+//   ACE-SSC64.dll / ACE-SSC-DRV64.sys / SProtectSDK64.dll
+//   netbios.dll / TerSafe.dll / 123.dll / sguard.dat / sg.dll
 const BLOCKED_DLL_KEYWORDS: &[&str] = &[
     "ACE", "SGuard", "SProtect", "TerSafe", "TP3Helper",
     "AntiCheat", "anticheat",
-    "netbios.dll",
+    "netbios.dll", "sguard.dat", "123.dll", "sg.dll",
+];
+
+// KG 通过 GetProcAddress 动态解析的 native API 名 (来自 .rdata 字符串表)
+// 这些是 ACE 反作弊用来扫描/终止其他进程的内核级 API, 必须拦截
+const BLOCKED_PROC_NAMES: &[&str] = &[
+    "NtOpenProcess",
+    "ZwOpenProcess",
+    "NtQueryInformationProcess",
+    "ZwQueryInformationProcess",
+    "NtReadVirtualMemory",
+    "ZwReadVirtualMemory",
+    "NtWriteVirtualMemory",
+    "ZwWriteVirtualMemory",
+    "NtAllocateVirtualMemory",
+    "ZwAllocateVirtualMemory",
+    "NtProtectVirtualMemory",
+    "ZwProtectVirtualMemory",
+    "NtCreateThreadEx",
+    "ZwCreateThreadEx",
+    "NtUnloadDriver",
+    "ZwUnloadDriver",
+    "NtLoadDriver",
+    "ZwLoadDriver",
+    "NtSetInformationThread",
+    "ZwSetInformationThread",
+    "NtSetInformationProcess",
+    "ZwSetInformationProcess",
+    "IsDebuggerPresent",
+    "CheckRemoteDebuggerPresent",
 ];
 
 // ============================================================
@@ -121,8 +158,12 @@ unsafe extern "system" fn hooked_load_library_a(
     if is_blocked_dll(s) {
         return 0; // 拒绝加载
     }
-    // 转发原始
-    LoadLibraryA(name)
+    // 转发原始 (避免走 IAT 被自己 hook)
+    if let Some(orig) = ORIG_LOAD_LIBRARY_A {
+        orig(name)
+    } else {
+        LoadLibraryA(name)
+    }
 }
 
 /// Hook LoadLibraryW: 过滤 ACE DLL
@@ -141,9 +182,13 @@ unsafe extern "system" fn hooked_load_library_w(
     if is_blocked_dll(&s) {
         return 0;
     }
-    // 转发原始
+    // 转发原始 (避免走 IAT)
     let cstr = to_cstr(&s);
-    LoadLibraryA(cstr.as_ptr())
+    if let Some(orig) = ORIG_LOAD_LIBRARY_A {
+        orig(cstr.as_ptr())
+    } else {
+        LoadLibraryA(cstr.as_ptr())
+    }
 }
 
 /// Hook GetModuleHandleA: 对 ACE 模块返回 NULL
@@ -151,6 +196,10 @@ unsafe extern "system" fn hooked_get_module_handle_a(
     name: *const u8,
 ) -> HMODULE {
     if name.is_null() {
+        // 用原始地址转发 NULL 参数 (获取自身模块)
+        if let Some(orig) = ORIG_GET_MODULE_HANDLE_A {
+            return orig(name);
+        }
         return GetModuleHandleA(name);
     }
     let mut len = 0;
@@ -161,7 +210,11 @@ unsafe extern "system" fn hooked_get_module_handle_a(
     if is_blocked_dll(s) {
         return 0;
     }
-    GetModuleHandleA(name)
+    if let Some(orig) = ORIG_GET_MODULE_HANDLE_A {
+        orig(name)
+    } else {
+        GetModuleHandleA(name)
+    }
 }
 
 /// Hook CreateMutexW: 返回 NULL 阻止 ACE 单实例检测
@@ -174,10 +227,64 @@ unsafe extern "system" fn hooked_create_mutex_w(
     0
 }
 
+/// Hook GetProcAddress — 关键!
+///
+/// KG 字符串表里出现 "NtOpenProcess" / "NtQueryInformationProcess",
+/// 说明 ACE 用 GetProcAddress 动态解析这些 native API。
+/// 不 hook 这一层, ACE 拿到真实 NtOpenProcess 就能直接打开游戏进程。
+///
+/// 拦截策略: 对 BLOCKED_PROC_NAMES 中的 API 返回 NULL (或返回 stub 地址)
+unsafe extern "system" fn hooked_get_proc_address(
+    h_module: HMODULE,
+    lp_proc_name: *const u8,
+) -> FARPROC {
+    if h_module == 0 || lp_proc_name.is_null() {
+        return GetProcAddress(h_module, lp_proc_name);
+    }
+
+    // 判断 lp_proc_name 是 ordinal (高位为 0, 低位 <= 0xFFFF) 还是 字符串指针
+    // 当 lp_proc_name 的高 16 位为 0 时, 表示是 ordinal
+    let as_usize = lp_proc_name as usize;
+    let is_string = (as_usize >> 16) != 0;
+
+    if is_string {
+        // 读 C 字符串
+        let mut len = 0;
+        while *lp_proc_name.add(len) != 0 {
+            len += 1;
+            if len > 64 {
+                break;
+            }
+        }
+        let s = core::str::from_utf8_unchecked(core::slice::from_raw_parts(lp_proc_name, len));
+        if is_blocked_proc(s) {
+            // 返回 NULL, 让 ACE 以为这些 API 不存在
+            return None;
+        }
+    }
+
+    // 转发原始 (避免走 IAT 被自己 hook)
+    if let Some(orig) = ORIG_GET_PROC_ADDRESS {
+        orig(h_module, lp_proc_name)
+    } else {
+        GetProcAddress(h_module, lp_proc_name)
+    }
+}
+
 fn is_blocked_dll(name: &str) -> bool {
     let lower = name.to_lowercase();
     for kw in BLOCKED_DLL_KEYWORDS {
         if lower.contains(&kw.to_lowercase()) {
+            return true;
+        }
+    }
+    false
+}
+
+fn is_blocked_proc(name: &str) -> bool {
+    // 精确匹配 (区分大小写, native API 名大小写敏感)
+    for &blocked in BLOCKED_PROC_NAMES {
+        if name == blocked {
             return true;
         }
     }
@@ -211,6 +318,22 @@ struct HookEntry {
 /// 安装所有 ACE 拦截 hook (IAT 方式)
 pub fn install_ace_hooks(cb: LogCallback) -> bool {
     log(cb, "======== 安装 ACE 用户态 Hook ========");
+
+    // 在 patch IAT 之前, 先保存原始 API 地址 (避免 hook 后死循环)
+    unsafe {
+        let h_k32 = GetModuleHandleA(b"kernel32.dll\0".as_ptr());
+        if h_k32 != 0 {
+            if let Some(p) = GetProcAddress(h_k32, b"GetProcAddress\0".as_ptr()) {
+                ORIG_GET_PROC_ADDRESS = Some(core::mem::transmute(p));
+            }
+            if let Some(p) = GetProcAddress(h_k32, b"LoadLibraryA\0".as_ptr()) {
+                ORIG_LOAD_LIBRARY_A = Some(core::mem::transmute(p));
+            }
+            if let Some(p) = GetProcAddress(h_k32, b"GetModuleHandleA\0".as_ptr()) {
+                ORIG_GET_MODULE_HANDLE_A = Some(core::mem::transmute(p));
+            }
+        }
+    }
 
     let hooks: &[HookEntry] = &[
         HookEntry {
@@ -257,6 +380,12 @@ pub fn install_ace_hooks(cb: LogCallback) -> bool {
             dll_name: "kernel32.dll",
             func_name: "MapViewOfFile",
             hook_addr: hooked_map_view_of_file as usize,
+        },
+        // GetProcAddress hook 是关键 — 阻止 ACE 动态解析 native API
+        HookEntry {
+            dll_name: "kernel32.dll",
+            func_name: "GetProcAddress",
+            hook_addr: hooked_get_proc_address as usize,
         },
     ];
 

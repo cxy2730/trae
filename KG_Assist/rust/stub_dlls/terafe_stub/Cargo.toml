@@ -1,0 +1,17 @@
+[package]
+name = "terafe_stub"
+version = "1.0.0"
+edition = "2021"
+
+[lib]
+name = "TerSafe"
+crate-type = ["cdylib"]
+
+[dependencies]
+
+[profile.release]
+opt-level = "z"
+lto = true
+panic = "abort"
+strip = true
+codegen-units = 1

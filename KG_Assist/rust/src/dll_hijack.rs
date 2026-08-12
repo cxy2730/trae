@@ -26,33 +26,13 @@ use crate::ffi::{LogCallback, log, log_warn, log_error, log_debug};
 type HANDLE = isize;
 const INVALID_HANDLE_VALUE: HANDLE = -1;
 const INVALID_FILE_ATTRIBUTES: u32 = 0xFFFFFFFF;
-const FILE_ATTRIBUTE_NORMAL: u32 = 0x80;
-const FILE_SHARE_READ: u32 = 0x00000001;
-const GENERIC_WRITE: u32 = 0x40000000;
-const CREATE_ALWAYS: u32 = 2;
-const OPEN_EXISTING: u32 = 3;
 
 extern "system" {
-    fn CreateFileW(
-        name: *const u16,
-        access: u32,
-        share: u32,
-        sa: *const core::ffi::c_void,
-        disp: u32,
-        attrs: u32,
-        template: HANDLE,
-    ) -> HANDLE;
-    fn WriteFile(
-        h: HANDLE,
-        buf: *const u8,
-        len: u32,
-        written: *mut u32,
-        overlapped: *mut core::ffi::c_void,
-    ) -> i32;
     fn CloseHandle(h: HANDLE) -> i32;
     fn GetFileAttributesW(name: *const u16) -> u32;
     fn MoveFileW(src: *const u16, dst: *const u16) -> i32;
     fn DeleteFileW(name: *const u16) -> i32;
+    fn CopyFileW(src: *const u16, dst: *const u16, fail_if_exists: i32) -> i32;
 }
 
 // ---- 需要替换的 DLL 列表 ----
@@ -63,57 +43,23 @@ const HIJACK_DLLS: &[&str] = &[
     "TerSafe.dll",          // 腾讯旧版反作弊
 ];
 
-// ---- 最小 PE stub (空 DLL, DllMain 返回 TRUE) ----
-// 这是 64 位 PE 的最小可加载 DLL, DllMain 立即返回 TRUE
-// 所有调用方加载后会立即调用 DllMain, 然后继续
-#[cfg(target_pointer_width = "64")]
-const STUB_DLL_BYTES: &[u8] = &[
-    // 最小 PE32+ DLL (256 字节, 仅 DllMain ret TRUE)
-    // 这是手工构造的最小可加载 PE
-    0x4D, 0x5A,                                           // MZ
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x40, 0x00, 0x00, 0x00,   // e_lfanew = 0x40
-    // PE header at 0x40
-    0x50, 0x45, 0x00, 0x00,                             // PE\0\0
-    0x64, 0x86,                                           // Machine = AMD64
-    0x00, 0x00,                                           // NumberOfSections = 0
-    0x00, 0x00, 0x00, 0x00,                             // TimeDateStamp
-    0x00, 0x00, 0x00, 0x00,                             // PointerToSymbolTable
-    0x00, 0x00, 0x00, 0x00,                             // NumberOfSymbols
-    0xF0, 0x00,                                           // SizeOfOptionalHeader = 240
-    0x00, 0x00,                                           // Characteristics
-    // OptionalHeader (PE32+)
-    0x0B, 0x02,                                           // Magic = PE32+
-    0x00, 0x00,                                           // MajorLinker
-    0x00, 0x00,                                           // MinorLinker
-    0x00, 0x00, 0x00, 0x00,                             // SizeOfCode
-    0x00, 0x00, 0x00, 0x00,                             // SizeOfInitializedData
-    0x00, 0x00, 0x00, 0x00,                             // SizeOfUninitializedData
-    0x00, 0x00, 0x00, 0x00,                             // AddressOfEntryPoint
-    0x00, 0x00, 0x00, 0x00,                             // BaseOfCode
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,   // ImageBase
-    0x00, 0x10,                                           // SectionAlignment
-    0x00, 0x10,                                           // FileAlignment
-    // ... 其余字段填 0 即可 (Windows loader 容忍)
-];
-
-#[cfg(target_pointer_width = "32")]
-const STUB_DLL_BYTES: &[u8] = &[
-    // PE32 最小 stub (略)
-    0x4D, 0x5A,
+// ---- stub DLL 文件名 → 源文件名映射 ----
+// 预编译的 stub DLL 放在 exe 同目录的 stub\ 子目录
+// 部署时复制到游戏目录并改名
+const STUB_DLL_MAPPING: &[(&str, &str)] = &[
+    ("version.dll",          "version.dll"),         // version_stub 编译产物
+    ("SProtectSDK64.dll",    "SProtectSDK64.dll"),   // sprotect_stub 编译产物
+    ("netbios.dll",          "netbios.dll"),         // netbios_stub 编译产物
+    ("TerSafe.dll",          "TerSafe.dll"),         // terafe_stub 编译产物
 ];
 
 /// 部署所有劫持 DLL — KG 的绕过步骤 #4
 ///
-/// 1. 找到游戏目录 (League of Legends.exe 所在目录)
-/// 2. 备份原 DLL
-/// 3. 释放 stub DLL
+/// 流程:
+///   1. 找到游戏目录 (注册表 / 进程查找)
+///   2. 找到 stub DLL 源目录 (exe 同目录的 stub\)
+///   3. 备份游戏目录原 DLL (重命名为 .bak)
+///   4. 复制 stub DLL 到游戏目录
 pub fn deploy_all_hijack_dlls(cb: LogCallback, game_dir: Option<&str>) -> bool {
     log(cb, "======== 部署 DLL 劫持 ========");
 
@@ -131,12 +77,32 @@ pub fn deploy_all_hijack_dlls(cb: LogCallback, game_dir: Option<&str>) -> bool {
 
     log(cb, &format!("  目标目录: {}", target_dir));
 
+    // 找 stub DLL 源目录 (exe 同目录的 stub\ 子目录)
+    let stub_dir = match get_stub_dir() {
+        Some(d) => d,
+        None => {
+            log_error(cb, "  [错误] 未找到 stub DLL 目录 (exe\\stub\\)");
+            log_error(cb, "  请确保 stub\\version.dll 等文件存在");
+            return false;
+        }
+    };
+    log(cb, &format!("  stub 源: {}", stub_dir));
+
     let mut deployed = 0;
     let mut backed_up = 0;
+    let mut missing = 0;
 
-    for dll_name in HIJACK_DLLS {
+    for (dll_name, stub_name) in STUB_DLL_MAPPING {
         let dll_path = format!("{}\\{}", target_dir, dll_name);
         let bak_path = format!("{}.bak", dll_path);
+        let stub_path = format!("{}\\{}", stub_dir, stub_name);
+
+        // 检查 stub 源文件
+        if !file_exists(&stub_path) {
+            log_warn(cb, &format!("  [缺失] stub 源不存在: {}", stub_path));
+            missing += 1;
+            continue;
+        }
 
         // 检查是否已存在原 DLL
         let attrs = get_file_attrs(&dll_path);
@@ -155,19 +121,42 @@ pub fn deploy_all_hijack_dlls(cb: LogCallback, game_dir: Option<&str>) -> bool {
             }
         }
 
-        // 释放 stub DLL
-        if write_file(&dll_path, STUB_DLL_BYTES) {
+        // 复制 stub DLL
+        if copy_file(&stub_path, &dll_path) {
             deployed += 1;
-            log(cb, &format!("  [部署] {} (stub DLL)", dll_name));
+            log(cb, &format!("  [部署] {} (stub: {})", dll_name, stub_name));
         } else {
             log_warn(cb, &format!("  [失败] 无法写入 {}", dll_name));
         }
     }
 
-    log(cb, &format!("  [汇总] 备份 {} 个, 部署 {} 个", backed_up, deployed));
+    log(cb, &format!("  [汇总] 备份 {} 个, 部署 {} 个, 缺失 {} 个", backed_up, deployed, missing));
     log(cb, "======== DLL 劫持部署完成 ========");
 
     deployed > 0
+}
+
+/// 获取 stub DLL 源目录 (exe 同目录的 stub\ 子目录)
+fn get_stub_dir() -> Option<String> {
+    let exe_path = get_exe_path()?;
+    // 取目录
+    let idx = exe_path.rfind('\\')?;
+    let exe_dir = &exe_path[..idx];
+    Some(format!("{}\\stub", exe_dir))
+}
+
+/// 获取当前 exe 完整路径
+fn get_exe_path() -> Option<String> {
+    extern "system" {
+        fn GetModuleFileNameW(h: isize, buf: *mut u16, size: u32) -> u32;
+    }
+
+    let mut buf = [0u16; 260];
+    let len = unsafe { GetModuleFileNameW(0, buf.as_mut_ptr(), buf.len() as u32) };
+    if len == 0 {
+        return None;
+    }
+    Some(String::from_utf16_lossy(&buf[..len as usize]))
 }
 
 /// 还原所有劫持 DLL (清理)
@@ -452,34 +441,10 @@ fn delete_file(path: &str) -> bool {
     unsafe { DeleteFileW(w.as_ptr()) != 0 }
 }
 
-fn write_file(path: &str, data: &[u8]) -> bool {
-    let path_w = wstr(path);
-    unsafe {
-        let h = CreateFileW(
-            path_w.as_ptr(),
-            GENERIC_WRITE,
-            FILE_SHARE_READ,
-            core::ptr::null(),
-            CREATE_ALWAYS,
-            FILE_ATTRIBUTE_NORMAL,
-            0,
-        );
-        if h == INVALID_HANDLE_VALUE as _ {
-            return false;
-        }
-
-        let mut written: u32 = 0;
-        let ok = WriteFile(
-            h,
-            data.as_ptr() as *const _,
-            data.len() as u32,
-            &mut written,
-            core::ptr::null_mut(),
-        );
-        CloseHandle(h);
-
-        ok != 0 && written as usize == data.len()
-    }
+fn copy_file(src: &str, dst: &str) -> bool {
+    let src_w = wstr(src);
+    let dst_w = wstr(dst);
+    unsafe { CopyFileW(src_w.as_ptr(), dst_w.as_ptr(), 0) != 0 }
 }
 
 fn wstr(s: &str) -> Vec<u16> {

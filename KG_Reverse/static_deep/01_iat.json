@@ -1,0 +1,2672 @@
+[
+  {
+    "dll": "WINMM.dll",
+    "name": "midiStreamOut",
+    "addr": 4859520,
+    "iat_offset": 665216
+  },
+  {
+    "dll": "WINMM.dll",
+    "name": "midiOutPrepareHeader",
+    "addr": 4859524,
+    "iat_offset": 665220
+  },
+  {
+    "dll": "WINMM.dll",
+    "name": "waveOutWrite",
+    "addr": 4859528,
+    "iat_offset": 665224
+  },
+  {
+    "dll": "WINMM.dll",
+    "name": "waveOutPause",
+    "addr": 4859532,
+    "iat_offset": 665228
+  },
+  {
+    "dll": "WINMM.dll",
+    "name": "waveOutReset",
+    "addr": 4859536,
+    "iat_offset": 665232
+  },
+  {
+    "dll": "WINMM.dll",
+    "name": "waveOutClose",
+    "addr": 4859540,
+    "iat_offset": 665236
+  },
+  {
+    "dll": "WINMM.dll",
+    "name": "waveOutGetNumDevs",
+    "addr": 4859544,
+    "iat_offset": 665240
+  },
+  {
+    "dll": "WINMM.dll",
+    "name": "waveOutOpen",
+    "addr": 4859548,
+    "iat_offset": 665244
+  },
+  {
+    "dll": "WINMM.dll",
+    "name": "midiOutUnprepareHeader",
+    "addr": 4859552,
+    "iat_offset": 665248
+  },
+  {
+    "dll": "WINMM.dll",
+    "name": "midiStreamOpen",
+    "addr": 4859556,
+    "iat_offset": 665252
+  },
+  {
+    "dll": "WINMM.dll",
+    "name": "midiStreamProperty",
+    "addr": 4859560,
+    "iat_offset": 665256
+  },
+  {
+    "dll": "WINMM.dll",
+    "name": "midiStreamStop",
+    "addr": 4859564,
+    "iat_offset": 665260
+  },
+  {
+    "dll": "WINMM.dll",
+    "name": "midiOutReset",
+    "addr": 4859568,
+    "iat_offset": 665264
+  },
+  {
+    "dll": "WINMM.dll",
+    "name": "midiStreamClose",
+    "addr": 4859572,
+    "iat_offset": 665268
+  },
+  {
+    "dll": "WINMM.dll",
+    "name": "midiStreamRestart",
+    "addr": 4859576,
+    "iat_offset": 665272
+  },
+  {
+    "dll": "WINMM.dll",
+    "name": "waveOutUnprepareHeader",
+    "addr": 4859580,
+    "iat_offset": 665276
+  },
+  {
+    "dll": "WINMM.dll",
+    "name": "waveOutRestart",
+    "addr": 4859584,
+    "iat_offset": 665280
+  },
+  {
+    "dll": "WINMM.dll",
+    "name": "waveOutPrepareHeader",
+    "addr": 4859588,
+    "iat_offset": 665284
+  },
+  {
+    "dll": "WS2_32.dll",
+    "name": "WSACleanup",
+    "addr": 4859612,
+    "iat_offset": 665308
+  },
+  {
+    "dll": "WS2_32.dll",
+    "name": "inet_ntoa",
+    "addr": 4859616,
+    "iat_offset": 665312
+  },
+  {
+    "dll": "WS2_32.dll",
+    "name": "closesocket",
+    "addr": 4859620,
+    "iat_offset": 665316
+  },
+  {
+    "dll": "WS2_32.dll",
+    "name": "getpeername",
+    "addr": 4859624,
+    "iat_offset": 665320
+  },
+  {
+    "dll": "WS2_32.dll",
+    "name": "accept",
+    "addr": 4859628,
+    "iat_offset": 665324
+  },
+  {
+    "dll": "WS2_32.dll",
+    "name": "ntohl",
+    "addr": 4859632,
+    "iat_offset": 665328
+  },
+  {
+    "dll": "WS2_32.dll",
+    "name": "WSAAsyncSelect",
+    "addr": 4859636,
+    "iat_offset": 665332
+  },
+  {
+    "dll": "WS2_32.dll",
+    "name": "recvfrom",
+    "addr": 4859640,
+    "iat_offset": 665336
+  },
+  {
+    "dll": "WS2_32.dll",
+    "name": "ioctlsocket",
+    "addr": 4859644,
+    "iat_offset": 665340
+  },
+  {
+    "dll": "WS2_32.dll",
+    "name": "recv",
+    "addr": 4859648,
+    "iat_offset": 665344
+  },
+  {
+    "dll": "VERSION.dll",
+    "name": "VerLanguageNameA",
+    "addr": 4859500,
+    "iat_offset": 665196
+  },
+  {
+    "dll": "VERSION.dll",
+    "name": "GetFileVersionInfoSizeA",
+    "addr": 4859504,
+    "iat_offset": 665200
+  },
+  {
+    "dll": "VERSION.dll",
+    "name": "GetFileVersionInfoA",
+    "addr": 4859508,
+    "iat_offset": 665204
+  },
+  {
+    "dll": "VERSION.dll",
+    "name": "VerQueryValueA",
+    "addr": 4859512,
+    "iat_offset": 665208
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "CreateFileMappingA",
+    "addr": 4858224,
+    "iat_offset": 663920
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "MapViewOfFile",
+    "addr": 4858228,
+    "iat_offset": 663924
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "OpenFileMappingA",
+    "addr": 4858232,
+    "iat_offset": 663928
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GetCurrentProcessId",
+    "addr": 4858236,
+    "iat_offset": 663932
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GetSystemDirectoryA",
+    "addr": 4858240,
+    "iat_offset": 663936
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GetWindowsDirectoryA",
+    "addr": 4858244,
+    "iat_offset": 663940
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GetCurrentProcess",
+    "addr": 4858248,
+    "iat_offset": 663944
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "Process32Next",
+    "addr": 4858252,
+    "iat_offset": 663948
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "Process32First",
+    "addr": 4858256,
+    "iat_offset": 663952
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "CreateToolhelp32Snapshot",
+    "addr": 4858260,
+    "iat_offset": 663956
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "SetFilePointer",
+    "addr": 4858264,
+    "iat_offset": 663960
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GetFileSize",
+    "addr": 4858268,
+    "iat_offset": 663964
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "TerminateProcess",
+    "addr": 4858272,
+    "iat_offset": 663968
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "OpenProcess",
+    "addr": 4858276,
+    "iat_offset": 663972
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "UnmapViewOfFile",
+    "addr": 4858280,
+    "iat_offset": 663976
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GetTimeZoneInformation",
+    "addr": 4858284,
+    "iat_offset": 663980
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GetVersion",
+    "addr": 4858288,
+    "iat_offset": 663984
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "TerminateThread",
+    "addr": 4858292,
+    "iat_offset": 663988
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "CreateMutexA",
+    "addr": 4858296,
+    "iat_offset": 663992
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "ReleaseMutex",
+    "addr": 4858300,
+    "iat_offset": 663996
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "SuspendThread",
+    "addr": 4858304,
+    "iat_offset": 664000
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "RaiseException",
+    "addr": 4858308,
+    "iat_offset": 664004
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GetLocalTime",
+    "addr": 4858312,
+    "iat_offset": 664008
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GetSystemTime",
+    "addr": 4858316,
+    "iat_offset": 664012
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "RtlUnwind",
+    "addr": 4858320,
+    "iat_offset": 664016
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GetStartupInfoA",
+    "addr": 4858324,
+    "iat_offset": 664020
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GetOEMCP",
+    "addr": 4858328,
+    "iat_offset": 664024
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GetCPInfo",
+    "addr": 4858332,
+    "iat_offset": 664028
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GetProcessVersion",
+    "addr": 4858336,
+    "iat_offset": 664032
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "SetErrorMode",
+    "addr": 4858340,
+    "iat_offset": 664036
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GlobalFlags",
+    "addr": 4858344,
+    "iat_offset": 664040
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GetCurrentThread",
+    "addr": 4858348,
+    "iat_offset": 664044
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GetFileTime",
+    "addr": 4858352,
+    "iat_offset": 664048
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "TlsGetValue",
+    "addr": 4858356,
+    "iat_offset": 664052
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "LocalReAlloc",
+    "addr": 4858360,
+    "iat_offset": 664056
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "TlsSetValue",
+    "addr": 4858364,
+    "iat_offset": 664060
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "TlsFree",
+    "addr": 4858368,
+    "iat_offset": 664064
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GlobalHandle",
+    "addr": 4858372,
+    "iat_offset": 664068
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "TlsAlloc",
+    "addr": 4858376,
+    "iat_offset": 664072
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "LocalAlloc",
+    "addr": 4858380,
+    "iat_offset": 664076
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "lstrcmpA",
+    "addr": 4858384,
+    "iat_offset": 664080
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GlobalGetAtomNameA",
+    "addr": 4858388,
+    "iat_offset": 664084
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GlobalAddAtomA",
+    "addr": 4858392,
+    "iat_offset": 664088
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GlobalFindAtomA",
+    "addr": 4858396,
+    "iat_offset": 664092
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GlobalDeleteAtom",
+    "addr": 4858400,
+    "iat_offset": 664096
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "lstrcmpiA",
+    "addr": 4858404,
+    "iat_offset": 664100
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "SetEndOfFile",
+    "addr": 4858408,
+    "iat_offset": 664104
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "UnlockFile",
+    "addr": 4858412,
+    "iat_offset": 664108
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "LockFile",
+    "addr": 4858416,
+    "iat_offset": 664112
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "FlushFileBuffers",
+    "addr": 4858420,
+    "iat_offset": 664116
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "DuplicateHandle",
+    "addr": 4858424,
+    "iat_offset": 664120
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "lstrcpynA",
+    "addr": 4858428,
+    "iat_offset": 664124
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "FileTimeToLocalFileTime",
+    "addr": 4858432,
+    "iat_offset": 664128
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "FileTimeToSystemTime",
+    "addr": 4858436,
+    "iat_offset": 664132
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "LocalFree",
+    "addr": 4858440,
+    "iat_offset": 664136
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "InterlockedDecrement",
+    "addr": 4858444,
+    "iat_offset": 664140
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "InterlockedIncrement",
+    "addr": 4858448,
+    "iat_offset": 664144
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "IsBadReadPtr",
+    "addr": 4858452,
+    "iat_offset": 664148
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "VirtualProtect",
+    "addr": 4858456,
+    "iat_offset": 664152
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "SetLastError",
+    "addr": 4858460,
+    "iat_offset": 664156
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GetSystemInfo",
+    "addr": 4858464,
+    "iat_offset": 664160
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "VirtualFree",
+    "addr": 4858468,
+    "iat_offset": 664164
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "VirtualAlloc",
+    "addr": 4858472,
+    "iat_offset": 664168
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "CreateSemaphoreA",
+    "addr": 4858476,
+    "iat_offset": 664172
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "ResumeThread",
+    "addr": 4858480,
+    "iat_offset": 664176
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "ReleaseSemaphore",
+    "addr": 4858484,
+    "iat_offset": 664180
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "EnterCriticalSection",
+    "addr": 4858488,
+    "iat_offset": 664184
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "LeaveCriticalSection",
+    "addr": 4858492,
+    "iat_offset": 664188
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GetProfileStringA",
+    "addr": 4858496,
+    "iat_offset": 664192
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "WriteFile",
+    "addr": 4858500,
+    "iat_offset": 664196
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "WaitForMultipleObjects",
+    "addr": 4858504,
+    "iat_offset": 664200
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "CreateFileA",
+    "addr": 4858508,
+    "iat_offset": 664204
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "SetEvent",
+    "addr": 4858512,
+    "iat_offset": 664208
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "FindResourceA",
+    "addr": 4858516,
+    "iat_offset": 664212
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "LoadResource",
+    "addr": 4858520,
+    "iat_offset": 664216
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "LockResource",
+    "addr": 4858524,
+    "iat_offset": 664220
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "ReadFile",
+    "addr": 4858528,
+    "iat_offset": 664224
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "RemoveDirectoryA",
+    "addr": 4858532,
+    "iat_offset": 664228
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GetModuleFileNameA",
+    "addr": 4858536,
+    "iat_offset": 664232
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "WideCharToMultiByte",
+    "addr": 4858540,
+    "iat_offset": 664236
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "MultiByteToWideChar",
+    "addr": 4858544,
+    "iat_offset": 664240
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GetCurrentThreadId",
+    "addr": 4858548,
+    "iat_offset": 664244
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "ExitProcess",
+    "addr": 4858552,
+    "iat_offset": 664248
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GlobalSize",
+    "addr": 4858556,
+    "iat_offset": 664252
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GlobalFree",
+    "addr": 4858560,
+    "iat_offset": 664256
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "DeleteCriticalSection",
+    "addr": 4858564,
+    "iat_offset": 664260
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "InitializeCriticalSection",
+    "addr": 4858568,
+    "iat_offset": 664264
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "lstrcatA",
+    "addr": 4858572,
+    "iat_offset": 664268
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "lstrlenA",
+    "addr": 4858576,
+    "iat_offset": 664272
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "InterlockedExchange",
+    "addr": 4858580,
+    "iat_offset": 664276
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "WinExec",
+    "addr": 4858584,
+    "iat_offset": 664280
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "lstrcpyA",
+    "addr": 4858588,
+    "iat_offset": 664284
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "FindNextFileA",
+    "addr": 4858592,
+    "iat_offset": 664288
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GlobalReAlloc",
+    "addr": 4858596,
+    "iat_offset": 664292
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "HeapFree",
+    "addr": 4858600,
+    "iat_offset": 664296
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "HeapReAlloc",
+    "addr": 4858604,
+    "iat_offset": 664300
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GetProcessHeap",
+    "addr": 4858608,
+    "iat_offset": 664304
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "HeapAlloc",
+    "addr": 4858612,
+    "iat_offset": 664308
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GetFullPathNameA",
+    "addr": 4858616,
+    "iat_offset": 664312
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "FreeLibrary",
+    "addr": 4858620,
+    "iat_offset": 664316
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "LoadLibraryA",
+    "addr": 4858624,
+    "iat_offset": 664320
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GetLastError",
+    "addr": 4858628,
+    "iat_offset": 664324
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GetVersionExA",
+    "addr": 4858632,
+    "iat_offset": 664328
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "WritePrivateProfileStringA",
+    "addr": 4858636,
+    "iat_offset": 664332
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "CreateThread",
+    "addr": 4858640,
+    "iat_offset": 664336
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "CreateEventA",
+    "addr": 4858644,
+    "iat_offset": 664340
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "Sleep",
+    "addr": 4858648,
+    "iat_offset": 664344
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GlobalAlloc",
+    "addr": 4858652,
+    "iat_offset": 664348
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GlobalLock",
+    "addr": 4858656,
+    "iat_offset": 664352
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GlobalUnlock",
+    "addr": 4858660,
+    "iat_offset": 664356
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GetTempPathA",
+    "addr": 4858664,
+    "iat_offset": 664360
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "FindFirstFileA",
+    "addr": 4858668,
+    "iat_offset": 664364
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "FindClose",
+    "addr": 4858672,
+    "iat_offset": 664368
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GetFileAttributesA",
+    "addr": 4858676,
+    "iat_offset": 664372
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "DeleteFileA",
+    "addr": 4858680,
+    "iat_offset": 664376
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "SetCurrentDirectoryA",
+    "addr": 4858684,
+    "iat_offset": 664380
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GetVolumeInformationA",
+    "addr": 4858688,
+    "iat_offset": 664384
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GetModuleHandleA",
+    "addr": 4858692,
+    "iat_offset": 664388
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GetProcAddress",
+    "addr": 4858696,
+    "iat_offset": 664392
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "MulDiv",
+    "addr": 4858700,
+    "iat_offset": 664396
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GetCommandLineA",
+    "addr": 4858704,
+    "iat_offset": 664400
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GetTickCount",
+    "addr": 4858708,
+    "iat_offset": 664404
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "WaitForSingleObject",
+    "addr": 4858712,
+    "iat_offset": 664408
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "CloseHandle",
+    "addr": 4858716,
+    "iat_offset": 664412
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "HeapSize",
+    "addr": 4858720,
+    "iat_offset": 664416
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GetACP",
+    "addr": 4858724,
+    "iat_offset": 664420
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "UnhandledExceptionFilter",
+    "addr": 4858728,
+    "iat_offset": 664424
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "FreeEnvironmentStringsA",
+    "addr": 4858732,
+    "iat_offset": 664428
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "FreeEnvironmentStringsW",
+    "addr": 4858736,
+    "iat_offset": 664432
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GetEnvironmentStrings",
+    "addr": 4858740,
+    "iat_offset": 664436
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GetEnvironmentStringsW",
+    "addr": 4858744,
+    "iat_offset": 664440
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "SetHandleCount",
+    "addr": 4858748,
+    "iat_offset": 664444
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GetStdHandle",
+    "addr": 4858752,
+    "iat_offset": 664448
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GetFileType",
+    "addr": 4858756,
+    "iat_offset": 664452
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GetEnvironmentVariableA",
+    "addr": 4858760,
+    "iat_offset": 664456
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "HeapDestroy",
+    "addr": 4858764,
+    "iat_offset": 664460
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "HeapCreate",
+    "addr": 4858768,
+    "iat_offset": 664464
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "SetEnvironmentVariableA",
+    "addr": 4858772,
+    "iat_offset": 664468
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "LCMapStringA",
+    "addr": 4858776,
+    "iat_offset": 664472
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "LCMapStringW",
+    "addr": 4858780,
+    "iat_offset": 664476
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "IsBadWritePtr",
+    "addr": 4858784,
+    "iat_offset": 664480
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "SetUnhandledExceptionFilter",
+    "addr": 4858788,
+    "iat_offset": 664484
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GetStringTypeA",
+    "addr": 4858792,
+    "iat_offset": 664488
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "GetStringTypeW",
+    "addr": 4858796,
+    "iat_offset": 664492
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "CompareStringA",
+    "addr": 4858800,
+    "iat_offset": 664496
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "CompareStringW",
+    "addr": 4858804,
+    "iat_offset": 664500
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "IsBadCodePtr",
+    "addr": 4858808,
+    "iat_offset": 664504
+  },
+  {
+    "dll": "KERNEL32.dll",
+    "name": "SetStdHandle",
+    "addr": 4858812,
+    "iat_offset": 664508
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "GetWindow",
+    "addr": 4858864,
+    "iat_offset": 664560
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "DestroyAcceleratorTable",
+    "addr": 4858868,
+    "iat_offset": 664564
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "SetWindowRgn",
+    "addr": 4858872,
+    "iat_offset": 664568
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "GetMessagePos",
+    "addr": 4858876,
+    "iat_offset": 664572
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "ScreenToClient",
+    "addr": 4858880,
+    "iat_offset": 664576
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "GetActiveWindow",
+    "addr": 4858884,
+    "iat_offset": 664580
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "SetFocus",
+    "addr": 4858888,
+    "iat_offset": 664584
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "IsIconic",
+    "addr": 4858892,
+    "iat_offset": 664588
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "PeekMessageA",
+    "addr": 4858896,
+    "iat_offset": 664592
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "SetMenu",
+    "addr": 4858900,
+    "iat_offset": 664596
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "GetMenu",
+    "addr": 4858904,
+    "iat_offset": 664600
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "DeleteMenu",
+    "addr": 4858908,
+    "iat_offset": 664604
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "GetSystemMenu",
+    "addr": 4858912,
+    "iat_offset": 664608
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "DefWindowProcA",
+    "addr": 4858916,
+    "iat_offset": 664612
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "GetClassInfoA",
+    "addr": 4858920,
+    "iat_offset": 664616
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "IsZoomed",
+    "addr": 4858924,
+    "iat_offset": 664620
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "PostQuitMessage",
+    "addr": 4858928,
+    "iat_offset": 664624
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "ChildWindowFromPointEx",
+    "addr": 4858932,
+    "iat_offset": 664628
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "CopyRect",
+    "addr": 4858936,
+    "iat_offset": 664632
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "LoadBitmapA",
+    "addr": 4858940,
+    "iat_offset": 664636
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "GetSysColorBrush",
+    "addr": 4858944,
+    "iat_offset": 664640
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "LoadImageA",
+    "addr": 4858948,
+    "iat_offset": 664644
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "EnumDisplaySettingsA",
+    "addr": 4858952,
+    "iat_offset": 664648
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "ClientToScreen",
+    "addr": 4858956,
+    "iat_offset": 664652
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "EnableMenuItem",
+    "addr": 4858960,
+    "iat_offset": 664656
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "GetSubMenu",
+    "addr": 4858964,
+    "iat_offset": 664660
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "GetDlgCtrlID",
+    "addr": 4858968,
+    "iat_offset": 664664
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "CreateAcceleratorTableA",
+    "addr": 4858972,
+    "iat_offset": 664668
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "CreateMenu",
+    "addr": 4858976,
+    "iat_offset": 664672
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "ModifyMenuA",
+    "addr": 4858980,
+    "iat_offset": 664676
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "CreatePopupMenu",
+    "addr": 4858984,
+    "iat_offset": 664680
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "DrawIconEx",
+    "addr": 4858988,
+    "iat_offset": 664684
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "CreateIconFromResource",
+    "addr": 4858992,
+    "iat_offset": 664688
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "CreateIconFromResourceEx",
+    "addr": 4858996,
+    "iat_offset": 664692
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "RegisterClipboardFormatA",
+    "addr": 4859000,
+    "iat_offset": 664696
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "SetRectEmpty",
+    "addr": 4859004,
+    "iat_offset": 664700
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "DispatchMessageA",
+    "addr": 4859008,
+    "iat_offset": 664704
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "GetMessageA",
+    "addr": 4859012,
+    "iat_offset": 664708
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "WindowFromPoint",
+    "addr": 4859016,
+    "iat_offset": 664712
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "DrawFocusRect",
+    "addr": 4859020,
+    "iat_offset": 664716
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "DrawEdge",
+    "addr": 4859024,
+    "iat_offset": 664720
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "DrawFrameControl",
+    "addr": 4859028,
+    "iat_offset": 664724
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "TranslateMessage",
+    "addr": 4859032,
+    "iat_offset": 664728
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "WinHelpA",
+    "addr": 4859036,
+    "iat_offset": 664732
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "KillTimer",
+    "addr": 4859040,
+    "iat_offset": 664736
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "SetTimer",
+    "addr": 4859044,
+    "iat_offset": 664740
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "ReleaseCapture",
+    "addr": 4859048,
+    "iat_offset": 664744
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "GetCapture",
+    "addr": 4859052,
+    "iat_offset": 664748
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "SetCapture",
+    "addr": 4859056,
+    "iat_offset": 664752
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "GetScrollRange",
+    "addr": 4859060,
+    "iat_offset": 664756
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "SetScrollRange",
+    "addr": 4859064,
+    "iat_offset": 664760
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "SetScrollPos",
+    "addr": 4859068,
+    "iat_offset": 664764
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "SetRect",
+    "addr": 4859072,
+    "iat_offset": 664768
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "InflateRect",
+    "addr": 4859076,
+    "iat_offset": 664772
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "IntersectRect",
+    "addr": 4859080,
+    "iat_offset": 664776
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "LoadStringA",
+    "addr": 4859084,
+    "iat_offset": 664780
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "GetMenuCheckMarkDimensions",
+    "addr": 4859088,
+    "iat_offset": 664784
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "CopyAcceleratorTableA",
+    "addr": 4859092,
+    "iat_offset": 664788
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "SetMenuItemBitmaps",
+    "addr": 4859096,
+    "iat_offset": 664792
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "CheckMenuItem",
+    "addr": 4859100,
+    "iat_offset": 664796
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "DestroyIcon",
+    "addr": 4859104,
+    "iat_offset": 664800
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "PtInRect",
+    "addr": 4859108,
+    "iat_offset": 664804
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "OffsetRect",
+    "addr": 4859112,
+    "iat_offset": 664808
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "IsWindowVisible",
+    "addr": 4859116,
+    "iat_offset": 664812
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "EnableWindow",
+    "addr": 4859120,
+    "iat_offset": 664816
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "RedrawWindow",
+    "addr": 4859124,
+    "iat_offset": 664820
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "GetWindowLongA",
+    "addr": 4859128,
+    "iat_offset": 664824
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "SetWindowLongA",
+    "addr": 4859132,
+    "iat_offset": 664828
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "GetSysColor",
+    "addr": 4859136,
+    "iat_offset": 664832
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "SetActiveWindow",
+    "addr": 4859140,
+    "iat_offset": 664836
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "SetCursorPos",
+    "addr": 4859144,
+    "iat_offset": 664840
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "LoadCursorA",
+    "addr": 4859148,
+    "iat_offset": 664844
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "SetCursor",
+    "addr": 4859152,
+    "iat_offset": 664848
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "GetDC",
+    "addr": 4859156,
+    "iat_offset": 664852
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "FillRect",
+    "addr": 4859160,
+    "iat_offset": 664856
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "IsRectEmpty",
+    "addr": 4859164,
+    "iat_offset": 664860
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "ReleaseDC",
+    "addr": 4859168,
+    "iat_offset": 664864
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "IsChild",
+    "addr": 4859172,
+    "iat_offset": 664868
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "DestroyMenu",
+    "addr": 4859176,
+    "iat_offset": 664872
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "SetForegroundWindow",
+    "addr": 4859180,
+    "iat_offset": 664876
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "GetWindowRect",
+    "addr": 4859184,
+    "iat_offset": 664880
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "EqualRect",
+    "addr": 4859188,
+    "iat_offset": 664884
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "UpdateWindow",
+    "addr": 4859192,
+    "iat_offset": 664888
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "ValidateRect",
+    "addr": 4859196,
+    "iat_offset": 664892
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "InvalidateRect",
+    "addr": 4859200,
+    "iat_offset": 664896
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "GetClientRect",
+    "addr": 4859204,
+    "iat_offset": 664900
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "GetFocus",
+    "addr": 4859208,
+    "iat_offset": 664904
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "GetParent",
+    "addr": 4859212,
+    "iat_offset": 664908
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "GetTopWindow",
+    "addr": 4859216,
+    "iat_offset": 664912
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "PostMessageA",
+    "addr": 4859220,
+    "iat_offset": 664916
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "IsWindow",
+    "addr": 4859224,
+    "iat_offset": 664920
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "SetParent",
+    "addr": 4859228,
+    "iat_offset": 664924
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "DestroyCursor",
+    "addr": 4859232,
+    "iat_offset": 664928
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "SendMessageA",
+    "addr": 4859236,
+    "iat_offset": 664932
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "SetWindowPos",
+    "addr": 4859240,
+    "iat_offset": 664936
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "MessageBoxA",
+    "addr": 4859244,
+    "iat_offset": 664940
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "GetCursorPos",
+    "addr": 4859248,
+    "iat_offset": 664944
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "GetSystemMetrics",
+    "addr": 4859252,
+    "iat_offset": 664948
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "EmptyClipboard",
+    "addr": 4859256,
+    "iat_offset": 664952
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "SetClipboardData",
+    "addr": 4859260,
+    "iat_offset": 664956
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "OpenClipboard",
+    "addr": 4859264,
+    "iat_offset": 664960
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "GetClipboardData",
+    "addr": 4859268,
+    "iat_offset": 664964
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "CloseClipboard",
+    "addr": 4859272,
+    "iat_offset": 664968
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "wsprintfA",
+    "addr": 4859276,
+    "iat_offset": 664972
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "GetKeyState",
+    "addr": 4859280,
+    "iat_offset": 664976
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "LoadIconA",
+    "addr": 4859284,
+    "iat_offset": 664980
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "DefWindowProcW",
+    "addr": 4859288,
+    "iat_offset": 664984
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "SetPropA",
+    "addr": 4859292,
+    "iat_offset": 664988
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "GetPropA",
+    "addr": 4859296,
+    "iat_offset": 664992
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "ShowWindowAsync",
+    "addr": 4859300,
+    "iat_offset": 664996
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "CreateWindowExA",
+    "addr": 4859304,
+    "iat_offset": 665000
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "RegisterClassA",
+    "addr": 4859308,
+    "iat_offset": 665004
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "GetForegroundWindow",
+    "addr": 4859312,
+    "iat_offset": 665008
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "GetDesktopWindow",
+    "addr": 4859316,
+    "iat_offset": 665012
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "GetClassNameA",
+    "addr": 4859320,
+    "iat_offset": 665016
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "GetWindowThreadProcessId",
+    "addr": 4859324,
+    "iat_offset": 665020
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "FindWindowA",
+    "addr": 4859328,
+    "iat_offset": 665024
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "GetDlgItem",
+    "addr": 4859332,
+    "iat_offset": 665028
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "GetWindowTextA",
+    "addr": 4859336,
+    "iat_offset": 665032
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "TranslateAcceleratorA",
+    "addr": 4859340,
+    "iat_offset": 665036
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "IsWindowEnabled",
+    "addr": 4859344,
+    "iat_offset": 665040
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "ShowWindow",
+    "addr": 4859348,
+    "iat_offset": 665044
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "GetMenuState",
+    "addr": 4859352,
+    "iat_offset": 665048
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "SystemParametersInfoA",
+    "addr": 4859356,
+    "iat_offset": 665052
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "UnregisterClassA",
+    "addr": 4859360,
+    "iat_offset": 665056
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "AppendMenuA",
+    "addr": 4859364,
+    "iat_offset": 665060
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "GetWindowTextLengthA",
+    "addr": 4859368,
+    "iat_offset": 665064
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "CharUpperA",
+    "addr": 4859372,
+    "iat_offset": 665068
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "GetWindowDC",
+    "addr": 4859376,
+    "iat_offset": 665072
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "BeginPaint",
+    "addr": 4859380,
+    "iat_offset": 665076
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "EndPaint",
+    "addr": 4859384,
+    "iat_offset": 665080
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "TabbedTextOutA",
+    "addr": 4859388,
+    "iat_offset": 665084
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "DrawTextA",
+    "addr": 4859392,
+    "iat_offset": 665088
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "GrayStringA",
+    "addr": 4859396,
+    "iat_offset": 665092
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "DestroyWindow",
+    "addr": 4859400,
+    "iat_offset": 665096
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "CreateDialogIndirectParamA",
+    "addr": 4859404,
+    "iat_offset": 665100
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "EndDialog",
+    "addr": 4859408,
+    "iat_offset": 665104
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "GetNextDlgTabItem",
+    "addr": 4859412,
+    "iat_offset": 665108
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "GetWindowPlacement",
+    "addr": 4859416,
+    "iat_offset": 665112
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "RegisterWindowMessageA",
+    "addr": 4859420,
+    "iat_offset": 665116
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "GetLastActivePopup",
+    "addr": 4859424,
+    "iat_offset": 665120
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "GetMessageTime",
+    "addr": 4859428,
+    "iat_offset": 665124
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "RemovePropA",
+    "addr": 4859432,
+    "iat_offset": 665128
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "CallWindowProcA",
+    "addr": 4859436,
+    "iat_offset": 665132
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "UnhookWindowsHookEx",
+    "addr": 4859440,
+    "iat_offset": 665136
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "GetClassLongA",
+    "addr": 4859444,
+    "iat_offset": 665140
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "CallNextHookEx",
+    "addr": 4859448,
+    "iat_offset": 665144
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "SetWindowsHookExA",
+    "addr": 4859452,
+    "iat_offset": 665148
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "GetMenuItemID",
+    "addr": 4859456,
+    "iat_offset": 665152
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "GetMenuItemCount",
+    "addr": 4859460,
+    "iat_offset": 665156
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "GetScrollPos",
+    "addr": 4859464,
+    "iat_offset": 665160
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "AdjustWindowRectEx",
+    "addr": 4859468,
+    "iat_offset": 665164
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "MapWindowPoints",
+    "addr": 4859472,
+    "iat_offset": 665168
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "SendDlgItemMessageA",
+    "addr": 4859476,
+    "iat_offset": 665172
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "ScrollWindowEx",
+    "addr": 4859480,
+    "iat_offset": 665176
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "IsDialogMessageA",
+    "addr": 4859484,
+    "iat_offset": 665180
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "SetWindowTextA",
+    "addr": 4859488,
+    "iat_offset": 665184
+  },
+  {
+    "dll": "USER32.dll",
+    "name": "MoveWindow",
+    "addr": 4859492,
+    "iat_offset": 665188
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "GetViewportExtEx",
+    "addr": 4857892,
+    "iat_offset": 663588
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "ExtSelectClipRgn",
+    "addr": 4857896,
+    "iat_offset": 663592
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "LineTo",
+    "addr": 4857900,
+    "iat_offset": 663596
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "MoveToEx",
+    "addr": 4857904,
+    "iat_offset": 663600
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "ExcludeClipRect",
+    "addr": 4857908,
+    "iat_offset": 663604
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "GetClipBox",
+    "addr": 4857912,
+    "iat_offset": 663608
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "CreateCompatibleDC",
+    "addr": 4857916,
+    "iat_offset": 663612
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "Ellipse",
+    "addr": 4857920,
+    "iat_offset": 663616
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "Rectangle",
+    "addr": 4857924,
+    "iat_offset": 663620
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "LPtoDP",
+    "addr": 4857928,
+    "iat_offset": 663624
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "DPtoLP",
+    "addr": 4857932,
+    "iat_offset": 663628
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "GetCurrentObject",
+    "addr": 4857936,
+    "iat_offset": 663632
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "RoundRect",
+    "addr": 4857940,
+    "iat_offset": 663636
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "GetTextExtentPoint32A",
+    "addr": 4857944,
+    "iat_offset": 663640
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "GetDeviceCaps",
+    "addr": 4857948,
+    "iat_offset": 663644
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "PtVisible",
+    "addr": 4857952,
+    "iat_offset": 663648
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "GetViewportOrgEx",
+    "addr": 4857956,
+    "iat_offset": 663652
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "GetWindowExtEx",
+    "addr": 4857960,
+    "iat_offset": 663656
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "GetDIBits",
+    "addr": 4857964,
+    "iat_offset": 663660
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "RealizePalette",
+    "addr": 4857968,
+    "iat_offset": 663664
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "SelectPalette",
+    "addr": 4857972,
+    "iat_offset": 663668
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "StretchBlt",
+    "addr": 4857976,
+    "iat_offset": 663672
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "CreatePalette",
+    "addr": 4857980,
+    "iat_offset": 663676
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "GetSystemPaletteEntries",
+    "addr": 4857984,
+    "iat_offset": 663680
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "CreateDIBitmap",
+    "addr": 4857988,
+    "iat_offset": 663684
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "DeleteObject",
+    "addr": 4857992,
+    "iat_offset": 663688
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "SelectClipRgn",
+    "addr": 4857996,
+    "iat_offset": 663692
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "CreatePolygonRgn",
+    "addr": 4858000,
+    "iat_offset": 663696
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "GetClipRgn",
+    "addr": 4858004,
+    "iat_offset": 663700
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "SetStretchBltMode",
+    "addr": 4858008,
+    "iat_offset": 663704
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "CreateRectRgnIndirect",
+    "addr": 4858012,
+    "iat_offset": 663708
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "SetBkColor",
+    "addr": 4858016,
+    "iat_offset": 663712
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "ScaleWindowExtEx",
+    "addr": 4858020,
+    "iat_offset": 663716
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "SetWindowExtEx",
+    "addr": 4858024,
+    "iat_offset": 663720
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "SetWindowOrgEx",
+    "addr": 4858028,
+    "iat_offset": 663724
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "ScaleViewportExtEx",
+    "addr": 4858032,
+    "iat_offset": 663728
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "SetViewportExtEx",
+    "addr": 4858036,
+    "iat_offset": 663732
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "OffsetViewportOrgEx",
+    "addr": 4858040,
+    "iat_offset": 663736
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "SetViewportOrgEx",
+    "addr": 4858044,
+    "iat_offset": 663740
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "SetMapMode",
+    "addr": 4858048,
+    "iat_offset": 663744
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "SetTextColor",
+    "addr": 4858052,
+    "iat_offset": 663748
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "SetROP2",
+    "addr": 4858056,
+    "iat_offset": 663752
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "SetPolyFillMode",
+    "addr": 4858060,
+    "iat_offset": 663756
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "RectVisible",
+    "addr": 4858064,
+    "iat_offset": 663760
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "TextOutA",
+    "addr": 4858068,
+    "iat_offset": 663764
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "ExtTextOutA",
+    "addr": 4858072,
+    "iat_offset": 663768
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "Escape",
+    "addr": 4858076,
+    "iat_offset": 663772
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "GetTextMetricsA",
+    "addr": 4858080,
+    "iat_offset": 663776
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "BitBlt",
+    "addr": 4858084,
+    "iat_offset": 663780
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "StartPage",
+    "addr": 4858088,
+    "iat_offset": 663784
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "StartDocA",
+    "addr": 4858092,
+    "iat_offset": 663788
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "DeleteDC",
+    "addr": 4858096,
+    "iat_offset": 663792
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "EndDoc",
+    "addr": 4858100,
+    "iat_offset": 663796
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "EndPage",
+    "addr": 4858104,
+    "iat_offset": 663800
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "CreateFontIndirectA",
+    "addr": 4858108,
+    "iat_offset": 663804
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "GetStockObject",
+    "addr": 4858112,
+    "iat_offset": 663808
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "CreateSolidBrush",
+    "addr": 4858116,
+    "iat_offset": 663812
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "FillRgn",
+    "addr": 4858120,
+    "iat_offset": 663816
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "CreateRectRgn",
+    "addr": 4858124,
+    "iat_offset": 663820
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "CombineRgn",
+    "addr": 4858128,
+    "iat_offset": 663824
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "PatBlt",
+    "addr": 4858132,
+    "iat_offset": 663828
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "CreatePen",
+    "addr": 4858136,
+    "iat_offset": 663832
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "GetObjectA",
+    "addr": 4858140,
+    "iat_offset": 663836
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "SelectObject",
+    "addr": 4858144,
+    "iat_offset": 663840
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "CreateBitmap",
+    "addr": 4858148,
+    "iat_offset": 663844
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "CreateDCA",
+    "addr": 4858152,
+    "iat_offset": 663848
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "SetBkMode",
+    "addr": 4858156,
+    "iat_offset": 663852
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "RestoreDC",
+    "addr": 4858160,
+    "iat_offset": 663856
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "SaveDC",
+    "addr": 4858164,
+    "iat_offset": 663860
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "CreateCompatibleBitmap",
+    "addr": 4858168,
+    "iat_offset": 663864
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "GetPolyFillMode",
+    "addr": 4858172,
+    "iat_offset": 663868
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "GetStretchBltMode",
+    "addr": 4858176,
+    "iat_offset": 663872
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "GetROP2",
+    "addr": 4858180,
+    "iat_offset": 663876
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "GetBkColor",
+    "addr": 4858184,
+    "iat_offset": 663880
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "BeginPath",
+    "addr": 4858188,
+    "iat_offset": 663884
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "GetTextColor",
+    "addr": 4858192,
+    "iat_offset": 663888
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "CreateRoundRectRgn",
+    "addr": 4858196,
+    "iat_offset": 663892
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "CreateEllipticRgn",
+    "addr": 4858200,
+    "iat_offset": 663896
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "PathToRegion",
+    "addr": 4858204,
+    "iat_offset": 663900
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "GetWindowOrgEx",
+    "addr": 4858208,
+    "iat_offset": 663904
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "GetBkMode",
+    "addr": 4858212,
+    "iat_offset": 663908
+  },
+  {
+    "dll": "GDI32.dll",
+    "name": "EndPath",
+    "addr": 4858216,
+    "iat_offset": 663912
+  },
+  {
+    "dll": "WINSPOOL.DRV",
+    "name": "OpenPrinterA",
+    "addr": 4859596,
+    "iat_offset": 665292
+  },
+  {
+    "dll": "WINSPOOL.DRV",
+    "name": "DocumentPropertiesA",
+    "addr": 4859600,
+    "iat_offset": 665296
+  },
+  {
+    "dll": "WINSPOOL.DRV",
+    "name": "ClosePrinter",
+    "addr": 4859604,
+    "iat_offset": 665300
+  },
+  {
+    "dll": "ADVAPI32.dll",
+    "name": "RegOpenKeyExA",
+    "addr": 4857856,
+    "iat_offset": 663552
+  },
+  {
+    "dll": "ADVAPI32.dll",
+    "name": "RegSetValueExA",
+    "addr": 4857860,
+    "iat_offset": 663556
+  },
+  {
+    "dll": "ADVAPI32.dll",
+    "name": "RegQueryValueA",
+    "addr": 4857864,
+    "iat_offset": 663560
+  },
+  {
+    "dll": "ADVAPI32.dll",
+    "name": "RegCreateKeyExA",
+    "addr": 4857868,
+    "iat_offset": 663564
+  },
+  {
+    "dll": "ADVAPI32.dll",
+    "name": "RegCloseKey",
+    "addr": 4857872,
+    "iat_offset": 663568
+  },
+  {
+    "dll": "SHELL32.dll",
+    "name": "Shell_NotifyIconA",
+    "addr": 4858836,
+    "iat_offset": 664532
+  },
+  {
+    "dll": "SHELL32.dll",
+    "name": "SHGetMalloc",
+    "addr": 4858840,
+    "iat_offset": 664536
+  },
+  {
+    "dll": "SHELL32.dll",
+    "name": "SHGetPathFromIDListA",
+    "addr": 4858844,
+    "iat_offset": 664540
+  },
+  {
+    "dll": "SHELL32.dll",
+    "name": "ShellExecuteA",
+    "addr": 4858848,
+    "iat_offset": 664544
+  },
+  {
+    "dll": "SHELL32.dll",
+    "name": "SHGetSpecialFolderPathA",
+    "addr": 4858852,
+    "iat_offset": 664548
+  },
+  {
+    "dll": "SHELL32.dll",
+    "name": "SHBrowseForFolderA",
+    "addr": 4858856,
+    "iat_offset": 664552
+  },
+  {
+    "dll": "ole32.dll",
+    "name": "CLSIDFromString",
+    "addr": 4859676,
+    "iat_offset": 665372
+  },
+  {
+    "dll": "ole32.dll",
+    "name": "OleUninitialize",
+    "addr": 4859680,
+    "iat_offset": 665376
+  },
+  {
+    "dll": "ole32.dll",
+    "name": "OleInitialize",
+    "addr": 4859684,
+    "iat_offset": 665380
+  },
+  {
+    "dll": "OLEAUT32.dll",
+    "name": "LoadTypeLib",
+    "addr": 4858820,
+    "iat_offset": 664516
+  },
+  {
+    "dll": "OLEAUT32.dll",
+    "name": "RegisterTypeLib",
+    "addr": 4858824,
+    "iat_offset": 664520
+  },
+  {
+    "dll": "OLEAUT32.dll",
+    "name": "UnRegisterTypeLib",
+    "addr": 4858828,
+    "iat_offset": 664524
+  },
+  {
+    "dll": "COMCTL32.dll",
+    "name": "ImageList_Destroy",
+    "addr": 4857884,
+    "iat_offset": 663580
+  },
+  {
+    "dll": "comdlg32.dll",
+    "name": "ChooseColorA",
+    "addr": 4859656,
+    "iat_offset": 665352
+  },
+  {
+    "dll": "comdlg32.dll",
+    "name": "GetFileTitleA",
+    "addr": 4859660,
+    "iat_offset": 665356
+  },
+  {
+    "dll": "comdlg32.dll",
+    "name": "GetSaveFileNameA",
+    "addr": 4859664,
+    "iat_offset": 665360
+  },
+  {
+    "dll": "comdlg32.dll",
+    "name": "GetOpenFileNameA",
+    "addr": 4859668,
+    "iat_offset": 665364
+  }
+]

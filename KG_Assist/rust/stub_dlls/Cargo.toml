@@ -1,0 +1,15 @@
+[workspace]
+members = [
+    "version_stub",
+    "sprotect_stub",
+    "netbios_stub",
+    "terafe_stub",
+]
+resolver = "2"
+
+[profile.release]
+opt-level = "z"
+lto = true
+panic = "abort"
+strip = true
+codegen-units = 1

@@ -1,0 +1,51 @@
+[
+  {
+    "disp_va": "0x4a2558",
+    "section": ".rdata",
+    "offset_in_sec": "0x558",
+    "value": "0x2ba5134",
+    "used_count": 63
+  },
+  {
+    "disp_va": "0x4a2564",
+    "section": ".rdata",
+    "offset_in_sec": "0x564",
+    "value": "0x2ba5108",
+    "used_count": 65
+  },
+  {
+    "disp_va": "0x4a217c",
+    "section": ".rdata",
+    "offset_in_sec": "0x17c",
+    "value": "0x2ba4f0e",
+    "used_count": 1
+  },
+  {
+    "disp_va": "0x4a258c",
+    "section": ".rdata",
+    "offset_in_sec": "0x58c",
+    "value": "0x2ba505e",
+    "used_count": 33
+  },
+  {
+    "disp_va": "0x4a24c8",
+    "section": ".rdata",
+    "offset_in_sec": "0x4c8",
+    "value": "0x2ba52fa",
+    "used_count": 17
+  },
+  {
+    "disp_va": "0x4a2338",
+    "section": ".rdata",
+    "offset_in_sec": "0x338",
+    "value": "0x2ba4b04",
+    "used_count": 1
+  },
+  {
+    "disp_va": "0x4a256c",
+    "section": ".rdata",
+    "offset_in_sec": "0x56c",
+    "value": "0x2ba50ea",
+    "used_count": 12
+  }
+]

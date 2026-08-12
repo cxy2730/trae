@@ -1,0 +1,2342 @@
+[
+  {
+    "section": ".rdata",
+    "va": "0x4a27f4",
+    "string": "kernel32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x4a2801",
+    "string": "kernel32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x4a280e",
+    "string": "Shell32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x4a281a",
+    "string": "kernel32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x4a2827",
+    "string": "Kernel32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x4a2834",
+    "string": "kernel32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x4a2841",
+    "string": "msvcrt.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x4a284c",
+    "string": "kernel32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x4a2859",
+    "string": "kernel32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x4a2866",
+    "string": "advapi32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x4a2873",
+    "string": "advapi32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x4a2880",
+    "string": "Advapi32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x4a288d",
+    "string": "kernel32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x4a289a",
+    "string": "kernel32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x4a28a7",
+    "string": "kernel32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x4a28b4",
+    "string": "kernel32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x4a28c1",
+    "string": "Kernel32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x4a28ce",
+    "string": "shlwapi.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x4a5d49",
+    "string": "LeagueClient.exe",
+    "matched_pattern": "LeagueClient"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x4a5d5a",
+    "string": "RiotClientServices.exe",
+    "matched_pattern": "Riot"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x4a5d71",
+    "string": "vgc.exe",
+    "matched_pattern": "vgc.exe"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x4a5d8b",
+    "string": "C:\\Program Files\\AntiCheatExpert\\SGuard\\x64\\ACE-SSC64.dll",
+    "matched_pattern": "ACE"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x4a5dc5",
+    "string": "C:\\Program Files\\AntiCheatExpert\\SGuard\\x64\\ACE-SSC-DRV64.sys",
+    "matched_pattern": "ACE"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x4a5e03",
+    "string": "C:\\Program Files\\AntiCheatExpert\\SGuard\\x64\\123.dll",
+    "matched_pattern": "AntiCheatExpert"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x4a5e37",
+    "string": "C:\\Program Files\\AntiCheatExpert\\SGuard\\x64\\sguard.dat",
+    "matched_pattern": "AntiCheatExpert"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x4a5e76",
+    "string": "C:\\Program Files\\AntiCheatExpert\\SGuard\\x64\\netbios.dll",
+    "matched_pattern": "netbios"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x4a5eae",
+    "string": "/version.dll",
+    "matched_pattern": "version.dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x4a5ebb",
+    "string": "/League of Legends.exe.ini",
+    "matched_pattern": "League of Legends"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x4a5ed6",
+    "string": "/League of Legends.exe.lic",
+    "matched_pattern": "League of Legends"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x4a5ef9",
+    "string": "/SProtectSDK64.dll",
+    "matched_pattern": "SProtect"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x4a5f0c",
+    "string": "\\Program Files\\AntiCheatExpert\\SGuard\\x64\\netbios.dll",
+    "matched_pattern": "netbios"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x4a5f42",
+    "string": "\\Program Files\\AntiCheatExpert\\SGuard\\x64\\123.dll",
+    "matched_pattern": "AntiCheatExpert"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x4a6036",
+    "string": "/TerSafe.dll",
+    "matched_pattern": "TerSafe"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x4a75cb",
+    "string": "VERSION.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x4a891e",
+    "string": "IsDebuggerPresent",
+    "matched_pattern": "IsDebuggerPresent"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x4a8f3c",
+    "string": "KERNEL32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x4a8f49",
+    "string": "USER32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x4a8f54",
+    "string": "GDI32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x4a8f5e",
+    "string": "ole32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x4a8f68",
+    "string": "COMCTL32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x4a8f75",
+    "string": "ntdll.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x4a8f7f",
+    "string": "gdiplus.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x4a8f8b",
+    "string": "WS2_32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x625088",
+    "string": "KERNEL32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x625769",
+    "string": "IsDebuggerPresent",
+    "matched_pattern": "IsDebuggerPresent"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x6259b6",
+    "string": "USER32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x625add",
+    "string": "GDI32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x625b7c",
+    "string": "ole32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x625bcf",
+    "string": "COMCTL32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x625c28",
+    "string": "ntdll.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x625c59",
+    "string": "gdiplus.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x625e37",
+    "string": "WS2_32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x648a15",
+    "string": "?Fatlthunk.dll_",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x6495d7",
+    "string": "!\"#$%&'()*+,-./0123456789:;",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x11522f4",
+    "string": ".dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1204a6c",
+    "string": "\\Program Files\\AntiCheatExpert\\SGuard\\x64\\Plugins\\sg.dll",
+    "matched_pattern": "AntiCheatExpert"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1204aa5",
+    "string": "netbios.dll",
+    "matched_pattern": "netbios"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1204ab1",
+    "string": "Plugins\\sg.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1204ac0",
+    "string": "LeagueClient\\netbios.dll",
+    "matched_pattern": "netbios"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1204ad9",
+    "string": "\\AntiCheatExpert\\SGuard\\x64\\Plugins\\sg.dll",
+    "matched_pattern": "AntiCheatExpert"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x124d0cc",
+    "string": " !\"#$%&'()*+,-./0123456789:;<=>?@abcdefghijklmnopqrstuvwxyz[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x124d24c",
+    "string": " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`ABCDEFGHIJKLMNOPQRSTUVWXYZ{|}~",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1257dfc",
+    "string": "NtQueryInformationProcess",
+    "matched_pattern": "NtQueryInformationProcess"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x12653ec",
+    "string": "NtOpenProcess",
+    "matched_pattern": "NtOpenProcess"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x127120e",
+    "string": "VERSION.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1271b1e",
+    "string": "IsDebuggerPresent",
+    "matched_pattern": "IsDebuggerPresent"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1271ec8",
+    "string": "KERNEL32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1271fdc",
+    "string": "USER32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1272070",
+    "string": "GDI32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x12720b6",
+    "string": "ole32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x12720fe",
+    "string": "COMCTL32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x12722ca",
+    "string": "gdiplus.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x12722d6",
+    "string": "WS2_32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x12959b4",
+    "string": "OLEAUT32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x12f1164",
+    "string": "ntdll.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x12f3d60",
+    "string": "NtOpenProcess",
+    "matched_pattern": "NtOpenProcess"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x136478a",
+    "string": "NtQueryInformationProcess",
+    "matched_pattern": "NtQueryInformationProcess"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x137584c",
+    "string": "IsDebuggerPresent",
+    "matched_pattern": "IsDebuggerPresent"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x15d900f",
+    "string": "ACES",
+    "matched_pattern": "ACE"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x166aa96",
+    "string": "ADVAPI32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x16766d6",
+    "string": "USER32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1678286",
+    "string": "KERNEL32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x17133fc",
+    "string": "C:\\data\\landun\\workspace\\CommonComponent\\ACE-SSC\\1.compile_source\\SOURCE\\SscDrv\\build64\\Release\\ACE-SSC-DRV64.pdb",
+    "matched_pattern": "ACE"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1719724",
+    "string": "cng.sys",
+    "matched_pattern": ".sys"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1719952",
+    "string": "EtwUnregister",
+    "matched_pattern": "register"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1719ad4",
+    "string": "KeDeregisterBugCheckReasonCallback",
+    "matched_pattern": "register"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1719b82",
+    "string": "ZwUnloadDriver",
+    "matched_pattern": "ZwUnloadDriver"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x171a23c",
+    "string": "HAL.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x171aae7",
+    "string": "Debug\\ACE-SSC-DRV64.sys.private_dbg0",
+    "matched_pattern": "ACE"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x18d4c53",
+    "string": "ACEVILLE PTE LTD1",
+    "matched_pattern": "ACE"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x18d4c6e",
+    "string": "ACEVILLE PTE LTD0",
+    "matched_pattern": "ACE"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1a8b4b4",
+    "string": ".dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1ac1414",
+    "string": "invalid string position",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1ac1bac",
+    "string": "kernel32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1ac1c2c",
+    "string": "invalid vector subscript",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1ac3afc",
+    "string": "invalid stol argument",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1ac50bc",
+    "string": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1ac520c",
+    "string": "0123456789ABCDEF",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1ac59a4",
+    "string": "Invalid zoneid: %s; %s",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1ac5bec",
+    "string": "No valid port number in connect to host string (%s)",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1ac6e54",
+    "string": "Proxy-authenticate:",
+    "matched_pattern": "authenticate"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1ac753c",
+    "string": "Invalid TIMEVALUE",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1ac7ca4",
+    "string": "Invalid Content-Length: value",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1ac7fcc",
+    "string": "0123456789abcdefghijklmnopqrstuvwxyz",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1ac7ff4",
+    "string": "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1ac85a4",
+    "string": "0123456789",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1ac85dc",
+    "string": "0123456789abcdef",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1ac896c",
+    "string": "PREAUTH connection, already authenticated!",
+    "matched_pattern": "authenticate"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1ac8a2c",
+    "string": "OK [UIDVALIDITY %19[0123456789]]",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1aca004",
+    "string": "Got invalid RTSP request",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1aca094",
+    "string": "Got invalid RTSP request: RTSPREQ_LAST",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1aca43c",
+    "string": "Invalid input packet",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1acb044",
+    "string": "invalid blocksize value in OACK packet",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1acb17c",
+    "string": "invalid tsize -:%s:- value in OACK packet",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1acb7fc",
+    "string": "[%*45[0123456789abcdefABCDEF:.]%c%n",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1acb834",
+    "string": "0123456789abcdefABCDEF:.",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1acc264",
+    "string": "Invalid LDAP URL",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1acc454",
+    "string": "Caller must register CURLOPT_CONV_ callback options",
+    "matched_pattern": "register"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1acc4dc",
+    "string": "RTSP CSeq mismatch or invalid CSeq",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1acc6cc",
+    "string": "Invalid arguments",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1acd0dc",
+    "string": "Received invalid version in initial SOCKS5 response.",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1acdbbc",
+    "string": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1acdc0c",
+    "string": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1ace12c",
+    "string": "0123456789-",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1ace13c",
+    "string": "APM0123456789:",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1acf1ec",
+    "string": "invalid hash bucket count",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1acf39c",
+    "string": "invalid string position",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1acfd9c",
+    "string": "invalid window size",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1acfdec",
+    "string": "invalid block type",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1acfe04",
+    "string": "invalid stored block lengths",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1acfe4c",
+    "string": "invalid code lengths set",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1acfe6c",
+    "string": "invalid bit length repeat",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1acfe8c",
+    "string": "invalid code -- missing end-of-block",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1acfeb4",
+    "string": "invalid literal/lengths set",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1acfed4",
+    "string": "invalid distances set",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1acfeec",
+    "string": "invalid literal/length code",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1acff0c",
+    "string": "invalid distance code",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1acff24",
+    "string": "invalid distance too far back",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1ad6b34",
+    "string": "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1adae0c",
+    "string": "regex_error(error_collate): The expression contained an invalid collating element name.",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1adae6c",
+    "string": "regex_error(error_ctype): The expression contained an invalid character class name.",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1adaecc",
+    "string": "regex_error(error_escape): The expression contained an invalid escaped character, or a trailing escape.",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1adaf3c",
+    "string": "regex_error(error_backref): The expression contained an invalid back reference.",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1adb07c",
+    "string": "regex_error(error_badbrace): The expression contained an invalid range in a {} expression.",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1adb0dc",
+    "string": "regex_error(error_range): The expression contained an invalid character range, such as [b-a] in most encodings.",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1adb1bc",
+    "string": "regex_error(error_badrepeat): One of *?+{ was not preceded by a valid regular expression.",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1adbdb4",
+    "string": "invalid argument",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1adbdcc",
+    "string": "invalid seek",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1adeffc",
+    "string": "0123456789abcdefghijklmnopqrstuvwxyz",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1adf04c",
+    "string": "0123456789abcdefghijklmnopqrstuvwxyz",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1ae1724",
+    "string": "Invalid argument",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1ae17c4",
+    "string": "Invalid seek",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1ae1c7c",
+    "string": " !\"#$%&'()*+,-./0123456789:;<=>?@abcdefghijklmnopqrstuvwxyz[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1ae1dfc",
+    "string": " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`ABCDEFGHIJKLMNOPQRSTUVWXYZ{|}~",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1ae240b",
+    "string": " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1aeb8ac",
+    "string": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1aeb8fc",
+    "string": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1aefb9c",
+    "string": "C:\\data\\landun\\workspace\\CommonComponent\\ACE-SSC\\1.compile_source\\SOURCE\\AceSsc\\build64\\Release\\ACE-SSC64.pdb",
+    "matched_pattern": "ACE"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1b0f978",
+    "string": "ACE-SSC64.dll",
+    "matched_pattern": "ACE"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1b1089c",
+    "string": "WTSAPI32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1b11298",
+    "string": "KERNEL32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1b114aa",
+    "string": "USER32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1b114ca",
+    "string": "SHELL32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1b1157e",
+    "string": "ole32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1b11588",
+    "string": "OLEAUT32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1b11852",
+    "string": "ADVAPI32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1b118dc",
+    "string": "SHLWAPI.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1b119b6",
+    "string": "WINTRUST.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1b11b08",
+    "string": "SETUPAPI.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1b11d84",
+    "string": "RPCRT4.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1b11dd2",
+    "string": "VERSION.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1b11e36",
+    "string": "WS2_32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1b11e42",
+    "string": "WLDAP32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1b11f22",
+    "string": "WINHTTP.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1b11fde",
+    "string": "CRYPT32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1b1211c",
+    "string": "IsDebuggerPresent",
+    "matched_pattern": "IsDebuggerPresent"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1b20a74",
+    "string": ".?AVinvalid_argument@std@@",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x1b39f97",
+    "string": "Debug\\ACE-SSC64.dll.private_dbg0",
+    "matched_pattern": "ACE"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x20af7f6",
+    "string": "ACEVILLE PTE LTD1",
+    "matched_pattern": "ACE"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x20af811",
+    "string": "ACEVILLE PTE LTD0",
+    "matched_pattern": "ACE"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2267a57",
+    "string": ".dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x229d9b7",
+    "string": "invalid string position",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x229e14f",
+    "string": "kernel32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x229e1cf",
+    "string": "invalid vector subscript",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22a009f",
+    "string": "invalid stol argument",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22a165f",
+    "string": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22a17af",
+    "string": "0123456789ABCDEF",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22a1f47",
+    "string": "Invalid zoneid: %s; %s",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22a218f",
+    "string": "No valid port number in connect to host string (%s)",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22a33f7",
+    "string": "Proxy-authenticate:",
+    "matched_pattern": "authenticate"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22a3adf",
+    "string": "Invalid TIMEVALUE",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22a4247",
+    "string": "Invalid Content-Length: value",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22a456f",
+    "string": "0123456789abcdefghijklmnopqrstuvwxyz",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22a4597",
+    "string": "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22a4b47",
+    "string": "0123456789",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22a4b7f",
+    "string": "0123456789abcdef",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22a4f0f",
+    "string": "PREAUTH connection, already authenticated!",
+    "matched_pattern": "authenticate"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22a4fcf",
+    "string": "OK [UIDVALIDITY %19[0123456789]]",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22a65a7",
+    "string": "Got invalid RTSP request",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22a6637",
+    "string": "Got invalid RTSP request: RTSPREQ_LAST",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22a69df",
+    "string": "Invalid input packet",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22a75e7",
+    "string": "invalid blocksize value in OACK packet",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22a771f",
+    "string": "invalid tsize -:%s:- value in OACK packet",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22a7d9f",
+    "string": "[%*45[0123456789abcdefABCDEF:.]%c%n",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22a7dd7",
+    "string": "0123456789abcdefABCDEF:.",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22a8807",
+    "string": "Invalid LDAP URL",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22a89f7",
+    "string": "Caller must register CURLOPT_CONV_ callback options",
+    "matched_pattern": "register"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22a8a7f",
+    "string": "RTSP CSeq mismatch or invalid CSeq",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22a8c6f",
+    "string": "Invalid arguments",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22a967f",
+    "string": "Received invalid version in initial SOCKS5 response.",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22aa15f",
+    "string": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22aa1af",
+    "string": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22aa6cf",
+    "string": "0123456789-",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22aa6df",
+    "string": "APM0123456789:",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22ab78f",
+    "string": "invalid hash bucket count",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22ab93f",
+    "string": "invalid string position",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22ac33f",
+    "string": "invalid window size",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22ac38f",
+    "string": "invalid block type",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22ac3a7",
+    "string": "invalid stored block lengths",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22ac3ef",
+    "string": "invalid code lengths set",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22ac40f",
+    "string": "invalid bit length repeat",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22ac42f",
+    "string": "invalid code -- missing end-of-block",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22ac457",
+    "string": "invalid literal/lengths set",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22ac477",
+    "string": "invalid distances set",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22ac48f",
+    "string": "invalid literal/length code",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22ac4af",
+    "string": "invalid distance code",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22ac4c7",
+    "string": "invalid distance too far back",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22b30d7",
+    "string": "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22b73af",
+    "string": "regex_error(error_collate): The expression contained an invalid collating element name.",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22b740f",
+    "string": "regex_error(error_ctype): The expression contained an invalid character class name.",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22b746f",
+    "string": "regex_error(error_escape): The expression contained an invalid escaped character, or a trailing escape.",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22b74df",
+    "string": "regex_error(error_backref): The expression contained an invalid back reference.",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22b761f",
+    "string": "regex_error(error_badbrace): The expression contained an invalid range in a {} expression.",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22b767f",
+    "string": "regex_error(error_range): The expression contained an invalid character range, such as [b-a] in most encodings.",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22b775f",
+    "string": "regex_error(error_badrepeat): One of *?+{ was not preceded by a valid regular expression.",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22b8357",
+    "string": "invalid argument",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22b836f",
+    "string": "invalid seek",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22bb59f",
+    "string": "0123456789abcdefghijklmnopqrstuvwxyz",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22bb5ef",
+    "string": "0123456789abcdefghijklmnopqrstuvwxyz",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22bdcc7",
+    "string": "Invalid argument",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22bdd67",
+    "string": "Invalid seek",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22be21f",
+    "string": " !\"#$%&'()*+,-./0123456789:;<=>?@abcdefghijklmnopqrstuvwxyz[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22be39f",
+    "string": " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`ABCDEFGHIJKLMNOPQRSTUVWXYZ{|}~",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22be9ae",
+    "string": " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22c7e4f",
+    "string": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22c7e9f",
+    "string": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22cc13f",
+    "string": "C:\\data\\landun\\workspace\\CommonComponent\\ACE-SSC\\1.compile_source\\SOURCE\\AceSsc\\build64\\Release\\ACE-SSC64.pdb",
+    "matched_pattern": "ACE"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22ebf1b",
+    "string": "ACE-SSC64.dll",
+    "matched_pattern": "ACE"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22ece3f",
+    "string": "WTSAPI32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22ed83b",
+    "string": "KERNEL32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22eda4d",
+    "string": "USER32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22eda6d",
+    "string": "SHELL32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22edb21",
+    "string": "ole32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22edb2b",
+    "string": "OLEAUT32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22eddf5",
+    "string": "ADVAPI32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22ede7f",
+    "string": "SHLWAPI.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22edf59",
+    "string": "WINTRUST.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22ee0ab",
+    "string": "SETUPAPI.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22ee327",
+    "string": "RPCRT4.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22ee375",
+    "string": "VERSION.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22ee3d9",
+    "string": "WS2_32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22ee3e5",
+    "string": "WLDAP32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22ee4c5",
+    "string": "WINHTTP.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22ee581",
+    "string": "CRYPT32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22ee6bf",
+    "string": "IsDebuggerPresent",
+    "matched_pattern": "IsDebuggerPresent"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x22fd017",
+    "string": ".?AVinvalid_argument@std@@",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x231653a",
+    "string": "Debug\\ACE-SSC64.dll.private_dbg0",
+    "matched_pattern": "ACE"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x288bd99",
+    "string": "ACEVILLE PTE LTD1",
+    "matched_pattern": "ACE"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x288bdb4",
+    "string": "ACEVILLE PTE LTD0",
+    "matched_pattern": "ACE"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x28a8e2f",
+    "string": "C:\\data\\landun\\workspace\\CommonComponent\\ACE-SSC\\1.compile_source\\SOURCE\\SscDrv\\build64\\Release\\ACE-SSC-DRV64.pdb",
+    "matched_pattern": "ACE"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x28af157",
+    "string": "cng.sys",
+    "matched_pattern": ".sys"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x28af385",
+    "string": "EtwUnregister",
+    "matched_pattern": "register"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x28af507",
+    "string": "KeDeregisterBugCheckReasonCallback",
+    "matched_pattern": "register"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x28af5b5",
+    "string": "ZwUnloadDriver",
+    "matched_pattern": "ZwUnloadDriver"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x28afc6f",
+    "string": "HAL.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x28b051a",
+    "string": "Debug\\ACE-SSC-DRV64.sys.private_dbg0",
+    "matched_pattern": "ACE"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2a6a686",
+    "string": "ACEVILLE PTE LTD1",
+    "matched_pattern": "ACE"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2a6a6a1",
+    "string": "ACEVILLE PTE LTD0",
+    "matched_pattern": "ACE"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2a8569f",
+    "string": "OLEAUT32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2ae0e4f",
+    "string": "ntdll.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2ae3a4b",
+    "string": "NtOpenProcess",
+    "matched_pattern": "NtOpenProcess"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2b54475",
+    "string": "NtQueryInformationProcess",
+    "matched_pattern": "NtQueryInformationProcess"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2b65537",
+    "string": "IsDebuggerPresent",
+    "matched_pattern": "IsDebuggerPresent"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2dc8cfa",
+    "string": "ACES",
+    "matched_pattern": "ACE"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2e5a781",
+    "string": "ADVAPI32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2e663c1",
+    "string": "USER32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2e67f71",
+    "string": "KERNEL32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2ee838f",
+    "string": "C:\\Program Files\\AntiCheatExpert\\SGuard\\x64\\Plugins\\ACE-SSC64.dll",
+    "matched_pattern": "ACE"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2ee83eb",
+    "string": "AntiCheatExpert",
+    "matched_pattern": "AntiCheatExpert"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2ee84df",
+    "string": "\\Program Files\\AntiCheatExpert\\SGuard\\x64\\",
+    "matched_pattern": "AntiCheatExpert"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2ee850a",
+    "string": "C:\\Program Files\\AntiCheatExpert\\SGuard\\x64\\",
+    "matched_pattern": "AntiCheatExpert"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2ee858e",
+    "string": "\\Program Files\\AntiCheatExpert\\SGuard\\x64\\ACE-SSC64.dll",
+    "matched_pattern": "ACE"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2ee85c6",
+    "string": "\\Program Files\\AntiCheatExpert\\SGuard\\x64\\ACE-SSC-DRV64.sys",
+    "matched_pattern": "ACE"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2ee8602",
+    "string": "\\Program Files\\AntiCheatExpert\\SGuard\\x64\\sguard.dat",
+    "matched_pattern": "AntiCheatExpert"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2ee8659",
+    "string": "kernel32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2ee8666",
+    "string": "Shell32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2ee8672",
+    "string": "Kernel32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2ee867f",
+    "string": "msvcrt.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2ee868a",
+    "string": "advapi32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2ee8697",
+    "string": "Advapi32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2ee86a4",
+    "string": "shlwapi.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2f980f0",
+    "string": "0123456789ABCDEF",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2f98104",
+    "string": "123456789",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2f98110",
+    "string": "0123456789ABCDEF",
+    "matched_pattern": "12345678"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2f9d280",
+    "string": "Invalid seek",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2f9d310",
+    "string": "Invalid argument",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2f9d558",
+    "string": "user32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2fa486c",
+    "string": "iphlpapi.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2fa487a",
+    "string": "SHLWAPI.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2fa4886",
+    "string": "MPR.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2fa49e6",
+    "string": "WINMM.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2fa49f0",
+    "string": "WS2_32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2fa4a52",
+    "string": "VERSION.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2fa5050",
+    "string": "KERNEL32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2fa518a",
+    "string": "InvalidateRect",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2fa57ec",
+    "string": "USER32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2fa5b66",
+    "string": "GDI32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2fa5c08",
+    "string": "ADVAPI32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2fa5c90",
+    "string": "SHELL32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2fa5cd0",
+    "string": "ole32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2fa5cda",
+    "string": "OLEAUT32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2fa5cfc",
+    "string": "COMCTL32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2fa5d0a",
+    "string": "WININET.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2fa65de",
+    "string": "comdlg32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".rdata",
+    "va": "0x2fa65ee",
+    "string": "UnregisterClassA",
+    "matched_pattern": "register"
+  },
+  {
+    "section": ".data",
+    "va": "0x2faaa64",
+    "string": "Shell32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".data",
+    "va": "0x2faaa70",
+    "string": "Mpr.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".data",
+    "va": "0x2faaa78",
+    "string": "Advapi32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".data",
+    "va": "0x2faaa88",
+    "string": "User32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".data",
+    "va": "0x2faaa94",
+    "string": "Gdi32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".data",
+    "va": "0x2faaaa0",
+    "string": "Kernel32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".data",
+    "va": "0x2faae90",
+    "string": "DllUnregisterServer",
+    "matched_pattern": "register"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fab660",
+    "string": "User32.dll",
+    "matched_pattern": ".dll"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb13e0",
+    "string": "invalid chromaticities",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb1444",
+    "string": "invalid sRGB rendering intent",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb14dc",
+    "string": "invalid length",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb1570",
+    "string": "invalid embedded Abstract ICC profile",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb161c",
+    "string": "invalid ICC profile color space",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb1658",
+    "string": "invalid signature",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb168c",
+    "string": "invalid rendering intent",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb17e0",
+    "string": "Invalid IHDR data",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb17f4",
+    "string": "Invalid filter method in IHDR",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb18b0",
+    "string": "Invalid color type/bit depth combination in IHDR",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb18e4",
+    "string": "Invalid color type in IHDR",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb1900",
+    "string": "Invalid bit depth in IHDR",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb191c",
+    "string": "Invalid image height in IHDR",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb193c",
+    "string": "Invalid image width in IHDR",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb1af0",
+    "string": "Invalid attempt to read row data",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb1ba4",
+    "string": "png_image_begin_read_from_memory: invalid argument",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb1bd8",
+    "string": "invalid memory read",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb1c38",
+    "string": "png_image_finish_read: invalid argument",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb1d2c",
+    "string": "invalid PNG color type",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb1fd0",
+    "string": "png_read_image: invalid transformations",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb24a4",
+    "string": "invalid window size",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb25a8",
+    "string": "invalid",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb265c",
+    "string": "invalid values",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb27c4",
+    "string": "invalid with alpha channel",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb27e0",
+    "string": "invalid index",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb27f0",
+    "string": "invalid data",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb281c",
+    "string": "invalid parameter count",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb2884",
+    "string": "invalid unit",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb29d8",
+    "string": "invalid chunk type",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb29ec",
+    "string": "invalid user transform pixel depth",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb2b14",
+    "string": "invalid before the PNG header has been read",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb2b40",
+    "string": "invalid after png_start_read_image or png_read_update_info",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb2bb0",
+    "string": "invalid alpha mode",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb2c18",
+    "string": "invalid error action to rgb_to_gray",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb2c3c",
+    "string": "invalid background gamma type",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb2d50",
+    "string": "png_set_filler is invalid for low bit depth gray output",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb2db4",
+    "string": "Invalid palette size, hIST allocation skipped",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb2ea4",
+    "string": "Invalid format for pCAL parameter",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb2ec8",
+    "string": "Invalid pCAL parameter count",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb2ee8",
+    "string": "Invalid pCAL equation type",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb2f34",
+    "string": "Invalid sCAL height",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb2f48",
+    "string": "Invalid sCAL width",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb2f5c",
+    "string": "Invalid sCAL unit",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb2f70",
+    "string": "Invalid palette",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb2f80",
+    "string": "Invalid palette length",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb2ff4",
+    "string": "Ignoring invalid time value",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb3058",
+    "string": "png_set_sPLT: invalid sPLT",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb30c4",
+    "string": "invalid location in png_set_unknown_chunks",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb30f0",
+    "string": "png_set_unknown_chunks now expects a valid location",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb3124",
+    "string": "png_set_keep_unknown_chunks: invalid keep",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb31d8",
+    "string": "invalid bit length repeat",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb3218",
+    "string": "invalid stored block lengths",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb3238",
+    "string": "invalid block type",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb3300",
+    "string": "invalid distance code",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb3318",
+    "string": "invalid literal/length code",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb45bc",
+    "string": "invalid literal/length code",
+    "matched_pattern": "valid"
+  },
+  {
+    "section": ".data",
+    "va": "0x2fb45d8",
+    "string": "invalid distance code",
+    "matched_pattern": "valid"
+  }
+]

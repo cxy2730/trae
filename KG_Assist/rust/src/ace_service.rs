@@ -35,15 +35,20 @@ const SERVICE_DISABLED: u32 = 0x00000004;
 const HKEY_LOCAL_MACHINE: usize = 0x80000002;
 const KEY_ALL_ACCESS: u32 = 0xF003F;
 
-// ---- 服务名清单 (KG 反编译中出现) ----
+// ---- 服务名清单 (对照 KG.exe 字符串表里实际出现的 ACE 组件) ----
+// KG 字符串: C:\Program Files\AntiCheatExpert\SGuard\x64\ACE-SSC64.dll
+//            C:\Program Files\AntiCheatExpert\SGuard\x64\ACE-SSC-DRV64.sys
+//            C:\Program Files\AntiCheatExpert\SGuard\x64\123.dll
+//            C:\Program Files\AntiCheatExpert\SGuard\x64\sguard.dat
+//            C:\Program Files\AntiCheatExpert\SGuard\x64\netbios.dll
 const ACE_SERVICES: &[&str] = &[
-    "AntiCheatExpert",      // ACE 主服务
-    "ACE-SSC-DRV64",        // ACE 64 位驱动服务
+    "AntiCheatExpert",      // ACE 主服务 (腾讯反作弊)
+    "ACE-SSC",              // ACE-SSC64.dll 用户态客户端
+    "ACE-SSC-DRV64",        // ACE 64 位驱动服务 (ACE-SSC-DRV64.sys)
     "ACE-SSC-DRV",          // ACE 32 位驱动服务 (兼容)
     "SGuardSvc",            // SGuard 服务 (腾讯旧版)
-    "SGuard64",             // SGuard 64
-    "TenSafe",              // 腾讯 TenSafe
-    "TP3Helper",            // TP3 助手
+    "SGuard64",             // SGuard 64 位服务
+    "SGuardSvc64",          // SGuard 64 位服务变体
 ];
 
 // ---- SCM 函数原型 ----

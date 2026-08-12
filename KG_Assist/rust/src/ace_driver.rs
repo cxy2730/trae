@@ -41,16 +41,15 @@ type ZwDeleteSymbolicLinkObject_t = unsafe extern "system" fn(
     SymbolicLinkName: *const UNICODE_STRING,
 ) -> i32;
 
-// ---- 目标驱动列表 ----
-/// KG 字符串中出现的 ACE 驱动名 (服务名)
-/// ZwUnloadDriver 用注册表路径: \Registry\...\Services\<name>
+// ---- 目标驱动列表 (对照 KG.exe 字符串表) ----
+// KG 字符串: C:\Program Files\AntiCheatExpert\SGuard\x64\ACE-SSC-DRV64.sys
+// KG 用 ZwUnloadDriver 通过注册表路径卸载:
+//   \Registry\Machine\System\CurrentControlSet\Services\<name>
 const ACE_DRIVERS: &[&str] = &[
-    "ACE-SSC-DRV64",    // ACE 主驱动 (64位)
-    "ACE-SSC-DRV",      // ACE 32 位驱动
+    "ACE-SSC-DRV64",    // ACE 主驱动 (64位, ACE-SSC-DRV64.sys)
+    "ACE-SSC-DRV",      // ACE 32 位驱动 (兼容)
     "SGuard64",         // SGuard 64
     "SGuard",           // SGuard 32
-    "ACE-BASE",         // ACE Base
-    "ACE-Guard",        // ACE Guard
 ];
 
 /// 需要删除的符号链接 (DosDevices)
