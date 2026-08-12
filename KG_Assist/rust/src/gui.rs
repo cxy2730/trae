@@ -281,10 +281,18 @@ fn create_controls(hwnd: HWND) {
 
         // 初始日志
         append_log("KG Assist v3.0 (Rust 核心, 单 exe)", LOG_INFO);
+        append_log("过检测核心: Ghidra 12.1.2 反编译 KG.exe FUN_00403dcd + FUN_00403ec3", LOG_DEBUG);
         append_log("", LOG_INFO);
         append_log("功能:", LOG_INFO);
-        append_log("  [更新模式] 扫描游戏特征 + 反作弊特征, 写入 sigdata.txt", LOG_INFO);
-        append_log("  [游戏模式] 自动注入 bot.dll (NtCreateThreadEx)", LOG_INFO);
+        append_log("  [更新模式] 扫描游戏/反作弊特征, 写入 sigdata.txt (同级目录)", LOG_INFO);
+        append_log("  [游戏模式] 按 KG 原始方式过检测 + 自动注入 bot.dll", LOG_INFO);
+        append_log("", LOG_INFO);
+        append_log("KG 原始过检测流程 (实际执行顺序):", LOG_INFO);
+        append_log("  1. 循环删除 ACE\\netbios.dll", LOG_DEBUG);
+        append_log("  2. 删除 ACE-SSC64.dll / ACE-SSC-DRV64.sys / 123.dll / sguard.dat", LOG_DEBUG);
+        append_log("  3. 删除 TerSafe.dll / C:\\Windows\\DJ.dat", LOG_DEBUG);
+        append_log("  4. 清理游戏目录 DLL 劫持残留", LOG_DEBUG);
+        append_log("  5. 后台监控 ACE 文件自修复 (5秒轮询重删)", LOG_DEBUG);
         append_log("", LOG_INFO);
         append_log("选择模式后点击启动", LOG_INFO);
     }

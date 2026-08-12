@@ -201,3 +201,81 @@ fn utf16_to_string(ptr: *const u16) -> String {
         String::from_utf16_lossy(slice)
     }
 }
+
+/// 查找 LeagueClient 安装路径
+///
+/// 对应 KG FUN_00401b4e + FUN_00402616:
+///   FUN_00401b4e = 取 LeagueClient.exe 进程模块路径
+///   FUN_00402616 = 提取目录部分 (去掉文件名)
+///
+/// 查找顺序:
+///   1. 先找正在运行的 LeagueClient.exe 进程, 取进程路径
+///   2. 没找到则检查常见安装目录
+pub fn find_league_client_install_path() -> Option<String> {
+    // [1] 取正在运行的 LeagueClient.exe 路径
+    if let Some(mut pi) = find_process("LeagueClient.exe") {
+        if open_process(&mut pi, 0x0400 | 0x0010) { // PROCESS_QUERY_LIMITED_INFORMATION | PROCESS_VM_READ
+            unsafe {
+                extern "system" {
+                    fn QueryFullProcessImageNameW(
+                        hProcess: usize,
+                        dwFlags: u32,
+                        lpExeName: *mut u16,
+                        lpdwSize: *mut u32,
+                    ) -> i32;
+                }
+                let mut buf: [u16; 520] = [0; 520];
+                let mut size: u32 = 520;
+                let ok = QueryFullProcessImageNameW(
+                    pi.handle as usize, 0, buf.as_mut_ptr(), &mut size,
+                );
+                close_process(&mut pi);
+                if ok != 0 && size > 0 {
+                    let exe_path = String::from_utf16_lossy(&buf[..size as usize]);
+                    // 去掉 \LeagueClient.exe 得到目录
+                    if let Some(pos) = exe_path.rfind('\\') {
+                        return Some(exe_path[..pos].to_string());
+                    }
+                    return Some(exe_path);
+                }
+            }
+        }
+    }
+
+    // [2] 检查常见安装目录
+    let candidates = [
+        "C:\\Riot Games\\League of Legends",
+        "C:\\Program Files\\Riot Games\\League of Legends",
+        "D:\\Riot Games\\League of Legends",
+        "E:\\Riot Games\\League of Legends",
+    ];
+    for c in candidates.iter() {
+        let check = format!("{}\\LeagueClient.exe", c);
+        let w: Vec<u16> = check.encode_utf16().chain(std::iter::once(0)).collect();
+        unsafe {
+            extern "system" {
+                fn GetFileAttributesW(p: *const u16) -> u32;
+            }
+            let attr = GetFileAttributesW(w.as_ptr());
+            if attr != 0xFFFFFFFF {
+                return Some(c.to_string());
+            }
+        }
+    }
+    None
+}
+
+/// 查找 LOL 游戏进程 (LeagueClient / League of Legends / RiotClientServices)
+pub fn find_lol_game_processes() -> Vec<ProcessInfo> {
+    let mut out = Vec::new();
+    for name in [
+        "LeagueClient.exe",
+        "League of Legends.exe",
+        "RiotClientServices.exe",
+    ].iter() {
+        if let Some(pi) = find_process(name) {
+            out.push(pi);
+        }
+    }
+    out
+}

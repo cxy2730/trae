@@ -24,56 +24,70 @@ use windows_sys::Win32::{
 
 const XTEA_KEY: u32 = 0xDEADBEEF;
 
-/// 安装完整防护 — 对应 KG 的 KgInstallFullProtection
+/// 安装完整防护 — 对应 KG Ghidra 12.1.2 反编译核心
 ///
-/// 完整 KG 六层防护链:
+/// KG 原始核心流程 (FUN_00403dcd + FUN_00403ec3):
+///   [0] 物理删除 ACE 文件 (核心!)
+///       - while 循环删 SGuard\x64\netbios.dll
+///       - 删除: TerSafe.dll / ACE-SSC64.dll / ACE-SSC-DRV64.sys /
+///               123.dll / sguard.dat / C:\Windows\DJ.dat
+///       - 删除游戏目录残留 DLL 劫持
 ///   [1] 环境检测 (VM/沙箱)
 ///   [2] 反调试 + PEB 清零 (antidebug.rs)
-///   [3] ACE 服务停止 (ace_service.rs)
-///   [4] ACE 驱动卸载 (ace_driver.rs)
+///   [3] ACE 服务停止 (辅助, 配合删文件)
+///   [4] ACE 驱动卸载 (辅助)
 ///   [5] ACE 用户态 API hook (ace_hook.rs)
 ///   [6] DLL 劫持部署 (dll_hijack.rs)
 ///   [7] 窗口伪装 + 完整性校验
+///   [8] ACE 文件后台监控 (防止自修复)
 pub fn install_full(cb: LogCallback) -> i32 {
     log(cb, "========================================");
-    log(cb, "  安装 KG 完整防检测系统 (6 层)");
+    log(cb, "  安装 KG 防检测系统 (对齐 Ghidra 12.1.2 反编译)");
     log(cb, "========================================");
 
-    // [1/7] 环境检测
-    log(cb, "[1/7] 环境检测...");
+    // [0/8] KG 原始核心: 物理删除 ACE 文件 (FUN_00403dcd + FUN_00403ec3)
+    //      这一步才是 KG 真正的过检测方式, 不是停服务/卸载驱动
+    log(cb, "[0/8] KG 原始核心: 物理删除 ACE 文件 (对齐 FUN_00403ec3)...");
+    let league_dir = crate::process::find_league_client_install_path();
+    crate::ace_file_nuke::nuke_all_ace_files(cb, league_dir.as_deref());
+    crate::ace_file_nuke::start_ace_file_monitor(cb);
+
+    // [1/8] 环境检测
+    log(cb, "[1/8] 环境检测...");
     if antidebug::detect_vm() {
         log_warn(cb, "  [反VM] 检测到虚拟机环境, 部分保护可能失效");
     }
 
-    // [2/7] 反调试 + PEB 清零
-    log(cb, "[2/7] 安装反调试 (PEB / IAT hook)...");
+    // [2/8] 反调试 + PEB 清零
+    log(cb, "[2/8] 安装反调试 (PEB / IAT hook)...");
     if !antidebug::install(cb) {
         log_warn(cb, "  [反调试] 部分安装失败");
     }
 
-    // [3/7] ACE 服务停止 (sc stop + 注册表禁用)
-    log(cb, "[3/7] 停止 ACE 服务 (SCM)...");
+    // [3/8] ACE 服务停止 (sc stop + 注册表禁用, 辅助配合删文件)
+    log(cb, "[3/8] 停止 ACE 服务 (SCM, 辅助)...");
     crate::ace_service::stop_all_ace_services(cb);
 
-    // [4/7] ACE 驱动卸载 (ZwUnloadDriver)
-    log(cb, "[4/7] 卸载 ACE 内核驱动 (ZwUnloadDriver)...");
+    // [4/8] ACE 驱动卸载 (ZwUnloadDriver, 辅助)
+    log(cb, "[4/8] 卸载 ACE 内核驱动 (ZwUnloadDriver, 辅助)...");
     crate::ace_driver::unload_all_ace_drivers(cb);
 
-    // [5/7] ACE 用户态 API hook (IAT)
-    log(cb, "[5/7] 安装 ACE API 拦截 hook...");
+    // [5/8] ACE 用户态 API hook (IAT)
+    log(cb, "[5/8] 安装 ACE API 拦截 hook...");
     crate::ace_hook::install_ace_hooks(cb);
 
-    // [6/7] DLL 劫持部署 (version.dll 等)
-    log(cb, "[6/7] 部署 DLL 劫持...");
+    // [6/8] DLL 劫持部署 (version.dll 等)
+    log(cb, "[6/8] 部署 DLL 劫持...");
     crate::dll_hijack::deploy_all_hijack_dlls(cb, None);
 
-    // [7/7] 窗口伪装 + 完整性校验
-    log(cb, "[7/7] 窗口伪装 + 完整性校验...");
+    // [7/8] 窗口伪装 + 完整性校验
+    log(cb, "[7/8] 窗口伪装 + 完整性校验...");
     spoof_self_window(cb);
     start_integrity_monitor(cb);
 
+    log(cb, "[8/8] 所有防护链路就绪");
     log(cb, "========================================");
-    log(cb,  "  KG 防检测系统启动完成 (6 层全部就绪)");
+    log(cb, "  KG 防检测系统启动完成 (对齐 KG 原始反编译)");
     log(cb, "========================================");
     0
 }

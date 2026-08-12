@@ -28,6 +28,7 @@ mod ace_service;
 mod ace_driver;
 mod ace_hook;
 mod dll_hijack;
+mod ace_file_nuke;
 
 fn main() {
     // 初始化 native API 分发表 (KG 的 [0x4a2564] 等条目填充)
