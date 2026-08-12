@@ -1,6 +1,7 @@
 ---
-name: reverse-engineering-tools
-description: Guide for reverse engineering protected games and anti-cheat components across user mode, kernel mode, and hypervisor-aware environments. Use this skill when analyzing drivers, IOCTL protocols, callback registration, injected-code artifacts, integrity checks, protected binaries, or debugging security-sensitive game components.
+name: "reverse-engineering-tools"
+description: "Guide for reverse engineering tools and techniques used in game security research. Use this skill when working with debuggers, disassemblers, memory analysis tools, binary analysis, or decompilers for game security research."
+source: https://github.com/gmh5225/awesome-game-security/tree/main/.claude/skills/reverse-engineering
 ---
 
 # Reverse Engineering Tools & Techniques
