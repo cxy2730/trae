@@ -61,29 +61,12 @@ const STUB_DLL_MAPPING: &[(&str, &str)] = &[
     ("TerSafe.dll",          "TerSafe.dll"),         // terafe_stub 编译产物
 ];
 
-/// 部署所有劫持 DLL — KG 的绕过步骤 #4
-///
-/// 流程:
-///   1. 找到游戏目录 (注册表 / 进程查找)
-///   2. 找到 stub DLL 源目录 (exe 同目录的 stub\)
-///   3. 备份游戏目录原 DLL (重命名为 .bak)
-///   4. 复制 stub DLL 到游戏目录
+/// 部署所有劫持 DLL — 同时部署到两个关键目录:
+///   [A] LoL 游戏目录 (LoL 启动时从当前进程目录搜 DLL, 先吃我们的 stub)
+///   [B] ACE 安装目录 SGuard\x64 (ACE-SSC64.dll 自己的模块目录, 优先从这里搜系统 DLL,
+///       不部署这里的话 ACE 用户态核心根本吃不到劫持, 等于白装!)
 pub fn deploy_all_hijack_dlls(cb: LogCallback, game_dir: Option<&str>) -> bool {
-    log(cb, "======== 部署 DLL 劫持 ========");
-
-    let target_dir = match game_dir {
-        Some(d) => d.to_string(),
-        None => match find_game_directory() {
-            Some(d) => d,
-            None => {
-                log_warn(cb, "  [警告] 未找到游戏目录, 跳过 DLL 劫持");
-                log_warn(cb, "  请先启动游戏, 或手动指定游戏路径");
-                return false;
-            }
-        }
-    };
-
-    log(cb, &format!("  目标目录: {}", target_dir));
+    log(cb, "======== 部署 DLL 劫持 (LoL 目录 + ACE 目录双路) ========");
 
     // 找 stub DLL 源目录 (exe 同目录的 stub\ 子目录)
     let stub_dir = match get_stub_dir() {
@@ -96,62 +79,51 @@ pub fn deploy_all_hijack_dlls(cb: LogCallback, game_dir: Option<&str>) -> bool {
     };
     log(cb, &format!("  stub 源: {}", stub_dir));
 
-    let mut deployed = 0;
-    let mut backed_up = 0;
+    // 收集所有要部署的目录 (去重, 避免同一目录两次)
+    let mut targets: Vec<String> = Vec::with_capacity(2);
+    let game = game_dir.map(|s| s.to_string())
+        .or_else(|| find_game_directory());
+    if let Some(d) = game {
+        targets.push(d);
+    }
+    if let Some(ace_dir) = find_ace_directory() {
+        // 去重: 如果 LoL 跟 ACE 刚好装一起就跳过
+        if !targets.iter().any(|t| t.trim_end_matches('\\') == ace_dir.trim_end_matches('\\')) {
+            targets.push(ace_dir);
+        }
+    }
+
+    if targets.is_empty() {
+        log_warn(cb, "  [警告] 既没找到游戏目录也没找到 ACE 目录, 跳过 DLL 劫持部署");
+        log_warn(cb, "  请先启动游戏, 或手动指定游戏路径");
+        return false;
+    }
+
+    let mut total_backup = 0;
+    let mut total_deploy = 0;
     let mut missing = 0;
-    let mut deployed_entries: Vec<String> = vec![];
 
     for (dll_name, stub_name) in STUB_DLL_MAPPING {
-        let dll_path = format!("{}\\{}", target_dir, dll_name);
-        let bak_path = format!("{}.bak", dll_path);
         let stub_path = format!("{}\\{}", stub_dir, stub_name);
-
-        // 检查 stub 源文件
         if !file_exists(&stub_path) {
             log_warn(cb, &format!("  [缺失] stub 源不存在: {}", stub_path));
             missing += 1;
             continue;
         }
-
-        // 检查是否已存在原 DLL
-        let attrs = get_file_attrs(&dll_path);
-        if attrs != INVALID_FILE_ATTRIBUTES {
-            // 备份原 DLL
-            if !file_exists(&bak_path) {
-                if move_file(&dll_path, &bak_path) {
-                    backed_up += 1;
-                    log_debug(cb, &format!("  [备份] {} -> {}.bak", dll_name, dll_name));
-                    deployed_entries.push(format!("BAK {}", dll_name));
-                } else {
-                    log_warn(cb, &format!("  [失败] 无法备份 {}", dll_name));
-                    continue;
-                }
-            } else {
-                log_debug(cb, &format!("  [跳过] {} 已有备份", dll_name));
-            }
-        }
-
-        // 复制 stub DLL
-        if copy_file(&stub_path, &dll_path) {
-            deployed += 1;
-            deployed_entries.push(format!("STUB {}", dll_name));
-            log(cb, &format!("  [部署] {} (stub: {})", dll_name, stub_name));
-        } else {
-            log_warn(cb, &format!("  [失败] 无法写入 {}", dll_name));
-        }
     }
 
-    // 写 BOM 清单 — undeploy 时只读我们这次动过的文件, 避免误还原用户自己的 .bak
-    if !deployed_entries.is_empty() {
-        if write_bom(&target_dir, &deployed_entries) {
-            log_debug(cb, "  [清单] 部署清单已写入 .kg_assist_bom.txt");
-        }
+    for dir in &targets {
+        log(cb, &format!("  目标目录: {}", dir));
+        let (b, d) = deploy_to_one_dir(cb, dir, &stub_dir);
+        if b { total_backup += 1; }
+        if d { total_deploy += 1; }
     }
 
-    log(cb, &format!("  [汇总] 备份 {} 个, 部署 {} 个, 缺失 {} 个", backed_up, deployed, missing));
+    log(cb, &format!("  [汇总] 目录 {} 个 / 备份 {} 个 / 部署 {} 个 / stub 缺失 {} 个",
+        targets.len(), total_backup, total_deploy, missing));
     log(cb, "======== DLL 劫持部署完成 ========");
 
-    deployed > 0
+    total_deploy > 0
 }
 
 /// 获取 stub DLL 源目录 (exe 同目录的 stub\ 子目录)
@@ -214,88 +186,212 @@ pub fn restore_all_hijack_dlls(cb: LogCallback, game_dir: Option<&str>) -> bool 
     restored > 0
 }
 
-/// 彻底撤回 DLL 劫持 (停止按钮调用)
+/// 彻底撤回 DLL 劫持 (停止按钮调用) — 同时从 LoL 游戏目录和 ACE 安装目录两处撤回
 ///
-/// 策略:
-///   1. 优先 .bak → 原文件还原 (最佳路径)
-///   2. 没 .bak 备份就删 stub 劫持文件 (等于没装过; 如果原文件存在会被系统自动重新加载)
-///   3. 只对"明确是我们部署过的 stub"做删除, 有数字签名或体积较大的官方文件保留不动
+/// 每处都严格遵守:
+///   1. 优先 .bak → 原文件还原 (最佳路径, 有 BOM 才动)
+///   2. 没 .bak 备份就删 stub 劫持文件 (<500KB, BOM 匹配才删)
+///   3. 最后删 BOM 清单 (不留痕迹)
 pub fn undeploy_all_hijack_dlls(cb: LogCallback, game_dir: Option<&str>) -> bool {
-    log(cb, "======== 撤回 DLL 劫持部署 ========");
+    log(cb, "======== 撤回 DLL 劫持部署 (LoL 目录 + ACE 目录双路) ========");
 
-    let target_dir = match game_dir {
-        Some(d) => d.to_string(),
-        None => match find_game_directory() {
-            Some(d) => d,
-            None => {
-                log_debug(cb, "  未找到游戏目录, 跳过撤回");
-                return true;
-            }
-        }
-    };
-
-    log(cb, &format!("  目标目录: {}", target_dir));
-
-    // [1] 只读我们写入过的 BOM 清单 — 避免误动用户自己的 .bak / 官方 DLL
-    let bom = read_bom(&target_dir);
-    let bom_has_bak = |name: &str| bom.iter().any(|l| l == &format!("BAK {}", name));
-    let bom_has_stub = |name: &str| bom.iter().any(|l| l == &format!("STUB {}", name));
-
-    // [2] .bak 还原 (只还原我们这次备份过的)
-    let mut restored = 0;
-    for dll_name in HIJACK_DLLS {
-        if !bom_has_bak(dll_name) && !bom.is_empty() {
-            continue;
-        }
-        let bak_path = format!("{}\\{}.bak", target_dir, dll_name);
-        let dll_path = format!("{}\\{}", target_dir, dll_name);
-        if file_exists(&bak_path) {
-            // 目标是当前 DLL — 如果 DLL 存在且大于 500KB 说明已经被官方覆盖了,
-            // 不要直接 move 过去把用户覆盖结果干掉, 只删 .bak
-            let dll_official_large = file_exists(&dll_path) && !file_size_less_than(&dll_path, 500);
-            if dll_official_large {
-                if delete_file(&bak_path) {
-                    log_debug(cb, &format!("  [清理] {} 已是官方 DLL, 仅删 .bak", dll_name));
-                    restored += 1;
-                }
-            } else {
-                if move_file(&bak_path, &dll_path) {
-                    log(cb, &format!("  [还原] {}.bak -> {} (BOM 匹配)", dll_name, dll_name));
-                    restored += 1;
-                }
-            }
+    let mut targets: Vec<String> = Vec::with_capacity(2);
+    if let Some(d) = game_dir {
+        targets.push(d.to_string());
+    } else if let Some(d) = find_game_directory() {
+        targets.push(d);
+    }
+    if let Some(ace_dir) = find_ace_directory() {
+        if !targets.iter().any(|t| t.trim_end_matches('\\') == ace_dir.trim_end_matches('\\')) {
+            targets.push(ace_dir);
         }
     }
-    if restored > 0 {
-        log(cb, &format!("  [还原] .bak {} 个 (仅 BOM 匹配项)", restored));
+
+    if targets.is_empty() {
+        log_debug(cb, "  未找到任何目标目录, 跳过撤回 (无残留)");
+        return true;
     }
 
-    // [3] 兜底: BOM 里记录的 stub 删除 (且 size < 500KB — 双重保险, 大的官方 DLL 绝对不动)
-    let mut removed = 0;
-    for dll_name in HIJACK_DLLS {
-        let stub_recorded = bom_has_stub(dll_name) || bom.is_empty();
-        if !stub_recorded { continue; }
-        let dll_path = format!("{}\\{}", target_dir, dll_name);
-        if file_exists(&dll_path) && file_size_less_than(&dll_path, 500) {
-            if delete_file(&dll_path) {
-                log_debug(cb, &format!("  [移除] stub {} (<500KB, BOM 匹配)", dll_name));
-                removed += 1;
-            }
-        }
-    }
-    if removed > 0 {
-        log(cb, &format!("  [兜底] 删除 stub {} 个", removed));
+    let mut total_restored = 0;
+    let mut total_removed = 0;
+    for dir in &targets {
+        log(cb, &format!("  目标目录: {}", dir));
+        let (r, rv) = undeploy_from_one_dir(cb, dir);
+        total_restored += r;
+        total_removed += rv;
     }
 
-    // [4] 最后清掉 BOM 清单文件 (不留痕迹)
-    let bp = bom_path(&target_dir);
-    if file_exists(&bp) { delete_file(&bp); }
-
+    log(cb, &format!("  [汇总] 目录 {} 个 / .bak 还原 {} 个 / stub 删除 {} 个",
+        targets.len(), total_restored, total_removed));
     log(cb, "======== DLL 劫持撤回完成 ========");
     true
 }
 
-/// 查找游戏目录
+/// 查找 ACE 反作弊安装目录 (关键!)
+///
+/// DLL 劫持必须同时作用到 **ACE 自己的 x64 目录** (ACE-SSC64.dll 所在目录),
+/// 因为 ACE 用户态检测核心优先从自己模块目录搜 DLL, 游戏目录的劫持根本吃不到。
+///
+/// 查找优先级:
+///   1. 进程查找: 找运行中的 ACE-SSC64 进程, 从 EXE 路径拿 x64 目录
+///   2. 默认路径探测: C:\Program Files\AntiCheatExpert\SGuard\x64
+///                    C:\Program Files (x86)\AntiCheatExpert\SGuard\x64
+pub fn find_ace_directory() -> Option<String> {
+    // 1. 进程查找 (最准 — ACE 已启动时一定拿到)
+    if let Some(dir) = find_ace_dir_from_process() {
+        return Some(dir);
+    }
+
+    // 2. 回退: 探测默认安装路径 (64-bit ACE 装 Program Files, 32-bit 装 x86)
+    extern "system" {
+        fn GetWindowsDirectoryW(buf: *mut u16, size: u32) -> u32;
+    }
+    let mut windrive = [0u16; 4]; // C:\0
+    unsafe {
+        let n = GetWindowsDirectoryW(windrive.as_mut_ptr(), 4);
+        if n >= 2 {
+            // 取 C:
+            let (drive, _) = windrive.split_at(2);
+            // 用 drive 拼 C:\Program Files\AntiCheatExpert\SGuard\x64
+            let prefix = String::from_utf16_lossy(drive);
+            let candidates = [
+                format!("{}\\Program Files\\AntiCheatExpert\\SGuard\\x64", prefix),
+                format!("{}\\Program Files (x86)\\AntiCheatExpert\\SGuard\\x64", prefix),
+                format!("{}\\Program Files\\AntiCheatExpert\\SGuard", prefix),
+                format!("{}\\Program Files (x86)\\AntiCheatExpert\\SGuard", prefix),
+            ];
+            for c in &candidates {
+                if file_exists(c) { return Some(c.clone()); }
+                // file_exists 只能查文件, 用 GetFileAttributes 看目录
+                let attrs = get_file_attrs(c);
+                if attrs != INVALID_FILE_ATTRIBUTES {
+                    return Some(c.clone());
+                }
+            }
+        }
+    }
+    None
+}
+
+/// 从运行中的 ACE 进程查找 x64 目录
+fn find_ace_dir_from_process() -> Option<String> {
+    const TH32CS_SNAPPROCESS: u32 = 0x00000002;
+    #[repr(C)]
+    struct PE32 {
+        dwSize: u32,
+        _r: [u8; 296],
+        szExeFile: [u16; 260],
+        th32ProcessID: u32,
+    }
+    extern "system" {
+        fn CreateToolhelp32Snapshot(f: u32, pid: u32) -> HANDLE;
+        fn Process32FirstW(h: HANDLE, e: *mut PE32) -> i32;
+        fn Process32NextW(h: HANDLE, e: *mut PE32) -> i32;
+    }
+    let snap = unsafe { CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0) };
+    if snap == INVALID_HANDLE_VALUE as _ { return None; }
+    let mut e: PE32 = unsafe { core::mem::zeroed() };
+    e.dwSize = core::mem::size_of::<PE32>() as u32;
+    let mut found: Option<String> = None;
+    unsafe {
+        if Process32FirstW(snap, &mut e) != 0 {
+            loop {
+                let name = utf16_to_string(e.szExeFile.as_ptr()).to_lowercase();
+                if name == "ace-ssc64.exe" || name == "ace-ssc.exe" || name == "sguard64.exe" {
+                    if let Some(p) = get_process_path(e.th32ProcessID) {
+                        if let Some(idx) = p.rfind('\\') {
+                            found = Some(p[..idx].to_string());
+                        }
+                        break;
+                    }
+                }
+                if Process32NextW(snap, &mut e) == 0 { break; }
+            }
+        }
+        CloseHandle(snap);
+    }
+    found
+}
+
+/// 部署 DLL 劫持到单个目录 (底层操作, 外部不要直接调)
+fn deploy_to_one_dir(cb: LogCallback, target_dir: &str, stub_dir: &str) -> (bool, bool) {
+    let mut backed_up = 0;
+    let mut deployed = 0;
+    let mut deployed_entries: Vec<String> = vec![];
+
+    for (dll_name, stub_name) in STUB_DLL_MAPPING {
+        let dll_path = format!("{}\\{}", target_dir, dll_name);
+        let bak_path = format!("{}.bak", dll_path);
+        let stub_path = format!("{}\\{}", stub_dir, stub_name);
+
+        if !file_exists(&stub_path) { continue; }
+
+        let attrs = get_file_attrs(&dll_path);
+        if attrs != INVALID_FILE_ATTRIBUTES {
+            if !file_exists(&bak_path) {
+                if move_file(&dll_path, &bak_path) {
+                    backed_up += 1;
+                    log_debug(cb, &format!("  [备份] {} -> {}.bak", dll_name, dll_name));
+                    deployed_entries.push(format!("BAK {}", dll_name));
+                } else {
+                    log_warn(cb, &format!("  [失败] 无法备份 {}", dll_name));
+                    continue;
+                }
+            }
+        }
+
+        if copy_file(&stub_path, &dll_path) {
+            deployed += 1;
+            deployed_entries.push(format!("STUB {}", dll_name));
+            log(cb, &format!("  [部署] {} -> {}", stub_name, target_dir));
+        }
+    }
+
+    if !deployed_entries.is_empty() {
+        let _ = write_bom(target_dir, &deployed_entries);
+    }
+    (backed_up > 0, deployed > 0)
+}
+
+/// 撤回 DLL 劫持从单个目录
+fn undeploy_from_one_dir(cb: LogCallback, target_dir: &str) -> (usize, usize) {
+    let bom = read_bom(target_dir);
+    let bom_has_bak = |name: &str| bom.iter().any(|l| l == &format!("BAK {}", name));
+    let bom_has_stub = |name: &str| bom.iter().any(|l| l == &format!("STUB {}", name));
+
+    let mut restored = 0;
+    for dll_name in HIJACK_DLLS {
+        if !bom_has_bak(dll_name) && !bom.is_empty() { continue; }
+        let bak_path = format!("{}\\{}.bak", target_dir, dll_name);
+        let dll_path = format!("{}\\{}", target_dir, dll_name);
+        if file_exists(&bak_path) {
+            let dll_large = file_exists(&dll_path) && !file_size_less_than(&dll_path, 500);
+            if dll_large {
+                if delete_file(&bak_path) {
+                    log_debug(cb, &format!("  [清理] {} 已是官方 DLL, 仅删 .bak", dll_name));
+                    restored += 1;
+                }
+            } else if move_file(&bak_path, &dll_path) {
+                log(cb, &format!("  [还原] {}.bak -> {} (BOM匹配)", dll_name, dll_name));
+                restored += 1;
+            }
+        }
+    }
+    let mut removed = 0;
+    for dll_name in HIJACK_DLLS {
+        if !bom_has_stub(dll_name) && !bom.is_empty() { continue; }
+        let dll_path = format!("{}\\{}", target_dir, dll_name);
+        if file_exists(&dll_path) && file_size_less_than(&dll_path, 500) {
+            if delete_file(&dll_path) {
+                log_debug(cb, &format!("  [移除] stub {} (<500KB)", dll_name));
+                removed += 1;
+            }
+        }
+    }
+    let bp = bom_path(target_dir);
+    if file_exists(&bp) { let _ = delete_file(&bp); }
+    (restored, removed)
+}
 ///
 /// 正确启动顺序: 防封程序先启动 → 部署 DLL 劫持 → 用户启动大厅 → 进入游戏
 /// 所以这里不能依赖"查找运行中的 League of Legends.exe", 而应该:

@@ -11,6 +11,7 @@
 //! 这样 ACE 检测 version.dll 是否被替换时, 看到的导出表完整, 行为正常
 
 #![allow(non_snake_case)]
+#![windows_subsystem = "windows"]  // ← 去掉 console subsystem, 匹配官方 DLL
 
 use core::ffi::c_void;
 use windows_sys::Win32::Foundation::{HMODULE, BOOL};
