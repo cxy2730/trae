@@ -405,6 +405,211 @@ KG 过检测核心技术文档
 
 
 ======================================================================
+KG.exe 游戏过检测实战数据 (2026-08-12 新增)
+======================================================================
+
+0. 概述
+------------------------------------------------------------------
+  KG.exe 本身为游戏外挂载体 (LoL)，其核心依赖一套二级间接分发表调用机制。
+  游戏进程 (LeagueClient.exe) 由 Vanguard (vgc.exe) + ACE 保护。
+  以下数据为从反编译中提取的**实战可用**的过检测技术细节。
+
+1. KG.exe 核心分发表 (Dispatch Table)
+------------------------------------------------------------------
+  KG.exe 不使用标准 IAT，而是用 ff15 (call [addr]) 二级间接调用。
+  共 438 个分发表，关键分发表如下：
+
+  分发表地址        实际语义                   使用频率 (硬编码调用点)
+  ───────────────────────────────────────────────────────────────────
+  0x4A2558          ZwOpenProcess              12+ 处 (sub_4115c0/sub_414e20)
+  0x4A2564          ZwAllocateVirtualMemory    5+ 处 (sub_4115c0/sub_414e20/sub_41e020)
+                    + ZwProtectVirtualMemory
+                    + rdtsc 封装
+  0x4A217C          系统调度检查 1 (init)      1 处 (sub_4644d0 0x464500)
+  0x4A258C          系统调度检查 2 (init)      2 处 (sub_4644d0 0x464511 / sub_42aa70)
+  0x4A24C8          Win32 消息派发 (SendMessage/PostMessage)
+                                               1 处 (sub_42aa70 0x42ACEE)
+
+  注: 这些调用是硬编码在 .text 段的 ff15 指令中，
+      普通 IAT Hook 无法覆盖，必须直接改写分发表值。
+
+2. 进程句柄获取路径
+------------------------------------------------------------------
+  入口函数: sub_4115c0 (0x4115C0, 256 blocks, 100 calls)
+  
+  核心流程:
+  KG.exe → [0x4A2558] → ZwOpenProcess → 获取 LoL 进程 HANDLE
+  
+  关键硬编码调用点:
+    0x4116BD: call dword ptr [0x4a2558]   ; ZwOpenProcess (获取句柄)
+    0x411E7E: call dword ptr [0x4a2564]   ; ZwAllocateVirtualMemory
+    0x411F41: call dword ptr [0x4a2558]   ; ZwOpenProcess
+    0x411FE1: call dword ptr [0x4a2558]   ; ZwOpenProcess
+    0x412177: call dword ptr [0x4a2558]   ; ZwOpenProcess
+  
+  绕过策略:
+  A) 覆写 0x4A2558 指向自定义 OpenProcess stub
+  B) Hook NtOpenProcess 在 ntdll 层拦截
+  C) 用内核驱动获取 EPROCESS 绕过 Zw 系列
+
+  关键代码 (覆写分发表):
+    DWORD* dispatch = (DWORD*)0x4A2558;
+    DWORD oldProtect;
+    VirtualProtect(dispatch, 4, PAGE_READWRITE, &oldProtect);
+    *dispatch = (DWORD)HookedZwOpenProcess;
+    VirtualProtect(dispatch, 4, oldProtect, &oldProtect);
+
+3. 内存读写通路
+------------------------------------------------------------------
+  入口函数: sub_414e20 (0x414E20, 267 blocks, 91 calls)
+  
+  核心流程:
+  KG.exe → [0x4A2558] (ZwOpenProcess) → HANDLE
+        → [0x4A2564] (ZwReadVirtualMemory / ZwProtectVirtualMemory)
+        → 读取 LoL 游戏内存
+  
+  关键硬编码调用点:
+    0x41506F: call dword ptr [0x4a2558]   ; ZwOpenProcess
+    0x415A26: call dword ptr [0x4a2558]   ; ZwOpenProcess
+    0x41541F: call dword ptr [0x4a2558]   ; ZwOpenProcess
+
+4. 游戏实体结构偏移 (LoL)
+------------------------------------------------------------------
+  从反编译 sub_4548c0 / sub_43fc00 中提取:
+
+  全局指针:
+    EntityList 基址:  0x2FE8F74 (从 sub_4644d0 / sub_4548c0 分析)
+    LocalPlayer:      从 EntityList 头节点 +0x18 偏移获取
+
+  实体结构 (Entity):
+    +0x04  : 链表节点 (Flink/Blink)
+    +0x1C  : 实体数量
+    +0x20  : 下一实体指针 (链表遍历)
+    +0x144 : 父对象指针
+    +0x150 : 可见范围 (WORD, 最大 0xFFFF)
+    +0x157 : 可见性标志 (BYTE, bit 2 = 可见)
+    +0x158 : 控制标志 (BYTE, bit 4 影响行为)
+    +0x2DC : 当前血量 (DWORD, 0xB18F/0x186A0 = 最大血量)
+    +0x326 : 动作状态 (WORD)
+    +0x1B4 : 子对象指针
+    +0x34  : 技能组指针
+    +0x18  : 标志位组合
+
+  实体数据解析伪代码:
+    // 读取实体链表
+    DWORD* entityList = (DWORD*)ReadGameMemory(0x2FE8F74);
+    DWORD* entity = entityList;
+    while (entity) {
+        BYTE visible = (BYTE)ReadGameMemory((DWORD)entity + 0x157);
+        if (visible & 4) {
+            // 目标可见，处理该实体
+            DWORD hp = (DWORD)ReadGameMemory((DWORD)entity + 0x2DC);
+            // ...
+        }
+        entity = (DWORD*)ReadGameMemory((DWORD)entity + 0x20);
+    }
+
+5. 游戏过检测核心函数清单 (33 个)
+------------------------------------------------------------------
+  按功能分类:
+
+  [进程句柄类 - 对抗 VGK 黑名单]
+    sub_4115c0 (0x4115C0) - 256块 100调用 - 进程句柄获取
+    sub_416a60 (0x416A60) - 144块 46调用 - 辅助句柄获取
+    sub_410350 (0x410350) - 301块 107调用 - 进程/ACE 交互
+
+  [内核操作类 - 对抗内核级检测]
+    sub_414e20 (0x414E20) - 267块 91调用 - 内存读写封装
+    sub_41e020 (0x41E020) - 177块 58调用 - 驱动加载/内核分配
+    sub_4644d0 (0x4644D0) - 945块 1调用  - 系统调度入口
+
+  [实体扫描类 - 对抗游戏内存扫描]
+    sub_4548c0 (0x4548C0) - 163块 33调用 - 实体链表遍历
+    sub_43fc00 (0x43FC00) - 247块 86调用 - 实体数据解析
+    sub_44e0c0 (0x44E0C0) - 216块 xx调用 - 内存操作处理
+
+  [检测调度类 - 周期性检测]
+    sub_470ea0 (0x470EA0) -  84块 39调用 - 反调试调度 (36×sub_46e720)
+    sub_471d10 (0x471D10) -   - 57调用   - 配置/网络派发
+    sub_472280 (0x472280) - 204块 58调用 - 配置解析
+    sub_474370 (0x474370) -  74块 29调用 - 二次配置解析
+
+  [反作弊类 - ACE 对抗]
+    sub_48d469 (0x48D469) - 310块 53调用 - 反作弊检查主逻辑
+    sub_48a852 (0x48A852) -   - 9调用    - ACE 特征码字节查找
+    sub_48dec5 (0x48DEC5) -   - 17调用   - ACE 特征码查询
+    sub_48dedf (0x48DEDF) -   - 12调用   - ACE 哈希校验
+    sub_48def6 (0x48DEF6) -   - 2调用    - ACE 结果上报
+    sub_48de8e (0x48DE8E) -   - 2调用    - ACE 检测通知
+    sub_48f56f (0x48F56F) - 146块 7调用  - 异常处理陷阱 (SEH/VEH)
+
+  [网络通信类 - 心跳/数据上报]
+    sub_419ca0 (0x419CA0) - 310块 90调用 - 网络通信核心
+    sub_413d70 (0x413D70) -  87块 38调用 - 数据包发送
+
+  [版本/完整性检测类]
+    sub_46a6d0 (0x46A6D0) - 148块 71调用 - 文件版本检测 (VerQueryValue)
+    sub_495a63 (0x495A63) - 147块 37调用 - 模块枚举 (14×sub_494bb2)
+    sub_431360 (0x431360) - 144块 21调用 - 系统状态监控
+    sub_43b080 (0x43B080) - 130块 60调用 - Win32 消息 Hook
+
+  [卡密/验证类]
+    sub_402ea3 (0x402EA3) - 306块 186调用 - 卡密验证入口
+    sub_4013e7 (0x4013E7) - 110块 87调用 - 卡密校验子例程
+
+  [资源/辅助类]
+    sub_42aa70 (0x42AA70) - 317块 153调用 - 资源加载/消息派发
+    sub_42d420 (0x42D420) - 175块 58调用 - 窗口创建管理
+    sub_433ca0 (0x433CA0) - 143块 67调用 - 文件操作封装
+    sub_4210b0 (0x4210B0) - 120块 32调用 - 辅助工具函数
+
+6. 实战过检测清单 (按优先级)
+------------------------------------------------------------------
+  1. [最关键] 覆写 0x4A2558 / 0x4A2564 分发表
+     → 让所有 ZwOpenProcess / ZwAllocateVirtualMemory 调用走自定义 stub
+  
+  2. [次关键] Hook NtOpenProcess + NtReadVirtualMemory
+     → 过滤 Vanguard (VGK) 黑名单
+  
+  3. [实体扫描] 使用实体偏移 +0x157 (可见性) / +0x2DC (血量)
+     → 精确提取 LoL 游戏数据
+  
+  4. [反调试] 2171 处条件跳转已 NOP (KG_bypassed.exe)
+     → 绕过 rdtsc/cpuid/sidt 检测
+  
+  5. [ACE 阻断] Hook CreateToolhelp32Snapshot 返回 INVALID_HANDLE_VALUE
+     → 阻止 ACE 进程扫描
+  
+  6. [完整性] 拷贝游戏 .text 段，扫描时恢复原始字节
+     → 绕过 Vanguard 内存完整性校验
+
+7. 关键代码引用
+------------------------------------------------------------------
+  反编译源码:
+    decompiled/sub_4115c0.c   - 进程句柄路径 (ZwOpenProcess 调用)
+    decompiled/sub_414e20.c   - 内存读写通路 (ZwReadVirtualMemory)
+    decompiled/sub_4548c0.c   - 实体链表遍历 (EntityList 偏移)
+    decompiled/sub_43fc00.c   - 实体数据解析 (可见性/血量)
+    decompiled/sub_4644d0.c   - 系统调度 + 分发表入口
+    decompiled/sub_48d469.c   - ACE 反作弊主逻辑
+    decompiled/sub_46eda0.c   - 反调试 7 层检测
+    decompiled/sub_410350.c   - ACE 驱动装载
+    decompiled/sub_41e020.c   - 内核分配/驱动加载
+    decompiled/sub_46a6d0.c   - 版本检测 (VerQueryValue)
+
+  已生成绕过代码:
+    scripts/KG_Bypass.c          - IAT Hook 反调试 DLL
+    scripts/KG_CardKey_Bypass.py - 卡密静态 Patch 脚本
+    patches/KG_bypassed.exe      - 已 NOP 2171 处条件跳转版本
+    patches/KG_NoAuth.exe        - 免验证版本
+
+  分析报告:
+    final_analysis_report.json    - 完整结构化分析
+    api_calls_full.json           - 完整函数调用图
+    complete_decompilation_report.txt - 完整反编译报告
+
+======================================================================
 本技术文档仅供安全研究和学习使用
 所有技术手段必须用于合法授权场景
+未经授权使用任何技术可能违反相关法律法规
 ======================================================================
