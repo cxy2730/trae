@@ -438,6 +438,18 @@ BOOL KgSpoofWindowClass(const char* fakeClassName);
 BOOL KgCanCallApi(s32 apiIndex);
 VOID KgWaitForApiCall(s32 apiIndex);
 
+// 核心防封 (Protector) - 新增
+BOOL KgSpoofSelfWindow(VOID);
+BOOL KgHideHandlesFromProcess(HANDLE hTargetProcess);
+BOOL KgInstallNtHook(VOID);
+BOOL KgInitIntegrity(VOID);
+BOOL KgVerifyIntegrity(VOID);
+VOID KgObfuscateString(const char* plain, char* obfuscated, u32 size);
+VOID KgDeobfuscateString(const char* obfuscated, char* plain, u32 size);
+FARPROC KgGetObfuscatedProcAddress(const char* dllName, const char* funcName);
+BOOL KgDetectVirtualMachine(VOID);
+BOOL KgInstallFullProtection(VOID);
+
 // 注入
 BOOL KgManualMap(HANDLE proc, const char* dllPath);
 BOOL KgInjectApc(HANDLE proc, const char* dllPath);

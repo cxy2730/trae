@@ -243,7 +243,16 @@ int main(int argc, char* argv[]) {
     // 注册控制台信号处理
     SetConsoleCtrlHandler(ConsoleHandler, TRUE);
     
-    KG_INFO("KG Assist v1.0 启动");
+    KG_INFO("============================================");
+    KG_INFO("  KG Assist v2.0 (Game Anti-Detection)");
+    KG_INFO("============================================");
+    
+    // 关键: 安装高级防封保护 (KG 核心能力)
+    // 这一步会: 伪装进程窗口、Hook 反调试检测、
+    //          启动完整性校验、混淆 API 调用、检测虚拟机环境
+    if (!KgInstallFullProtection()) {
+        KG_WARN("部分保护措施未能安装 (可能需要管理员权限)");
+    }
     
     // 解析命令行参数
     const char* targetName = KG_LOL_PROCESS_NAME;
