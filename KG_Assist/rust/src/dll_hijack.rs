@@ -33,6 +33,14 @@ extern "system" {
     fn MoveFileW(src: *const u16, dst: *const u16) -> i32;
     fn DeleteFileW(name: *const u16) -> i32;
     fn CopyFileW(src: *const u16, dst: *const u16, fail_if_exists: i32) -> i32;
+    fn CreateFileW(
+        name: *const u16, access: u32, share: u32,
+        sa: *const core::ffi::c_void, creation: u32, attrs: u32,
+        template: isize,
+    ) -> isize;
+    fn WriteFile(h: isize, buf: *const u8, len: u32, written: *mut u32, ol: *const core::ffi::c_void) -> i32;
+    fn ReadFile(h: isize, buf: *mut u8, len: u32, read: *mut u32, ol: *const core::ffi::c_void) -> i32;
+    fn GetFileSizeEx(h: isize, size: *mut i64) -> i32;
 }
 
 // ---- 需要替换的 DLL 列表 ----
@@ -91,6 +99,7 @@ pub fn deploy_all_hijack_dlls(cb: LogCallback, game_dir: Option<&str>) -> bool {
     let mut deployed = 0;
     let mut backed_up = 0;
     let mut missing = 0;
+    let mut deployed_entries: Vec<String> = vec![];
 
     for (dll_name, stub_name) in STUB_DLL_MAPPING {
         let dll_path = format!("{}\\{}", target_dir, dll_name);
@@ -112,6 +121,7 @@ pub fn deploy_all_hijack_dlls(cb: LogCallback, game_dir: Option<&str>) -> bool {
                 if move_file(&dll_path, &bak_path) {
                     backed_up += 1;
                     log_debug(cb, &format!("  [备份] {} -> {}.bak", dll_name, dll_name));
+                    deployed_entries.push(format!("BAK {}", dll_name));
                 } else {
                     log_warn(cb, &format!("  [失败] 无法备份 {}", dll_name));
                     continue;
@@ -124,9 +134,17 @@ pub fn deploy_all_hijack_dlls(cb: LogCallback, game_dir: Option<&str>) -> bool {
         // 复制 stub DLL
         if copy_file(&stub_path, &dll_path) {
             deployed += 1;
+            deployed_entries.push(format!("STUB {}", dll_name));
             log(cb, &format!("  [部署] {} (stub: {})", dll_name, stub_name));
         } else {
             log_warn(cb, &format!("  [失败] 无法写入 {}", dll_name));
+        }
+    }
+
+    // 写 BOM 清单 — undeploy 时只读我们这次动过的文件, 避免误还原用户自己的 .bak
+    if !deployed_entries.is_empty() {
+        if write_bom(&target_dir, &deployed_entries) {
+            log_debug(cb, "  [清单] 部署清单已写入 .kg_assist_bom.txt");
         }
     }
 
@@ -218,24 +236,61 @@ pub fn undeploy_all_hijack_dlls(cb: LogCallback, game_dir: Option<&str>) -> bool
 
     log(cb, &format!("  目标目录: {}", target_dir));
 
-    // [1] 先走 .bak 还原
-    let _ = restore_all_hijack_dlls(cb, Some(&target_dir));
+    // [1] 只读我们写入过的 BOM 清单 — 避免误动用户自己的 .bak / 官方 DLL
+    let bom = read_bom(&target_dir);
+    let bom_has_bak = |name: &str| bom.iter().any(|l| l == &format!("BAK {}", name));
+    let bom_has_stub = |name: &str| bom.iter().any(|l| l == &format!("STUB {}", name));
 
-    // [2] 兜底: 仍然在的 HIJACK_DLL 删掉 (部署的 stub)
+    // [2] .bak 还原 (只还原我们这次备份过的)
+    let mut restored = 0;
+    for dll_name in HIJACK_DLLS {
+        if !bom_has_bak(dll_name) && !bom.is_empty() {
+            continue;
+        }
+        let bak_path = format!("{}\\{}.bak", target_dir, dll_name);
+        let dll_path = format!("{}\\{}", target_dir, dll_name);
+        if file_exists(&bak_path) {
+            // 目标是当前 DLL — 如果 DLL 存在且大于 500KB 说明已经被官方覆盖了,
+            // 不要直接 move 过去把用户覆盖结果干掉, 只删 .bak
+            let dll_official_large = file_exists(&dll_path) && !file_size_less_than(&dll_path, 500);
+            if dll_official_large {
+                if delete_file(&bak_path) {
+                    log_debug(cb, &format!("  [清理] {} 已是官方 DLL, 仅删 .bak", dll_name));
+                    restored += 1;
+                }
+            } else {
+                if move_file(&bak_path, &dll_path) {
+                    log(cb, &format!("  [还原] {}.bak -> {} (BOM 匹配)", dll_name, dll_name));
+                    restored += 1;
+                }
+            }
+        }
+    }
+    if restored > 0 {
+        log(cb, &format!("  [还原] .bak {} 个 (仅 BOM 匹配项)", restored));
+    }
+
+    // [3] 兜底: BOM 里记录的 stub 删除 (且 size < 500KB — 双重保险, 大的官方 DLL 绝对不动)
     let mut removed = 0;
     for dll_name in HIJACK_DLLS {
+        let stub_recorded = bom_has_stub(dll_name) || bom.is_empty();
+        if !stub_recorded { continue; }
         let dll_path = format!("{}\\{}", target_dir, dll_name);
-        if file_exists(&dll_path) {
+        if file_exists(&dll_path) && file_size_less_than(&dll_path, 500) {
             if delete_file(&dll_path) {
-                log_debug(cb, &format!("  [移除] stub {} (无 .bak 备份, 兜底删除)", dll_name));
+                log_debug(cb, &format!("  [移除] stub {} (<500KB, BOM 匹配)", dll_name));
                 removed += 1;
             }
         }
     }
-
     if removed > 0 {
         log(cb, &format!("  [兜底] 删除 stub {} 个", removed));
     }
+
+    // [4] 最后清掉 BOM 清单文件 (不留痕迹)
+    let bp = bom_path(&target_dir);
+    if file_exists(&bp) { delete_file(&bp); }
+
     log(cb, "======== DLL 劫持撤回完成 ========");
     true
 }
@@ -491,6 +546,72 @@ fn copy_file(src: &str, dst: &str) -> bool {
     let src_w = wstr(src);
     let dst_w = wstr(dst);
     unsafe { CopyFileW(src_w.as_ptr(), dst_w.as_ptr(), 0) != 0 }
+}
+
+// ---- 文件读写辅助 ----
+const INVALID_HANDLE: isize = -1;
+const GENERIC_WRITE: u32 = 0x40000000;
+const GENERIC_READ:  u32 = 0x80000000;
+const FILE_SHARE_READ: u32 = 0x1;
+const OPEN_ALWAYS: u32 = 4;
+const OPEN_EXISTING: u32 = 3;
+const FILE_ATTRIBUTE_NORMAL: u32 = 0x80;
+
+fn write_text_file(path: &str, content: &str) -> bool {
+    let w = wstr(path);
+    let h = unsafe { CreateFileW(w.as_ptr(), GENERIC_WRITE, FILE_SHARE_READ,
+        core::ptr::null(), OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0) };
+    if h == INVALID_HANDLE { return false; }
+    let mut written = 0u32;
+    let ok = unsafe { WriteFile(h, content.as_ptr(), content.len() as u32, &mut written, core::ptr::null()) != 0 };
+    unsafe { CloseHandle(h); }
+    ok
+}
+
+fn read_text_file(path: &str) -> Option<String> {
+    let w = wstr(path);
+    let h = unsafe { CreateFileW(w.as_ptr(), GENERIC_READ, FILE_SHARE_READ,
+        core::ptr::null(), OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0) };
+    if h == INVALID_HANDLE { return None; }
+    let mut size = 0i64;
+    if unsafe { GetFileSizeEx(h, &mut size) } == 0 {
+        unsafe { CloseHandle(h); return None; }
+    }
+    let cap = size.min(65536) as usize;
+    let mut buf = vec![0u8; cap];
+    let mut read = 0u32;
+    let ok = unsafe { ReadFile(h, buf.as_mut_ptr(), cap as u32, &mut read, core::ptr::null()) != 0 };
+    unsafe { CloseHandle(h); }
+    if !ok { return None; }
+    buf.truncate(read as usize);
+    String::from_utf8(buf).ok()
+}
+
+/// 小文件的 size 查询 (< 500KB 就认为是我们部署的 stub, 不会是官方 DLL)
+fn file_size_less_than(path: &str, kb: u32) -> bool {
+    let w = wstr(path);
+    let h = unsafe { CreateFileW(w.as_ptr(), GENERIC_READ, FILE_SHARE_READ,
+        core::ptr::null(), OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0) };
+    if h == INVALID_HANDLE { return false; }
+    let mut size = 0i64;
+    unsafe { GetFileSizeEx(h, &mut size); CloseHandle(h); }
+    size >= 0 && (size as u64) < (kb as u64) * 1024
+}
+
+const BOM_FILENAME: &str = ".kg_assist_bom.txt";
+
+fn bom_path(target_dir: &str) -> String {
+    format!("{}\\{}", target_dir, BOM_FILENAME)
+}
+
+fn write_bom(target_dir: &str, entries: &[String]) -> bool {
+    let lines: Vec<String> = entries.iter().map(|s| s.clone()).collect();
+    write_text_file(&bom_path(target_dir), &lines.join("\n"))
+}
+
+fn read_bom(target_dir: &str) -> Vec<String> {
+    let Some(txt) = read_text_file(&bom_path(target_dir)) else { return vec![]; };
+    txt.lines().map(|l| l.trim().to_string()).filter(|l| !l.is_empty()).collect()
 }
 
 fn wstr(s: &str) -> Vec<u16> {

@@ -1,295 +1,427 @@
 //! ACE 用户态 API Hook — 对应 KG 的绕过步骤 #3
 //!
-//! KG 反编译分析:
-//!   ACE 用以下 API 做检测, KG 在 ACE 初始化前 hook 掉它们:
+//! ⚠️ 关键修正 (之前版本的致命 bug):
+//!   直接返回 NULL / INVALID_HANDLE_VALUE 是最容易被 ACE 检测的 hook 行为!
+//!   ACE 自己也调用这些 API, 当所有调用都"异常失败"时, 它立刻知道被 hook 了, 直接标记封号。
 //!
-//!   ┌─────────────────────────────────────────────────────────────┐
-//!   │ API                          | Hook 策略                   │
-//!   ├─────────────────────────────────────────────────────────────┤
-//!   │ CreateToolhelp32Snapshot     | 返回 INVALID_HANDLE_VALUE   │
-//!   │ Process32First/Next          | 返回 FALSE                  │
-//!   │ OpenProcess                  | 对 LoL 返回 NULL            │
-//!   │ TerminateProcess             | 返回 FALSE                  │
-//!   │ CreateFileMappingA/W         | 返回 NULL                   │
-//!   │ MapViewOfFile                | 返回 NULL                   │
-//!   │ LoadLibraryA/W               | 过滤 ACE/SGuard 关键字      │
-//!   │ GetModuleHandleA/W           | 对 ACE 模块返回 NULL        │
-//!   │ CreateMutexA/W               | 返回 NULL                   │
-//!   │ GetProcAddress               | 拦截 ACE API 解析           │
-//!   └─────────────────────────────────────────────────────────────┘
+//! ✅ KG 实际做法 (对齐反编译):
+//!   让 API **正常工作 + 返回真实数据**, 但在返回结果中**剔除/伪造跟我们有关的条目**:
+//!   - 进程列表里隐藏我们自己的 PID
+//!   - 模块列表里隐藏 bot.dll / version.dll / TerSafe.dll
+//!   - OpenProcess 对我们自己的 PID 返回拒绝, 其他正常放行
+//!   - 文件路径名里包含 bot.dll 时替换成 League of Legends.exe (伪造)
 //!
-//! 实现: IAT hook + inline hook 双保险
-//!   - IAT hook: 遍历自身 PE 的导入表替换函数指针 (KG_Bypass.c 方式)
-//!   - inline hook: 对 ntdll/kernel32 函数前 5 字节写 jmp (detour)
+//! 策略: "看起来完全正常, 只是看不到我"
 //!
-//! 注: inline hook 是给 bot.dll 用的 (在游戏进程内运行),
-//!     IAT hook 只保护 KG 自身进程。
 
 use crate::ffi::{LogCallback, log, log_warn, log_debug};
 use windows_sys::Win32::{
-    Foundation::{HANDLE, HMODULE, BOOL, FARPROC},
-    System::LibraryLoader::{GetModuleHandleA, GetProcAddress, LoadLibraryA},
+    Foundation::{HANDLE, HMODULE, BOOL, FARPROC, NTSTATUS},
+    System::LibraryLoader::{GetModuleHandleA, GetProcAddress, LoadLibraryA, LoadLibraryW, GetModuleFileNameW},
     System::Memory::{VirtualProtect, PAGE_READWRITE},
 };
 
-// 原始 GetProcAddress 地址 (hook 安装前保存, 避免 IAT patch 后死循环)
+// ---- 原始 API 地址 (hook 安装前保存, 用来转发真实调用) ----
 static mut ORIG_GET_PROC_ADDRESS: Option<unsafe extern "system" fn(HMODULE, *const u8) -> FARPROC> = None;
-// 原始 LoadLibraryA 地址 (hook 后转发需要)
 static mut ORIG_LOAD_LIBRARY_A: Option<unsafe extern "system" fn(*const u8) -> HMODULE> = None;
+static mut ORIG_LOAD_LIBRARY_W: Option<unsafe extern "system" fn(*const u16) -> HMODULE> = None;
 static mut ORIG_GET_MODULE_HANDLE_A: Option<unsafe extern "system" fn(*const u8) -> HMODULE> = None;
+static mut ORIG_GET_MODULE_HANDLE_W: Option<unsafe extern "system" fn(*const u16) -> HMODULE> = None;
+static mut ORIG_OPEN_PROCESS: Option<unsafe extern "system" fn(u32, BOOL, u32) -> HANDLE> = None;
+static mut ORIG_CREATE_TOOLHELP32_SNAPSHOT: Option<unsafe extern "system" fn(u32, u32) -> HANDLE> = None;
+static mut ORIG_TERMINATE_PROCESS: Option<unsafe extern "system" fn(HANDLE, u32) -> BOOL> = None;
+static mut ORIG_CREATE_FILE_MAPPING_W: Option<unsafe extern "system" fn(HANDLE, *const core::ffi::c_void, u32, u32, u32, *const u16) -> HANDLE> = None;
+static mut ORIG_MAP_VIEW_OF_FILE: Option<unsafe extern "system" fn(HANDLE, u32, u32, u32, usize) -> *mut core::ffi::c_void> = None;
+static mut ORIG_CREATE_MUTEX_W: Option<unsafe extern "system" fn(*const core::ffi::c_void, BOOL, *const u16) -> HANDLE> = None;
+static mut ORIG_PROCESS32_FIRST_W: Option<unsafe extern "system" fn(HANDLE, *mut core::ffi::c_void) -> BOOL> = None;
+static mut ORIG_PROCESS32_NEXT_W: Option<unsafe extern "system" fn(HANDLE, *mut core::ffi::c_void) -> BOOL> = None;
+static mut ORIG_MODULE32_FIRST_W: Option<unsafe extern "system" fn(HANDLE, *mut core::ffi::c_void) -> BOOL> = None;
+static mut ORIG_MODULE32_NEXT_W: Option<unsafe extern "system" fn(HANDLE, *mut core::ffi::c_void) -> BOOL> = None;
+// 原始 ntdll NtQuerySystemInformation
+static mut ORIG_NT_QUERY_SYSTEM_INFO: Option<unsafe extern "system" fn(u32, *mut core::ffi::c_void, u32, *mut u32) -> NTSTATUS> = None;
 
 // ---- 常量 ----
-const INVALID_HANDLE_VALUE: HANDLE = -1;
+const INVALID_HANDLE_VALUE: HANDLE = -1isize as HANDLE;
 
-// 需要过滤的 DLL 名关键字 (LoadLibrary / GetModuleHandle)
-// 对照 KG.exe 字符串表里实际出现的 ACE 组件名:
-//   ACE-SSC64.dll / ACE-SSC-DRV64.sys / SProtectSDK64.dll
-//   netbios.dll / TerSafe.dll / 123.dll / sguard.dat / sg.dll
-const BLOCKED_DLL_KEYWORDS: &[&str] = &[
-    "ACE", "SGuard", "SProtect", "TerSafe", "TP3Helper",
-    "AntiCheat", "anticheat",
-    "netbios.dll", "sguard.dat", "123.dll", "sg.dll",
+// 需要在 ACE 扫描结果中隐藏的关键词 (进程名 / 模块名 / 映射名)
+// 这些名字一旦出现在 Toolhelp / NtQuerySystemInformation 返回值里, 会被 ACE 判定为外挂
+const HIDE_KEYWORDS: &[&str] = &[
+    // 我们自己 & bot & 劫持 DLL
+    "kg_assist", "bot.dll", "BOT.DLL",
+    "version.dll", "tersafe.dll", "netbios.dll", "sprotectsdk64.dll",
+    // 常见外挂残留/调试器 (KG 也顺手藏掉, 免得 ACE 误报导致我们被关联)
+    "x64dbg", "x32dbg", "ida", "ghidra", "cheat engine", "cheatengine",
+    "procmon", "procexp", "wireshark", "fiddler",
+    "process hacker", "processhacker",
 ];
 
-// KG 通过 GetProcAddress 动态解析的 native API 名 (来自 .rdata 字符串表)
-// 这些是 ACE 反作弊用来扫描/终止其他进程的内核级 API, 必须拦截
+// ACE 本身组件 (不能藏, 但对反向"ACE 尝试打开/加载我们"的调用要过滤)
+// ACE DLL 加载的关键字 — 如果 ACE 尝试 LoadLibrary 这些, 放行
+// 反过来, 如果"不是 ACE 的调用"尝试加载它们, 正常放行
+// 这里主要用于 GetProcAddress 拦截: ACE 动态解析 native API 的名字
 const BLOCKED_PROC_NAMES: &[&str] = &[
+    // —— 下面这组, 对于 KG 自己进程内的调用, 返回 NULL 让 ACE 拿不到地址 ——
+    // 注意: 在游戏进程 (LoL.exe) 里 bot 注入后我们不应该这么做, 因为 LoL 自己也需要.
+    // 但 KG_ASSIST 这个 exe 自己不跑游戏, 所以禁掉没副作用.
     "NtOpenProcess",
-    "ZwOpenProcess",
     "NtQueryInformationProcess",
-    "ZwQueryInformationProcess",
     "NtReadVirtualMemory",
-    "ZwReadVirtualMemory",
     "NtWriteVirtualMemory",
-    "ZwWriteVirtualMemory",
     "NtAllocateVirtualMemory",
-    "ZwAllocateVirtualMemory",
     "NtProtectVirtualMemory",
-    "ZwProtectVirtualMemory",
     "NtCreateThreadEx",
-    "ZwCreateThreadEx",
     "NtUnloadDriver",
-    "ZwUnloadDriver",
     "NtLoadDriver",
-    "ZwLoadDriver",
     "NtSetInformationThread",
-    "ZwSetInformationThread",
     "NtSetInformationProcess",
+    // Zw 变体 (跟上面等价, 但有些代码直接用 Zw*)
+    "ZwOpenProcess",
+    "ZwQueryInformationProcess",
+    "ZwReadVirtualMemory",
+    "ZwWriteVirtualMemory",
+    "ZwAllocateVirtualMemory",
+    "ZwProtectVirtualMemory",
+    "ZwCreateThreadEx",
+    "ZwUnloadDriver",
+    "ZwLoadDriver",
+    "ZwSetInformationThread",
     "ZwSetInformationProcess",
+    // —— 反调试 API ——
     "IsDebuggerPresent",
     "CheckRemoteDebuggerPresent",
 ];
 
+// 我们自己的 PID — hook 时用它来识别"要隐藏的目标进程" (在自己进程里主要是防止 ACE 打开我们)
+static mut SELF_PID: u32 = 0;
+static mut LOL_PID: u32 = 0;   // 检测到的 League of Legends.exe PID (启动后置)
+
+/// 由 protector/game_mode 在检测到 LoL PID 后设置
+pub fn set_lol_pid(pid: u32) {
+    unsafe { LOL_PID = pid; }
+}
+
+fn init_self_pid() {
+    unsafe {
+        if SELF_PID == 0 {
+            extern "system" { fn GetCurrentProcessId() -> u32; }
+            SELF_PID = GetCurrentProcessId();
+        }
+    }
+}
+
 // ============================================================
-// Hook 函数实现 (替代原始 API)
+//   隐藏规则判断
 // ============================================================
 
-/// Hook CreateToolhelp32Snapshot: 对进程/模块快照返回 INVALID_HANDLE_VALUE
-unsafe extern "system" fn hooked_create_toolhelp32_snapshot(
-    flags: u32,
-    pid: u32,
-) -> HANDLE {
-    // 对进程快照和模块快照都返回 INVALID_HANDLE_VALUE
-    // 让 ACE 看不到任何进程/模块
-    let _ = (flags, pid);
-    INVALID_HANDLE_VALUE
-}
-
-/// Hook OpenProcess: 拒绝打开 LoL 进程
-unsafe extern "system" fn hooked_open_process(
-    access: u32,
-    inherit: BOOL,
-    pid: u32,
-) -> HANDLE {
-    let _ = (access, inherit);
-    // LoL PID 检查留给运行时, 这里简单拒绝所有
-    // 实际场景: 只拒绝 ACE 自己的 OpenProcess 调用
-    // 这里返回 NULL 让 ACE 无法操作游戏进程
-    let _ = pid;
-    0
-}
-
-/// Hook TerminateProcess: 禁止 ACE 终止进程
-unsafe extern "system" fn hooked_terminate_process(
-    h: HANDLE,
-    exit_code: u32,
-) -> BOOL {
-    let _ = (h, exit_code);
-    0 // FALSE
-}
-
-/// Hook CreateFileMappingW: 返回 NULL 阻止 ACE 共享内存
-unsafe extern "system" fn hooked_create_file_mapping_w(
-    h_file: HANDLE,
-    sa: *const core::ffi::c_void,
-    protect: u32,
-    max_high: u32,
-    max_low: u32,
-    name: *const u16,
-) -> HANDLE {
-    let _ = (h_file, sa, protect, max_high, max_low, name);
-    0
-}
-
-/// Hook MapViewOfFile: 返回 NULL
-unsafe extern "system" fn hooked_map_view_of_file(
-    h: HANDLE,
-    access: u32,
-    high: u32,
-    low: u32,
-    bytes: usize,
-) -> *mut core::ffi::c_void {
-    let _ = (h, access, high, low, bytes);
-    core::ptr::null_mut()
-}
-
-/// Hook LoadLibraryA: 过滤 ACE DLL
-unsafe extern "system" fn hooked_load_library_a(
-    name: *const u8,
-) -> HMODULE {
-    if name.is_null() {
-        return 0;
+/// 是否是"我们需要藏起来"的进程名 / 模块名
+fn should_hide_name(raw: &[u16]) -> bool {
+    // 把 UTF-16 转小写比较 (只转 ASCII 范围, 足够了)
+    let mut tmp = [0u8; 260];
+    let n = raw.len().min(tmp.len());
+    for i in 0..n {
+        let c = raw[i];
+        tmp[i] = if c < 0x80 { (c as u8).to_ascii_lowercase() } else { b'_' };
     }
-    let mut len = 0;
-    while *name.add(len) != 0 {
-        len += 1;
-    }
-    let s = core::str::from_utf8_unchecked(core::slice::from_raw_parts(name, len));
-    if is_blocked_dll(s) {
-        return 0; // 拒绝加载
-    }
-    // 转发原始 (避免走 IAT 被自己 hook)
-    if let Some(orig) = ORIG_LOAD_LIBRARY_A {
-        orig(name)
-    } else {
-        LoadLibraryA(name)
-    }
-}
-
-/// Hook LoadLibraryW: 过滤 ACE DLL
-unsafe extern "system" fn hooked_load_library_w(
-    name: *const u16,
-) -> HMODULE {
-    if name.is_null() {
-        return 0;
-    }
-    let mut len = 0;
-    while *name.add(len) != 0 {
-        len += 1;
-    }
-    let s_utf16 = core::slice::from_raw_parts(name, len);
-    let s: String = s_utf16.iter().map(|&c| c as u8 as char).collect();
-    if is_blocked_dll(&s) {
-        return 0;
-    }
-    // 转发原始 (避免走 IAT)
-    let cstr = to_cstr(&s);
-    if let Some(orig) = ORIG_LOAD_LIBRARY_A {
-        orig(cstr.as_ptr())
-    } else {
-        LoadLibraryA(cstr.as_ptr())
-    }
-}
-
-/// Hook GetModuleHandleA: 对 ACE 模块返回 NULL
-unsafe extern "system" fn hooked_get_module_handle_a(
-    name: *const u8,
-) -> HMODULE {
-    if name.is_null() {
-        // 用原始地址转发 NULL 参数 (获取自身模块)
-        if let Some(orig) = ORIG_GET_MODULE_HANDLE_A {
-            return orig(name);
-        }
-        return GetModuleHandleA(name);
-    }
-    let mut len = 0;
-    while *name.add(len) != 0 {
-        len += 1;
-    }
-    let s = core::str::from_utf8_unchecked(core::slice::from_raw_parts(name, len));
-    if is_blocked_dll(s) {
-        return 0;
-    }
-    if let Some(orig) = ORIG_GET_MODULE_HANDLE_A {
-        orig(name)
-    } else {
-        GetModuleHandleA(name)
-    }
-}
-
-/// Hook CreateMutexW: 返回 NULL 阻止 ACE 单实例检测
-unsafe extern "system" fn hooked_create_mutex_w(
-    sa: *const core::ffi::c_void,
-    owner: BOOL,
-    name: *const u16,
-) -> HANDLE {
-    let _ = (sa, owner, name);
-    0
-}
-
-/// Hook GetProcAddress — 关键!
-///
-/// KG 字符串表里出现 "NtOpenProcess" / "NtQueryInformationProcess",
-/// 说明 ACE 用 GetProcAddress 动态解析这些 native API。
-/// 不 hook 这一层, ACE 拿到真实 NtOpenProcess 就能直接打开游戏进程。
-///
-/// 拦截策略: 对 BLOCKED_PROC_NAMES 中的 API 返回 NULL (或返回 stub 地址)
-unsafe extern "system" fn hooked_get_proc_address(
-    h_module: HMODULE,
-    lp_proc_name: *const u8,
-) -> FARPROC {
-    if h_module == 0 || lp_proc_name.is_null() {
-        return GetProcAddress(h_module, lp_proc_name);
-    }
-
-    // 判断 lp_proc_name 是 ordinal (高位为 0, 低位 <= 0xFFFF) 还是 字符串指针
-    // 当 lp_proc_name 的高 16 位为 0 时, 表示是 ordinal
-    let as_usize = lp_proc_name as usize;
-    let is_string = (as_usize >> 16) != 0;
-
-    if is_string {
-        // 读 C 字符串
-        let mut len = 0;
-        while *lp_proc_name.add(len) != 0 {
-            len += 1;
-            if len > 64 {
-                break;
-            }
-        }
-        let s = core::str::from_utf8_unchecked(core::slice::from_raw_parts(lp_proc_name, len));
-        if is_blocked_proc(s) {
-            // 返回 NULL, 让 ACE 以为这些 API 不存在
-            return None;
-        }
-    }
-
-    // 转发原始 (避免走 IAT 被自己 hook)
-    if let Some(orig) = ORIG_GET_PROC_ADDRESS {
-        orig(h_module, lp_proc_name)
-    } else {
-        GetProcAddress(h_module, lp_proc_name)
-    }
-}
-
-fn is_blocked_dll(name: &str) -> bool {
-    let lower = name.to_lowercase();
-    for kw in BLOCKED_DLL_KEYWORDS {
-        if lower.contains(&kw.to_lowercase()) {
+    let s = unsafe { core::str::from_utf8_unchecked(&tmp[..n]) };
+    for kw in HIDE_KEYWORDS {
+        let kw_lower = kw.to_ascii_lowercase();
+        if s.contains(&kw_lower) {
             return true;
         }
     }
     false
+}
+
+/// ASCII (A 后缀) 版本的隐藏判断
+fn should_hide_name_a(s: &str) -> bool {
+    let lower = s.to_ascii_lowercase();
+    for kw in HIDE_KEYWORDS {
+        let kw_lower = kw.to_ascii_lowercase();
+        if lower.contains(&kw_lower) {
+            return true;
+        }
+    }
+    false
+}
+
+/// OpenProcess 拒绝列表: 对我们自己和 LoL 进程, 拒绝高权限打开
+/// (ACE 扫所有进程 → 我们不让它打开 LoL, 防止它直接读内存发现 bot)
+fn should_deny_open_pid(pid: u32, access: u32) -> bool {
+    // 只对高权限访问拒绝 (PROCESS_VM_READ / PROCESS_VM_WRITE / PROCESS_ALL_ACCESS 等)
+    // 低权限 (SYNCHRONIZE=0x100000 之类) 放行, 避免系统功能异常
+    let high_perm_mask: u32 = 0x001FFFFF; // 除了 SYNCHRONIZE 以外的所有高权限
+    if (access & high_perm_mask) == 0 {
+        return false;
+    }
+    unsafe { pid == SELF_PID || (LOL_PID != 0 && pid == LOL_PID) }
 }
 
 fn is_blocked_proc(name: &str) -> bool {
-    // 精确匹配 (区分大小写, native API 名大小写敏感)
-    for &blocked in BLOCKED_PROC_NAMES {
-        if name == blocked {
-            return true;
-        }
+    for &b in BLOCKED_PROC_NAMES {
+        if name == b { return true; }
     }
     false
 }
+
+// ============================================================
+//   Hook 函数: 转发原始 API, 只从结果中剔除我们的痕迹
+// ============================================================
+
+/// CreateToolhelp32Snapshot: 允许创建正常快照 (ACE 自己要能看到进程, 不然它也会异常)
+/// 真正的过滤在 Process32First/Next 和 Module32First/Next 里做
+unsafe extern "system" fn hooked_create_toolhelp32_snapshot(flags: u32, pid: u32) -> HANDLE {
+    if let Some(orig) = ORIG_CREATE_TOOLHELP32_SNAPSHOT {
+        orig(flags, pid)
+    } else {
+        // fallback: 没抓到原始地址, 用静态导入的 (如果有)
+        // 这种情况返回 INVALID 让调用方知道失败, 但不是我们的策略
+        extern "system" { fn CreateToolhelp32Snapshot(f: u32, p: u32) -> HANDLE; }
+        CreateToolhelp32Snapshot(flags, pid)
+    }
+}
+
+/// OpenProcess: 大部分情况放行, 只有对 "我们自己 PID / LoL PID" 的高权限访问拒绝
+unsafe extern "system" fn hooked_open_process(access: u32, inherit: BOOL, pid: u32) -> HANDLE {
+    if should_deny_open_pid(pid, access) {
+        // 返回 NULL, ACE 会认为"这个 PID 已经退出了"
+        return 0;
+    }
+    if let Some(orig) = ORIG_OPEN_PROCESS { orig(access, inherit, pid) } else { 0 }
+}
+
+/// TerminateProcess: 不允许 ACE 终止任何进程 (ACE 会在检测到外挂时强踢游戏进程)
+unsafe extern "system" fn hooked_terminate_process(h: HANDLE, exit_code: u32) -> BOOL {
+    let _ = (h, exit_code);
+    0 // FALSE, 假装失败
+}
+
+/// CreateFileMappingW / MapViewOfFile: 正常放行 (ACE 跟游戏端通信靠这些, 挡了反而暴露)
+unsafe extern "system" fn hooked_create_file_mapping_w(
+    h_file: HANDLE, sa: *const core::ffi::c_void, protect: u32,
+    max_high: u32, max_low: u32, name: *const u16,
+) -> HANDLE {
+    if let Some(orig) = ORIG_CREATE_FILE_MAPPING_W {
+        orig(h_file, sa, protect, max_high, max_low, name)
+    } else { 0 }
+}
+
+unsafe extern "system" fn hooked_map_view_of_file(
+    h: HANDLE, access: u32, high: u32, low: u32, bytes: usize,
+) -> *mut core::ffi::c_void {
+    if let Some(orig) = ORIG_MAP_VIEW_OF_FILE { orig(h, access, high, low, bytes) } else { core::ptr::null_mut() }
+}
+
+/// CreateMutexW: 正常放行, 不然 ACE 启动失败反而会因为起不来直接退出游戏
+/// 关键: KG 不阻止 ACE 创建 mutex, 那会导致 ACE 进入"异常状态"拒绝用户进入
+unsafe extern "system" fn hooked_create_mutex_w(
+    sa: *const core::ffi::c_void, owner: BOOL, name: *const u16,
+) -> HANDLE {
+    if let Some(orig) = ORIG_CREATE_MUTEX_W { orig(sa, owner, name) } else { 0 }
+}
+
+/// LoadLibraryA/W: 隐藏关键词库
+unsafe extern "system" fn hooked_load_library_a(name: *const u8) -> HMODULE {
+    if !name.is_null() {
+        let mut len = 0;
+        while *name.add(len) != 0 { len += 1; if len > 512 { break; } }
+        let s = unsafe { core::str::from_utf8_unchecked(core::slice::from_raw_parts(name, len)) };
+        if should_hide_name_a(s) {
+            // 对这些 DLL, 返回"找不到"
+            return 0;
+        }
+    }
+    if let Some(orig) = ORIG_LOAD_LIBRARY_A { orig(name) } else { LoadLibraryA(name) }
+}
+
+unsafe extern "system" fn hooked_load_library_w(name: *const u16) -> HMODULE {
+    if !name.is_null() {
+        let mut len = 0;
+        while *name.add(len) != 0 { len += 1; if len > 512 { break; } }
+        let slice = unsafe { core::slice::from_raw_parts(name, len) };
+        if should_hide_name(slice) { return 0; }
+    }
+    if let Some(orig) = ORIG_LOAD_LIBRARY_W { orig(name) } else { LoadLibraryW(name) }
+}
+
+/// GetModuleHandleA/W: 问我们要隐藏的模块, 返回 NULL
+unsafe extern "system" fn hooked_get_module_handle_a(name: *const u8) -> HMODULE {
+    if !name.is_null() {
+        let mut len = 0;
+        while *name.add(len) != 0 { len += 1; if len > 256 { break; } }
+        let s = unsafe { core::str::from_utf8_unchecked(core::slice::from_raw_parts(name, len)) };
+        if should_hide_name_a(s) { return 0; }
+    }
+    if let Some(orig) = ORIG_GET_MODULE_HANDLE_A { orig(name) } else { GetModuleHandleA(name) }
+}
+
+unsafe extern "system" fn hooked_get_module_handle_w(name: *const u16) -> HMODULE {
+    if !name.is_null() {
+        let mut len = 0;
+        while *name.add(len) != 0 { len += 1; if len > 256 { break; } }
+        let slice = unsafe { core::slice::from_raw_parts(name, len) };
+        if should_hide_name(slice) { return 0; }
+    }
+    if let Some(orig) = ORIG_GET_MODULE_HANDLE_W { orig(name) } else {
+        extern "system" { fn GetModuleHandleW(n: *const u16) -> HMODULE; }
+        GetModuleHandleW(name)
+    }
+}
+
+// ---- Process32FirstW / NextW: 跳过名字匹配隐藏关键词的进程 ----
+// PROCESSENTRY32W 结构:
+//   DWORD     dwSize;          +0
+//   DWORD     cntUsage;        +4
+//   DWORD     th32ProcessID;   +8
+//   ULONG_PTR th32DefaultHeapID; +12(32)/+12(64 前4 字节) → 但对齐下其实 +16(64)
+//   DWORD     th32ModuleID;    32:+16 / 64:+20
+//   DWORD     cntThreads;      32:+20 / 64:+24
+//   DWORD     th32ParentProcessID; 32:+24 / 64:+28
+//   LONG      pcPriClassBase;  32:+28 / 64:+32
+//   DWORD     dwFlags;         32:+32 / 64:+36
+//   WCHAR     szExeFile[260];  32:+36 / 64:+40
+#[cfg(target_pointer_width = "32")]
+const PE32_SZEXEFILE_OFFSET: usize = 36;
+#[cfg(target_pointer_width = "64")]
+const PE64_SZEXEFILE_OFFSET: usize = 40;
+
+unsafe fn pe32w_process_name(entry: *const core::ffi::c_void) -> &'static [u16] {
+    // szExeFile 是 260 WCHAR 的数组, 取到第一个 \0 为止
+    let base = entry as *const u8;
+    #[cfg(target_pointer_width = "32")]
+    let name_ptr = base.add(PE32_SZEXEFILE_OFFSET) as *const u16;
+    #[cfg(target_pointer_width = "64")]
+    let name_ptr = base.add(PE64_SZEXEFILE_OFFSET) as *const u16;
+    let mut n = 0;
+    while *name_ptr.add(n) != 0 && n < 260 { n += 1; }
+    core::slice::from_raw_parts(name_ptr, n)
+}
+
+unsafe fn pe32w_pid(entry: *const core::ffi::c_void) -> u32 {
+    let base = entry as *const u8;
+    *((base.add(8)) as *const u32)
+}
+
+unsafe extern "system" fn hooked_process32_first_w(h: HANDLE, entry: *mut core::ffi::c_void) -> BOOL {
+    let orig = match ORIG_PROCESS32_FIRST_W {
+        Some(f) => f,
+        None => return 0,
+    };
+    let mut r = orig(h, entry);
+    while r != 0 {
+        let name = pe32w_process_name(entry);
+        let pid = pe32w_pid(entry);
+        // 跳过我们自己的 PID 和 LoL PID (ACE 就以为这俩进程不存在) + 名字匹配的
+        if unsafe { !(pid == SELF_PID || (LOL_PID != 0 && pid == LOL_PID)) }
+            && !should_hide_name(name) {
+            return r; // 正常, 返回这一条
+        }
+        // 下一个
+        r = match ORIG_PROCESS32_NEXT_W {
+            Some(f) => f(h, entry),
+            None => break,
+        };
+    }
+    r
+}
+
+unsafe extern "system" fn hooked_process32_next_w(h: HANDLE, entry: *mut core::ffi::c_void) -> BOOL {
+    let orig = match ORIG_PROCESS32_NEXT_W {
+        Some(f) => f,
+        None => return 0,
+    };
+    let mut r = orig(h, entry);
+    while r != 0 {
+        let name = pe32w_process_name(entry);
+        let pid = pe32w_pid(entry);
+        if unsafe { !(pid == SELF_PID || (LOL_PID != 0 && pid == LOL_PID)) }
+            && !should_hide_name(name) {
+            return r;
+        }
+        r = orig(h, entry);
+    }
+    r
+}
+
+// ---- Module32FirstW / NextW: 跳过劫持 DLL/bot.dll ----
+// MODULEENTRY32W:
+//   DWORD   dwSize;          +0
+//   DWORD   th32ModuleID;    +4
+//   DWORD   th32ProcessID;   +8
+//   DWORD   GlblcntUsage;    +12
+//   DWORD   ProccntUsage;    +16
+//   BYTE    *modBaseAddr;    +20(32)/+24(64) 指针 4/8
+//   DWORD   modBaseSize;     +24(32)/+32(64)
+//   HMODULE hModule;         +28(32)/+36(64)
+//   WCHAR   szModule[256];   +32(32)/+40(64)    各 2 字节, 共 512 字节 (+512 = szExePath 起点)
+//   WCHAR   szExePath[260];  +544(32)/+552(64)
+#[cfg(target_pointer_width = "32")]
+const ME32_SZMODULE_OFFSET: usize = 32;
+#[cfg(target_pointer_width = "64")]
+const ME64_SZMODULE_OFFSET: usize = 40;
+
+unsafe fn me32w_module_name(entry: *const core::ffi::c_void) -> &'static [u16] {
+    let base = entry as *const u8;
+    #[cfg(target_pointer_width = "32")]
+    let name_ptr = base.add(ME32_SZMODULE_OFFSET) as *const u16;
+    #[cfg(target_pointer_width = "64")]
+    let name_ptr = base.add(ME64_SZMODULE_OFFSET) as *const u16;
+    let mut n = 0;
+    while *name_ptr.add(n) != 0 && n < 256 { n += 1; }
+    core::slice::from_raw_parts(name_ptr, n)
+}
+
+unsafe extern "system" fn hooked_module32_first_w(h: HANDLE, entry: *mut core::ffi::c_void) -> BOOL {
+    let orig = match ORIG_MODULE32_FIRST_W {
+        Some(f) => f,
+        None => return 0,
+    };
+    let next_fn = match ORIG_MODULE32_NEXT_W {
+        Some(f) => f,
+        None => return 0,
+    };
+    let mut r = orig(h, entry);
+    while r != 0 {
+        let name = me32w_module_name(entry);
+        if !should_hide_name(name) { return r; }
+        r = next_fn(h, entry);
+    }
+    r
+}
+
+unsafe extern "system" fn hooked_module32_next_w(h: HANDLE, entry: *mut core::ffi::c_void) -> BOOL {
+    let orig = match ORIG_MODULE32_NEXT_W {
+        Some(f) => f,
+        None => return 0,
+    };
+    let mut r = orig(h, entry);
+    while r != 0 {
+        let name = me32w_module_name(entry);
+        if !should_hide_name(name) { return r; }
+        r = orig(h, entry);
+    }
+    r
+}
+
+/// Hook GetProcAddress: 对 native 扫描 API 返回 NULL
+unsafe extern "system" fn hooked_get_proc_address(
+    h_module: HMODULE, lp_proc_name: *const u8,
+) -> FARPROC {
+    if !lp_proc_name.is_null() {
+        let as_usize = lp_proc_name as usize;
+        let is_string = (as_usize >> 16) != 0;
+        if is_string {
+            let mut len = 0;
+            while *lp_proc_name.add(len) != 0 { len += 1; if len > 96 { break; } }
+            let s = unsafe { core::str::from_utf8_unchecked(core::slice::from_raw_parts(lp_proc_name, len)) };
+            if is_blocked_proc(s) { return None; }
+        }
+    }
+    if let Some(orig) = ORIG_GET_PROC_ADDRESS { orig(h_module, lp_proc_name) } else { GetProcAddress(h_module, lp_proc_name) }
+}
+
+// ============================================================
+// IAT Hook 安装
+// ============================================================
 
 fn to_cstr(s: &str) -> Vec<u8> {
     let mut v = Vec::with_capacity(s.len() + 1);
@@ -297,10 +429,6 @@ fn to_cstr(s: &str) -> Vec<u8> {
     v.push(0);
     v
 }
-
-// ============================================================
-// IAT Hook 安装
-// ============================================================
 
 #[repr(C)]
 struct ImageDosHeader {
@@ -341,74 +469,67 @@ pub fn install_ace_hooks(cb: LogCallback) -> bool {
         }
     }
 
-    // 在 patch IAT 之前, 先保存原始 API 地址 (避免 hook 后死循环)
+    init_self_pid();
+
+    // 在 patch IAT 之前, 先保存所有原始 API 真实地址 (避免 hook 后转发走回 IAT 造成死循环)
     unsafe {
         let h_k32 = GetModuleHandleA(b"kernel32.dll\0".as_ptr());
         if h_k32 != 0 {
-            if let Some(p) = GetProcAddress(h_k32, b"GetProcAddress\0".as_ptr()) {
-                ORIG_GET_PROC_ADDRESS = Some(core::mem::transmute(p));
+            // 用宏式的逐个抓: 每个 API 都通过 GetProcAddress 直接拿 kernel32/ntdll 里真正的函数地址
+            // 不能走静态 IAT — 因为一旦 patch 了 IAT, 我们再 call 就会跳进自己的 hook
+            macro_rules! save_orig {
+                ($h:expr, $name:expr, $field:ident, $ty:ty) => {
+                    if let Some(p) = GetProcAddress($h, concat!($name, "\0").as_ptr()) {
+                        // FARPROC -> fn pointer: 先取 raw 地址值, 再 transmute 到具体函数指针类型
+                        // 避免 Option<extern fn> 和具体 fn 指针 transmute 的布局不兼容问题
+                        let raw: usize = core::mem::transmute::<FARPROC, usize>(Some(p));
+                        $field = Some(core::mem::transmute::<usize, $ty>(raw));
+                    }
+                };
             }
-            if let Some(p) = GetProcAddress(h_k32, b"LoadLibraryA\0".as_ptr()) {
-                ORIG_LOAD_LIBRARY_A = Some(core::mem::transmute(p));
-            }
-            if let Some(p) = GetProcAddress(h_k32, b"GetModuleHandleA\0".as_ptr()) {
-                ORIG_GET_MODULE_HANDLE_A = Some(core::mem::transmute(p));
+            save_orig!(h_k32, "GetProcAddress",              ORIG_GET_PROC_ADDRESS,             unsafe extern "system" fn(HMODULE, *const u8) -> FARPROC);
+            save_orig!(h_k32, "LoadLibraryA",                ORIG_LOAD_LIBRARY_A,               unsafe extern "system" fn(*const u8) -> HMODULE);
+            save_orig!(h_k32, "LoadLibraryW",                ORIG_LOAD_LIBRARY_W,               unsafe extern "system" fn(*const u16) -> HMODULE);
+            save_orig!(h_k32, "GetModuleHandleA",            ORIG_GET_MODULE_HANDLE_A,          unsafe extern "system" fn(*const u8) -> HMODULE);
+            save_orig!(h_k32, "GetModuleHandleW",            ORIG_GET_MODULE_HANDLE_W,          unsafe extern "system" fn(*const u16) -> HMODULE);
+            save_orig!(h_k32, "OpenProcess",                 ORIG_OPEN_PROCESS,                 unsafe extern "system" fn(u32, BOOL, u32) -> HANDLE);
+            save_orig!(h_k32, "CreateToolhelp32Snapshot",    ORIG_CREATE_TOOLHELP32_SNAPSHOT,   unsafe extern "system" fn(u32, u32) -> HANDLE);
+            save_orig!(h_k32, "TerminateProcess",            ORIG_TERMINATE_PROCESS,            unsafe extern "system" fn(HANDLE, u32) -> BOOL);
+            save_orig!(h_k32, "CreateFileMappingW",          ORIG_CREATE_FILE_MAPPING_W,        unsafe extern "system" fn(HANDLE, *const core::ffi::c_void, u32, u32, u32, *const u16) -> HANDLE);
+            save_orig!(h_k32, "MapViewOfFile",               ORIG_MAP_VIEW_OF_FILE,             unsafe extern "system" fn(HANDLE, u32, u32, u32, usize) -> *mut core::ffi::c_void);
+            save_orig!(h_k32, "CreateMutexW",                ORIG_CREATE_MUTEX_W,               unsafe extern "system" fn(*const core::ffi::c_void, BOOL, *const u16) -> HANDLE);
+            save_orig!(h_k32, "Process32FirstW",             ORIG_PROCESS32_FIRST_W,            unsafe extern "system" fn(HANDLE, *mut core::ffi::c_void) -> BOOL);
+            save_orig!(h_k32, "Process32NextW",              ORIG_PROCESS32_NEXT_W,             unsafe extern "system" fn(HANDLE, *mut core::ffi::c_void) -> BOOL);
+            save_orig!(h_k32, "Module32FirstW",              ORIG_MODULE32_FIRST_W,             unsafe extern "system" fn(HANDLE, *mut core::ffi::c_void) -> BOOL);
+            save_orig!(h_k32, "Module32NextW",               ORIG_MODULE32_NEXT_W,              unsafe extern "system" fn(HANDLE, *mut core::ffi::c_void) -> BOOL);
+        }
+        let h_ntdll = GetModuleHandleA(b"ntdll.dll\0".as_ptr());
+        if h_ntdll != 0 {
+            if let Some(p) = GetProcAddress(h_ntdll, b"NtQuerySystemInformation\0".as_ptr()) {
+                let raw: usize = core::mem::transmute::<FARPROC, usize>(Some(p));
+                ORIG_NT_QUERY_SYSTEM_INFO = Some(core::mem::transmute::<usize, _>(raw));
             }
         }
     }
 
+    // —— Hook 表 (14 个, 对齐 KG 真实策略) ——
     let hooks: &[HookEntry] = &[
-        HookEntry {
-            dll_name: "kernel32.dll",
-            func_name: "CreateToolhelp32Snapshot",
-            hook_addr: hooked_create_toolhelp32_snapshot as usize,
-        },
-        HookEntry {
-            dll_name: "kernel32.dll",
-            func_name: "OpenProcess",
-            hook_addr: hooked_open_process as usize,
-        },
-        HookEntry {
-            dll_name: "kernel32.dll",
-            func_name: "TerminateProcess",
-            hook_addr: hooked_terminate_process as usize,
-        },
-        HookEntry {
-            dll_name: "kernel32.dll",
-            func_name: "LoadLibraryA",
-            hook_addr: hooked_load_library_a as usize,
-        },
-        HookEntry {
-            dll_name: "kernel32.dll",
-            func_name: "LoadLibraryW",
-            hook_addr: hooked_load_library_w as usize,
-        },
-        HookEntry {
-            dll_name: "kernel32.dll",
-            func_name: "GetModuleHandleA",
-            hook_addr: hooked_get_module_handle_a as usize,
-        },
-        HookEntry {
-            dll_name: "kernel32.dll",
-            func_name: "CreateMutexW",
-            hook_addr: hooked_create_mutex_w as usize,
-        },
-        HookEntry {
-            dll_name: "kernel32.dll",
-            func_name: "CreateFileMappingW",
-            hook_addr: hooked_create_file_mapping_w as usize,
-        },
-        HookEntry {
-            dll_name: "kernel32.dll",
-            func_name: "MapViewOfFile",
-            hook_addr: hooked_map_view_of_file as usize,
-        },
-        // GetProcAddress hook 是关键 — 阻止 ACE 动态解析 native API
-        HookEntry {
-            dll_name: "kernel32.dll",
-            func_name: "GetProcAddress",
-            hook_addr: hooked_get_proc_address as usize,
-        },
+        HookEntry { dll_name: "kernel32.dll", func_name: "CreateToolhelp32Snapshot", hook_addr: hooked_create_toolhelp32_snapshot as usize },
+        HookEntry { dll_name: "kernel32.dll", func_name: "Process32FirstW",         hook_addr: hooked_process32_first_w as usize },
+        HookEntry { dll_name: "kernel32.dll", func_name: "Process32NextW",          hook_addr: hooked_process32_next_w as usize },
+        HookEntry { dll_name: "kernel32.dll", func_name: "Module32FirstW",          hook_addr: hooked_module32_first_w as usize },
+        HookEntry { dll_name: "kernel32.dll", func_name: "Module32NextW",           hook_addr: hooked_module32_next_w as usize },
+        HookEntry { dll_name: "kernel32.dll", func_name: "OpenProcess",             hook_addr: hooked_open_process as usize },
+        HookEntry { dll_name: "kernel32.dll", func_name: "TerminateProcess",        hook_addr: hooked_terminate_process as usize },
+        HookEntry { dll_name: "kernel32.dll", func_name: "LoadLibraryA",            hook_addr: hooked_load_library_a as usize },
+        HookEntry { dll_name: "kernel32.dll", func_name: "LoadLibraryW",            hook_addr: hooked_load_library_w as usize },
+        HookEntry { dll_name: "kernel32.dll", func_name: "GetModuleHandleA",        hook_addr: hooked_get_module_handle_a as usize },
+        HookEntry { dll_name: "kernel32.dll", func_name: "GetModuleHandleW",        hook_addr: hooked_get_module_handle_w as usize },
+        HookEntry { dll_name: "kernel32.dll", func_name: "CreateFileMappingW",      hook_addr: hooked_create_file_mapping_w as usize },
+        HookEntry { dll_name: "kernel32.dll", func_name: "MapViewOfFile",           hook_addr: hooked_map_view_of_file as usize },
+        HookEntry { dll_name: "kernel32.dll", func_name: "CreateMutexW",            hook_addr: hooked_create_mutex_w as usize },
+        // —— 核心: GetProcAddress 拦截 ACE 动态解析 native API ——
+        HookEntry { dll_name: "kernel32.dll", func_name: "GetProcAddress",          hook_addr: hooked_get_proc_address as usize },
     ];
 
     let mut installed = 0;

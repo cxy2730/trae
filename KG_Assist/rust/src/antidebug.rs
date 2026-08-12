@@ -38,8 +38,21 @@ struct IatPatchRecord {
     thunk_size: usize,
     orig_value: u64,
 }
-static mut IAT_PATCHES: [Option<IatPatchRecord>; 8] = [None; 8];
+static mut IAT_PATCHES: [Option<IatPatchRecord>; 16] = [None; 16];  // 扩到 16 (NtQueryObject + GetThreadContext + OutputDebugStringW 也加上)
 static mut IAT_PATCH_COUNT: usize = 0;
+
+// 真实 NtQueryInformationProcess 地址 (转发非调试类查询时用, 不然直接返回 STATUS_INVALID 会暴露 hook)
+static mut ORIG_NT_QUERY_INFORMATION_PROCESS:
+    Option<unsafe extern "system" fn(HANDLE, u32, *mut core::ffi::c_void, u32, *mut u32) -> i32> = None;
+// NtQueryObject — ACE 查调试对象句柄的核心
+static mut ORIG_NT_QUERY_OBJECT:
+    Option<unsafe extern "system" fn(HANDLE, u32, *mut core::ffi::c_void, u32, *mut u32) -> i32> = None;
+// GetThreadContext — 查硬件断点 DRx 寄存器
+static mut ORIG_GET_THREAD_CONTEXT:
+    Option<unsafe extern "system" fn(HANDLE, *mut core::ffi::c_void) -> BOOL> = None;
+// OutputDebugStringW — 有些检测通过这个触发异常
+static mut ORIG_OUTPUT_DEBUG_STRING_W:
+    Option<unsafe extern "system" fn(*const u16)> = None;
 
 fn push_iat_patch(rec: IatPatchRecord) {
     unsafe {
@@ -54,11 +67,39 @@ fn push_iat_patch(rec: IatPatchRecord) {
 pub fn install(cb: LogCallback) -> bool {
     let mut ok = true;
     unsafe {
-        // 重置状态: 清空 IAT patch 记录
+        // 清空上一次的状态
         for i in 0..IAT_PATCH_COUNT { IAT_PATCHES[i] = None; }
         IAT_PATCH_COUNT = 0;
+        ORIG_NT_QUERY_INFORMATION_PROCESS = None;
+        ORIG_NT_QUERY_OBJECT = None;
+        ORIG_GET_THREAD_CONTEXT = None;
+        ORIG_OUTPUT_DEBUG_STRING_W = None;
 
-        // 1. PEB 清零 (先读原始值再清, 存 ORIG_*)
+        // 在任何 hook 之前, 先从 kernel32 / ntdll 直接抓真实地址 (不走我们自己 IAT)
+        let h_k32 = GetModuleHandleA(b"kernel32.dll\0".as_ptr());
+        let h_ntdll = GetModuleHandleA(b"ntdll.dll\0".as_ptr());
+        if h_ntdll != 0 {
+            if let Some(p) = GetProcAddress(h_ntdll, b"NtQueryInformationProcess\0".as_ptr()) {
+                let raw: usize = core::mem::transmute::<FARPROC, usize>(Some(p));
+                ORIG_NT_QUERY_INFORMATION_PROCESS = Some(core::mem::transmute::<usize, _>(raw));
+            }
+            if let Some(p) = GetProcAddress(h_ntdll, b"NtQueryObject\0".as_ptr()) {
+                let raw: usize = core::mem::transmute::<FARPROC, usize>(Some(p));
+                ORIG_NT_QUERY_OBJECT = Some(core::mem::transmute::<usize, _>(raw));
+            }
+        }
+        if h_k32 != 0 {
+            if let Some(p) = GetProcAddress(h_k32, b"GetThreadContext\0".as_ptr()) {
+                let raw: usize = core::mem::transmute::<FARPROC, usize>(Some(p));
+                ORIG_GET_THREAD_CONTEXT = Some(core::mem::transmute::<usize, _>(raw));
+            }
+            if let Some(p) = GetProcAddress(h_k32, b"OutputDebugStringW\0".as_ptr()) {
+                let raw: usize = core::mem::transmute::<FARPROC, usize>(Some(p));
+                ORIG_OUTPUT_DEBUG_STRING_W = Some(core::mem::transmute::<usize, _>(raw));
+            }
+        }
+
+        // 1. PEB 清零
         if !save_and_clear_peb_debug_flags() {
             log_warn(cb, "[反调试] PEB 清零失败");
             ok = false;
@@ -66,11 +107,32 @@ pub fn install(cb: LogCallback) -> bool {
             log(cb, "[反调试] PEB BeingDebugged + NtGlobalFlag 已清除");
         }
 
-        // 2. IAT hook (IsDebuggerPresent 等) — 真实 patch IAT, 并记录原始 thunk
+        // 2. IAT hook (IsDebuggerPresent / CheckRemoteDebuggerPresent / OutputDebugStringA + W)
         install_iat_hooks(cb);
 
-        // 3. NtQueryInformationProcess hook (静态导入场景)
+        // 3. NtQueryInformationProcess IAT (静态导入场景)
         install_nt_query_iat_hook(cb);
+
+        // 4. NtQueryObject IAT — 查调试对象句柄 (如果静态导入)
+        install_iat_hook_internal(
+            "ntdll.dll",
+            b"NtQueryObject\0",
+            hooked_nt_query_object as usize,
+        );
+
+        // 5. GetThreadContext IAT — 看 DRx 硬件断点
+        install_iat_hook_internal(
+            "kernel32.dll",
+            b"GetThreadContext\0",
+            hooked_get_thread_context as usize,
+        );
+
+        // 6. OutputDebugStringW IAT — 检测的另一个变体
+        install_iat_hook_internal(
+            "kernel32.dll",
+            b"OutputDebugStringW\0",
+            hooked_output_debug_string_w as usize,
+        );
 
         ANTIDEBUG_INSTALLED = true;
     }
@@ -419,13 +481,12 @@ unsafe fn read_cstr(ptr: *const u8) -> String {
 ///   class 30 (ProcessDebugObjectHandle) → 返回 NULL
 ///   class 31 (ProcessDebugFlags)        → 返回 0
 unsafe extern "system" fn hooked_nt_query_information_process(
-    _h: HANDLE,
+    h: HANDLE,
     proc_info_class: u32,
     proc_info: *mut core::ffi::c_void,
     proc_info_len: u32,
     return_len: *mut u32,
 ) -> i32 {
-    // 调试器检测 class 全部返回 "无调试器"
     match proc_info_class {
         7 => {  // ProcessDebugPort
             if !proc_info.is_null() {
@@ -455,13 +516,112 @@ unsafe extern "system" fn hooked_nt_query_information_process(
             0
         }
         _ => {
-            // 其他 class 转发原始 (避免破坏正常功能)
-            // 简化: 直接返回失败, 避免调用 ntdll 真实函数被检测
-            // 实际场景: 应该转发原始 NtQueryInformationProcess
-            let _ = proc_info_len;
-            0xC0000007u32 as i32 // STATUS_INVALID_INFO_CLASS
+            // ⚠️ 关键修正: 其他 class 必须真实转发原始 NtQueryInformationProcess!
+            // 否则直接 STATUS_INVALID_INFO_CLASS = "hook 了" 的特征, ACE 100% 识别
+            if let Some(orig) = ORIG_NT_QUERY_INFORMATION_PROCESS {
+                orig(h, proc_info_class, proc_info, proc_info_len, return_len)
+            } else {
+                0xC0000007u32 as i32 // 彻底没抓到原始地址时最后兜底
+            }
         }
     }
+}
+
+/// Hook NtQueryObject — ACE 用来查 "调试对象句柄数量" 的检测点
+///
+/// ObjectDebugInformation = class 3, 返回的值应该是 0 (没有调试对象)
+/// ObjectTypesInformation = 3, ObjectNameInformation = 1, 其他 class 正常转发
+unsafe extern "system" fn hooked_nt_query_object(
+    h: HANDLE,
+    obj_info_class: u32,
+    obj_info: *mut core::ffi::c_void,
+    obj_info_len: u32,
+    return_len: *mut u32,
+) -> i32 {
+    // ObjectDebugInformation class = 3
+    const OBJECT_DEBUG_INFORMATION_CLASS: u32 = 3;
+    if obj_info_class == OBJECT_DEBUG_INFORMATION_CLASS {
+        if !obj_info.is_null() && obj_info_len >= 4 {
+            // OBJECT_DEBUG_INFORMATION 结构: 前 DWORD 就是 Flags (0 = 无调试对象),
+            // 我们清空整个输出, 假装无调试
+            let base = obj_info as *mut u8;
+            let n = obj_info_len.min(64) as usize;
+            for i in 0..n { *base.add(i) = 0; }
+        }
+        if !return_len.is_null() {
+            // 最少 4 字节, 多的给 caller 要的大小
+            *return_len = obj_info_len.max(4);
+        }
+        return 0; // STATUS_SUCCESS
+    }
+    // 其他 class 正常转发 — 绝不返回 STATUS_INVALID, 不然就是 hook 特征
+    if let Some(orig) = ORIG_NT_QUERY_OBJECT {
+        orig(h, obj_info_class, obj_info, obj_info_len, return_len)
+    } else {
+        0xC0000008u32 as i32 // STATUS_INVALID_HANDLE 最后兜底
+    }
+}
+
+/// Hook GetThreadContext — 清除 DR0~DR7 硬件断点痕迹
+///
+/// DR6/DR7 非零是硬件断点存在的明确证据, ACE 查 CONTEXT_DEBUG_REGISTERS 时
+/// 会看到调试器设置的 DRx. 我们 hook 后把 DR0-DR7 清零再返回.
+///
+/// 重要: 其他 CONTEXT 字段 (通用寄存器/段寄存器 等) 必须原样保留,
+/// 所以我们先调用真实 GetThreadContext, 再对结果做 in-place 擦除.
+unsafe extern "system" fn hooked_get_thread_context(
+    h_thread: HANDLE,
+    lp_context: *mut core::ffi::c_void,
+) -> BOOL {
+    // 1. 先让 Windows 填完整 Context
+    let result = if let Some(orig) = ORIG_GET_THREAD_CONTEXT {
+        orig(h_thread, lp_context)
+    } else {
+        0
+    };
+    if result == 0 || lp_context.is_null() {
+        return result; // 失败就别碰 buffer
+    }
+
+    // 2. in-place 清零 DR0 ~ DR7 (CONTEXT 结构偏移)
+    //
+    // x64 CONTEXT (M128A 对齐, 但 DR 寄存器的偏移是 4 个 64-bit DR0..DR3 + DR6 + DR7):
+    //   DR0 = +24
+    //   DR1 = +32
+    //   DR2 = +40
+    //   DR3 = +48
+    //   DR6 = +56
+    //   DR7 = +64
+    // x86 CONTEXT:
+    //   DR0 = +4
+    //   DR1 = +8
+    //   DR2 = +12
+    //   DR3 = +16
+    //   DR6 = +20
+    //   DR7 = +24
+    #[cfg(target_pointer_width = "64")]
+    {
+        let base = lp_context as *mut u8;
+        // 这 6 个都是 64-bit
+        for offs in [24usize, 32, 40, 48, 56, 64] {
+            let p = base.add(offs) as *mut u64;
+            *p = 0;
+        }
+    }
+    #[cfg(target_pointer_width = "32")]
+    {
+        let base = lp_context as *mut u8;
+        for offs in [4usize, 8, 12, 16, 20, 24] {
+            let p = base.add(offs) as *mut u32;
+            *p = 0;
+        }
+    }
+    result
+}
+
+/// Hook OutputDebugStringW — 空实现 (ACE 可能通过调用这个看调试器是否捕获字符串)
+unsafe extern "system" fn hooked_output_debug_string_w(_msg: *const u16) {
+    // 什么都不做, 让 Debugger Output 检测失败
 }
 
 /// 通过 IAT patch NtQueryInformationProcess (ntdll.dll)

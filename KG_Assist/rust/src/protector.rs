@@ -110,8 +110,9 @@ pub fn install_full(cb: LogCallback) -> i32 {
     log(cb, "[6/7] 启动 ACE 劫持文件监控 (后台)...");
     crate::ace_file_nuke::start_ace_file_monitor(cb);
 
-    // [7/7] 窗口伪装 + 完整性校验
-    log(cb, "[7/7] 窗口伪装 + 完整性自校验...");
+    // [7/7] PEB 路径伪装 + 窗口伪装 + 完整性校验
+    log(cb, "[7/7] PEB 进程路径伪装 + 窗口伪装 + 完整性自校验...");
+    spoof_peb_image_path(cb);
     spoof_self_window(cb);
     unsafe {
         start_integrity_monitor(cb);
@@ -176,6 +177,7 @@ pub fn uninstall_full(cb: LogCallback) -> i32 {
     // [3/7] 卸载反调试
     log(cb, "[3] 卸载反调试 (PEB 还原)...");
     antidebug::uninstall(cb);
+    unsafe { restore_peb_image_path(); }
 
     // [2/7] ACE 目录劫持残留的监控已在 [7] 停
 
@@ -194,7 +196,7 @@ pub fn uninstall_full(cb: LogCallback) -> i32 {
 }
 
 // ============================================================
-// 窗口伪装 (只改自身窗口, 修复 C 版 bug)
+// 窗口伪装 + PEB 进程路径伪装
 // ============================================================
 
 /// 修改自身进程的窗口标题, 伪装为系统组件
@@ -221,8 +223,170 @@ fn spoof_self_window(cb: LogCallback) {
 
         EnumWindows(Some(enum_proc), current_pid as isize);
 
-        log(cb, &format!("[伪装] 自身窗口伪装完成 (PID={})", current_pid));
+        log(cb, &format!("[伪装] 自身窗口标题伪装完成 (PID={})", current_pid));
     }
+}
+
+/// 伪造 PEB 的 ProcessParameters ImagePathName / CommandLine
+///
+/// ACE 调 QueryFullProcessImageName / NtQueryInformationProcess(ProcessImageFileName)
+/// / 直接读目标 PEB 拿进程路径, 如果读到 "kg_assist.exe" 立刻判定外挂。
+///
+/// 我们在自身进程里把 PEB 里的这两个 UnicodeString 指向一份伪造的 svchost.exe 路径,
+/// 不管 ACE 用哪种方式读, 最终拿的都是我们伪造的指针内容。
+///
+/// x64 PEB 结构关键偏移:
+///   PEB+0x20  = PPEB_LDR_DATA Ldr                (不用动)
+///   PEB+0x60  = PVOID ProcessParameters          (关键, RTL_USER_PROCESS_PARAMETERS*)
+/// RTL_USER_PROCESS_PARAMETERS (x64):
+///   +0x00  结构起始 (MaximumAllocationSize / Size / Flags / ...)
+///   +0x60  UNICODE_STRING ImagePathName
+///   +0x70  UNICODE_STRING CommandLine
+/// 一个 UNICODE_STRING = { u16 Length; u16 MaximumLength; PWSTR Buffer; } = 8 bytes + 8 bytes 指针 = 16 bytes。
+///
+/// x86 PEB:
+///   PEB+0x10 = ProcessParameters (指针)
+/// RTL_USER_PROCESS_PARAMETERS (x86):
+///   +0x40  ImagePathName
+///   +0x48  CommandLine
+///   UNICODE_STRING = 2 + 2 + 4 = 8 bytes
+#[cfg(target_pointer_width = "64")]
+const PEB_PROC_PARAMS_OFF: usize = 0x60;
+#[cfg(target_pointer_width = "32")]
+const PEB_PROC_PARAMS_OFF: usize = 0x10;
+
+#[cfg(target_pointer_width = "64")]
+const UPP_IMAGEPATH_OFF: usize = 0x60;
+#[cfg(target_pointer_width = "32")]
+const UPP_IMAGEPATH_OFF: usize = 0x40;
+
+#[cfg(target_pointer_width = "64")]
+const UPP_CMDLINE_OFF: usize = 0x70;
+#[cfg(target_pointer_width = "32")]
+const UPP_CMDLINE_OFF: usize = 0x48;
+
+/// 伪造的 svchost 路径 buffer (UTF-16, 长度 256 够放任何系统路径)
+static mut FAKE_PATH_BUF: [u16; 256] = {
+    const S: &str = "C:\\Windows\\System32\\svchost.exe";
+    let mut buf = [0u16; 256];
+    let s_bytes = S.as_bytes();
+    let mut i = 0;
+    while i < s_bytes.len() {
+        buf[i] = s_bytes[i] as u16;
+        i += 1;
+    }
+    buf[i] = 0;
+    buf
+};
+/// 伪造的命令行: "svchost.exe -k netsvcs" (常见系统服务启动行)
+static mut FAKE_CMD_BUF: [u16; 256] = {
+    const S: &str = "svchost.exe -k netsvcs";
+    let mut buf = [0u16; 256];
+    let s_bytes = S.as_bytes();
+    let mut i = 0;
+    while i < s_bytes.len() {
+        buf[i] = s_bytes[i] as u16;
+        i += 1;
+    }
+    buf[i] = 0;
+    buf
+};
+
+// 卸载时需要还原, 所以先把原值存起来
+static mut ORIG_IMAGE_BUF: Option<(usize, usize, u16, u16)> = None; // (buf_ptr orig, buffer 前 8+8 字节备份不需要 — 只存原 UNICODE_STRING {Length, Max, Buffer})
+static mut ORIG_IMAGE_US: [u8; 16] = [0; 16];     // 16 字节 x64, x86 只需 8 但存 16 不影响
+static mut ORIG_CMD_US: [u8; 16] = [0; 16];
+static mut PEB_SPOOFED: bool = false;
+
+fn spoof_peb_image_path(cb: LogCallback) {
+    unsafe {
+        let peb: *mut u8;
+        #[cfg(target_pointer_width = "64")]
+        core::arch::asm!("mov {}, gs:0x60", out(reg) peb, options(nostack, preserves_flags, readonly));
+        #[cfg(target_pointer_width = "32")]
+        core::arch::asm!("mov {}, fs:0x30", out(reg) peb, options(nostack, preserves_flags, readonly));
+        if peb.is_null() {
+            log_warn(cb, "[伪装] 拿不到 PEB, 跳过路径伪装");
+            return;
+        }
+
+        let proc_params_pp = peb.add(PEB_PROC_PARAMS_OFF) as *const usize;
+        let proc_params = *proc_params_pp as *mut u8;
+        if proc_params.is_null() {
+            log_warn(cb, "[伪装] ProcessParameters 为 NULL, 跳过");
+            return;
+        }
+
+        #[cfg(target_pointer_width = "64")]
+        const US_SIZE: usize = 16;
+        #[cfg(target_pointer_width = "32")]
+        const US_SIZE: usize = 8;
+
+        // 备份原 ImagePathName UNICODE_STRING
+        let orig_img_ptr = proc_params.add(UPP_IMAGEPATH_OFF);
+        core::ptr::copy_nonoverlapping(orig_img_ptr, ORIG_IMAGE_US.as_mut_ptr(), US_SIZE);
+        // 备份原 CommandLine UNICODE_STRING
+        let orig_cmd_ptr = proc_params.add(UPP_CMDLINE_OFF);
+        core::ptr::copy_nonoverlapping(orig_cmd_ptr, ORIG_CMD_US.as_mut_ptr(), US_SIZE);
+
+        // 写新的 ImagePathName
+        let img_len: u16 = (29 * 2) as u16;  // Length in bytes
+        let img_max: u16 = (30 * 2) as u16;  // MaximumLength in bytes (含 \0)
+        let cmd_len: u16 = (22 * 2) as u16;
+        let cmd_max: u16 = (23 * 2) as u16;
+
+        #[cfg(target_pointer_width = "64")]
+        {
+            // UNICODE_STRING x64: Length(u16)+0, MaximumLength(u16)+2, Pad(u32)+4, Buffer(PVOID)+8 = 16 bytes
+            let p = orig_img_ptr as *mut u8;
+            *(p as *mut u16) = img_len;
+            *(p.add(2) as *mut u16) = img_max;
+            *((p.add(8)) as *mut u64) = FAKE_PATH_BUF.as_ptr() as u64;
+
+            let q = orig_cmd_ptr as *mut u8;
+            *(q as *mut u16) = cmd_len;
+            *(q.add(2) as *mut u16) = cmd_max;
+            *((q.add(8)) as *mut u64) = FAKE_CMD_BUF.as_ptr() as u64;
+        }
+        #[cfg(target_pointer_width = "32")]
+        {
+            // UNICODE_STRING x86: Length + Max + Buffer(4) = 8 bytes
+            let p = orig_img_ptr as *mut u8;
+            *(p as *mut u16) = img_len;
+            *(p.add(2) as *mut u16) = img_max;
+            *((p.add(4)) as *mut u32) = FAKE_PATH_BUF.as_ptr() as u32;
+
+            let q = orig_cmd_ptr as *mut u8;
+            *(q as *mut u16) = cmd_len;
+            *(q.add(2) as *mut u16) = cmd_max;
+            *((q.add(4)) as *mut u32) = FAKE_CMD_BUF.as_ptr() as u32;
+        }
+        PEB_SPOOFED = true;
+        log(cb, "[伪装] PEB 进程路径已伪造为 svchost.exe -k netsvcs");
+    }
+}
+
+/// uninstall_full 时调用, 把 PEB 路径改回真实值
+unsafe fn restore_peb_image_path() {
+    if !PEB_SPOOFED { return; }
+    let peb: *mut u8;
+    #[cfg(target_pointer_width = "64")]
+    core::arch::asm!("mov {}, gs:0x60", out(reg) peb, options(nostack, preserves_flags, readonly));
+    #[cfg(target_pointer_width = "32")]
+    core::arch::asm!("mov {}, fs:0x30", out(reg) peb, options(nostack, preserves_flags, readonly));
+    if peb.is_null() { return; }
+    let proc_params_pp = peb.add(PEB_PROC_PARAMS_OFF) as *const usize;
+    let proc_params = *proc_params_pp as *mut u8;
+    if proc_params.is_null() { return; }
+
+    #[cfg(target_pointer_width = "64")]
+    const US_SIZE: usize = 16;
+    #[cfg(target_pointer_width = "32")]
+    const US_SIZE: usize = 8;
+
+    core::ptr::copy_nonoverlapping(ORIG_IMAGE_US.as_ptr(), proc_params.add(UPP_IMAGEPATH_OFF), US_SIZE);
+    core::ptr::copy_nonoverlapping(ORIG_CMD_US.as_ptr(),   proc_params.add(UPP_CMDLINE_OFF),  US_SIZE);
+    PEB_SPOOFED = false;
 }
 
 unsafe fn get_current_process_id() -> u32 {
