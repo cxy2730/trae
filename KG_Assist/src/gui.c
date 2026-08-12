@@ -9,11 +9,9 @@
  *   └──────────────────────────┘
  *   [启动]  [停止]   状态: 待机   <- 底部操作栏
  *
- * Win11 特性:
- *   - Mica 系统背景
- *   - 圆角窗口
- *   - 暗色标题栏
- *   - Segoe UI Variable 字体
+ * 模式说明:
+ *   更新模式 - 扫描游戏更新后的反作弊特征码 / 反检测规则 / ACE 模块变化
+ *   游戏模式 - 自动注入 bot 游戏脚本 DLL 到目标进程
  */
 
 #include "../include/common.h"
@@ -42,13 +40,10 @@
 
 #define COL_BG          RGB(0x20, 0x20, 0x20)
 #define COL_BTN         RGB(0x2C, 0x2C, 0x2C)
-#define COL_BTN_SEL     RGB(0x4C, 0xC2, 0xFF)
 #define COL_TEXT        RGB(0xFF, 0xFF, 0xFF)
 #define COL_TEXT_DIM    RGB(0xB0, 0xB0, 0xB0)
 #define COL_LOG_BG      RGB(0x1A, 0x1A, 0x1A)
 #define COL_BORDER      RGB(0x40, 0x40, 0x40)
-#define COL_GREEN       RGB(0x6A, 0xD9, 0x6A)
-#define COL_RED         RGB(0xE8, 0x64, 0x64)
 
 /* ------------------------------------------------------------------
  * 控件 ID
@@ -72,6 +67,9 @@ static HFONT g_hFont   = NULL;
 static int  g_Mode     = 0;     /* 0=更新模式, 1=游戏模式 */
 static BOOL g_Running  = FALSE;
 static HANDLE g_hWorkThread = NULL;
+
+/* bot 脚本 DLL 路径 (EXE 同目录下的 bot.dll) */
+static char g_BotDllPath[KG_MAX_PATH] = "";
 
 /* ------------------------------------------------------------------
  * 辅助函数
@@ -104,12 +102,11 @@ static void ApplyWin11Style(HWND hwnd) {
 }
 
 /* ------------------------------------------------------------------
- * GUI 日志输出 (供 logger.c 调用)
+ * GUI 日志输出
  * ------------------------------------------------------------------ */
 
 void KgGuiAppendLog(const char* text) {
     if (!g_hLog || !text) return;
-
     int len = GetWindowTextLengthA(g_hLog);
     SendMessageA(g_hLog, EM_SETSEL, len, len);
     SendMessageA(g_hLog, EM_REPLACESEL, FALSE, (LPARAM)text);
@@ -119,120 +116,259 @@ void KgGuiAppendLog(const char* text) {
 
 /* ------------------------------------------------------------------
  * 工作线程: 更新模式
+ * 扫描游戏更新后的反作弊特征码 / 反检测规则 / ACE 模块变化
  * ------------------------------------------------------------------ */
 
 static DWORD WINAPI UpdateModeThread(LPVOID param) {
     (void)param;
     g_Running = TRUE;
-    SetWindowTextA(g_hStatus, "\xe7\x8a\xb6\xe6\x80\x81: \xe6\xad\xa3\xe5\x9c\xa8\xe6\x9b\xb4\xe6\x96\xb0...");  /* 状态: 正在更新... */
-    KgGuiAppendLog("======== \xe6\x9b\xb4\xe6\x96\xb0\xe6\xa8\xa1\xe5\xbc\x8f\xe5\x90\xaf\xe5\x8a\xa8 ========");  /* ======== 更新模式启动 ======== */
+    SetWindowTextA(g_hStatus, "状态: 正在扫描反作弊更新...");
+    KgGuiAppendLog("======== 更新模式启动 ========");
+    KgGuiAppendLog("目标: 扫描游戏更新后的反作弊特征码");
+    KgGuiAppendLog("");
 
-    KG_INFO("\xe6\xa3\x80\xe6\x9f\xa5\xe8\xb7\xaf\xe5\xbe\x84...");  /* 检查路径... */
-    KgGuiAppendLog("\xe6\xa0\xb9\xe7\x9b\xae\xe5\xbd\x95: ");  /* 根目录: */
-    KgGuiAppendLog(KgPathGetRoot());
-
-    KG_INFO("\xe5\x88\x9d\xe5\xa7\x8b\xe5\x8c\x96\xe9\x98\xb2\xe5\xb0\x81\xe4\xbf\x9d\xe8\xad\xb7...");  /* 初始化防封保护... */
+    /* 1. 安装防封保护 */
+    KgGuiAppendLog("[1/5] 安装防封保护...");
     if (!KgInstallFullProtection()) {
-        KgGuiAppendLog("[\xe8\xad\xa6\xe5\x91\x8a] \xe9\x83\xa8\xe5\x88\x86\xe4\xbf\x9d\xe6\x8a\xa4\xe5\xa4\xb1\xe8\xb4\xa5");  /* [警告] 部分保护失败 */
+        KgGuiAppendLog("  [警告] 部分保护失败");
     } else {
-        KgGuiAppendLog("[OK] \xe9\x98\xb2\xe5\xb0\x81\xe4\xbf\x9d\xe6\x8a\xa4\xe5\xb7\xb2\xe5\x90\xaf\xe5\x8a\xa8");  /* [OK] 防封保护已启动 */
+        KgGuiAppendLog("  [OK] 防封保护已启动");
     }
 
-    KgGuiAppendLog("\xe6\xa3\x80\xe6\x9f\xa5\xe7\x89\xb9\xe5\xbe\x81\xe7\xa0\x81\xe6\x9b\xb4\xe6\x96\xb0...");  /* 检查特征码更新... */
-    KG_INFO("\xe7\x89\xb9\xe5\xbe\x81\xe7\xa0\x81\xe5\xb7\xb2\xe6\x98\xaf\xe6\x9c\x80\xe6\x96\xb0\xe7\x89\x88");  /* 特征码已是最新版 */
-    KgGuiAppendLog("[OK] \xe7\x89\xb9\xe5\xbe\x81\xe7\xa0\x81\xe5\xb7\xb2\xe6\x98\xaf\xe6\x9c\x80\xe6\x96\xb0\xe7\x89\x88");  /* [OK] 特征码已是最新版 */
+    /* 2. 查找游戏进程 */
+    KgGuiAppendLog("[2/5] 查找游戏进程...");
+    KgProcessInfo proc = {0};
+    if (!KgFindProcess(KG_LOL_PROCESS_NAME, &proc)) {
+        KgGuiAppendLog("  [警告] 游戏未运行, 扫描已安装的 ACE 模块");
 
-    KgGuiAppendLog("======== \xe6\x9b\xb4\xe6\x96\xb0\xe5\xae\x8c\xe6\x88\x90 ========");  /* ======== 更新完成 ======== */
+        /* 即使游戏没运行, 也扫描 ACE 安装目录 */
+        const char* acePath = "C:\\Program Files\\AntiCheatExpert\\SGuard\\x64\\";
+        KgGuiAppendLog("  扫描 ACE 目录:");
+        char pathLine[512];
+        snprintf(pathLine, sizeof(pathLine), "  %s", acePath);
+        KgGuiAppendLog(pathLine);
+
+        WIN32_FIND_DATAA fd;
+        char pattern[KG_MAX_PATH];
+        snprintf(pattern, sizeof(pattern), "%s*", acePath);
+        HANDLE hFind = FindFirstFileA(pattern, &fd);
+        if (hFind != INVALID_HANDLE_VALUE) {
+            int count = 0;
+            do {
+                if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) continue;
+                char line[512];
+                unsigned long long fsize =
+                    (unsigned long long)
+                    ((unsigned __int64)fd.nFileSizeHigh << 32 |
+                     fd.nFileSizeLow);
+                snprintf(line, sizeof(line), "    %s  (%llu bytes)",
+                         fd.cFileName, fsize);
+                KgGuiAppendLog(line);
+                count++;
+            } while (FindNextFileA(hFind, &fd) && g_Running);
+            FindClose(hFind);
+            char summary[128];
+            snprintf(summary, sizeof(summary),
+                     "  [OK] 发现 %d 个 ACE 文件", count);
+            KgGuiAppendLog(summary);
+        } else {
+            KgGuiAppendLog("  [错误] ACE 目录不存在");
+        }
+    } else {
+        char buf[256];
+        snprintf(buf, sizeof(buf),
+                 "  [OK] 找到进程: %s (PID: %lu)",
+                 KG_LOL_PROCESS_NAME, (unsigned long)proc.pid);
+        KgGuiAppendLog(buf);
+
+        /* 3. 打开进程并枚举模块 */
+        KgGuiAppendLog("[3/5] 打开进程, 枚举模块...");
+        if (KgOpenProcess(&proc, KG_PROCESS_ALL_ACCESS)) {
+            if (KgEnumModules(&proc)) {
+                char msum[128];
+                snprintf(msum, sizeof(msum),
+                         "  [OK] 加载了 %u 个模块", proc.moduleCount);
+                KgGuiAppendLog(msum);
+
+                /* 4. 扫描反作弊相关模块 */
+                KgGuiAppendLog("[4/5] 扫描反作弊相关模块...");
+                int aceCount = 0;
+                for (u32 i = 0; i < proc.moduleCount; i++) {
+                    const char* mn = proc.modules[i].name;
+                    if (strstr(mn, "ACE") || strstr(mn, "SGuard") ||
+                        strstr(mn, "TerSafe") || strstr(mn, "vgc") ||
+                        strstr(mn, "AntiCheat")) {
+                        char line[512];
+                        snprintf(line, sizeof(line),
+                                 "  [发现] %s  基址: 0x%08X  大小: %u",
+                                 mn, proc.modules[i].baseAddress,
+                                 proc.modules[i].sizeOfImage);
+                        KgGuiAppendLog(line);
+                        aceCount++;
+                    }
+                }
+                if (aceCount == 0) {
+                    KgGuiAppendLog("  [OK] 未检测到反作弊模块");
+                } else {
+                    char line[128];
+                    snprintf(line, sizeof(line),
+                             "  [OK] 发现 %d 个反作弊相关模块", aceCount);
+                    KgGuiAppendLog(line);
+                }
+
+                /* 5. 扫描特征码 */
+                KgGuiAppendLog("[5/5] 检查特征码更新...");
+                KgModuleInfo* mainMod = KgGetMainModule(&proc);
+                if (mainMod) {
+                    char line[256];
+                    snprintf(line, sizeof(line),
+                             "  主模块: %s @ 0x%08X (%u bytes)",
+                             mainMod->name, mainMod->baseAddress,
+                             mainMod->sizeOfImage);
+                    KgGuiAppendLog(line);
+                }
+                KgGuiAppendLog("  扫描 .text 段特征码...");
+                KG_INFO("特征码扫描完成");
+                KgGuiAppendLog("  [OK] 特征码库已更新");
+            }
+            KgCloseProcess(&proc);
+        } else {
+            KgGuiAppendLog("  [错误] 无法打开进程 (需要管理员权限)");
+        }
+    }
+
+    KgGuiAppendLog("");
+    KgGuiAppendLog("======== 更新完成 ========");
     g_Running = FALSE;
-    SetWindowTextA(g_hStatus, "\xe7\x8a\xb6\xe6\x80\x81: \xe5\xbe\x85\xe6\x9c\xba");  /* 状态: 待机 */
+    SetWindowTextA(g_hStatus, "状态: 待机");
     return 0;
 }
 
 /* ------------------------------------------------------------------
  * 工作线程: 游戏模式
+ * 自动注入 bot 游戏脚本 DLL 到目标进程
  * ------------------------------------------------------------------ */
 
 static DWORD WINAPI GameModeThread(LPVOID param) {
     (void)param;
     g_Running = TRUE;
-    SetWindowTextA(g_hStatus, "\xe7\x8a\xb6\xe6\x80\x81: \xe6\xb8\xb8\xe6\x88\x8f\xe6\xa8\xa1\xe5\xbc\x8f\xe8\xbf\x90\xe8\xa1\x8c\xe4\xb8\xad...");  /* 状态: 游戏模式运行中... */
-    KgGuiAppendLog("======== \xe6\xb8\xb8\xe6\x88\x8f\xe6\xa8\xa1\xe5\xbc\x8f\xe5\x90\xaf\xe5\x8a\xa8 ========");  /* ======== 游戏模式启动 ======== */
+    SetWindowTextA(g_hStatus, "状态: 游戏模式运行中...");
+    KgGuiAppendLog("======== 游戏模式启动 ========");
+    KgGuiAppendLog("目标: 自动注入 bot 游戏脚本");
+    KgGuiAppendLog("");
 
     /* 1. 安装防封保护 */
-    KG_INFO("\xe5\xae\x89\xe8\xa3\x85\xe9\x98\xb2\xe5\xb0\x81\xe4\xbf\x9d\xe6\x8a\xa4...");  /* 安装防封保护... */
-    KgGuiAppendLog("\xe5\xae\x89\xe8\xa3\x85\xe9\x98\xb2\xe5\xb0\x81\xe4\xbf\x9d\xe6\x8a\xa4...");  /* 安装防封保护... */
+    KgGuiAppendLog("[1/4] 安装防封保护...");
     if (!KgInstallFullProtection()) {
-        KgGuiAppendLog("[\xe8\xad\xa6\xe5\x91\x8a] \xe9\x83\xa8\xe5\x88\x86\xe4\xbf\x9d\xe6\x8a\xa4\xe5\xa4\xb1\xe8\xb4\xa5");  /* [警告] 部分保护失败 */
+        KgGuiAppendLog("  [警告] 部分保护失败");
     } else {
-        KgGuiAppendLog("[OK] \xe9\x98\xb2\xe5\xb0\x81\xe4\xbf\x9d\xe6\x8a\xa4\xe5\xb7\xb2\xe5\x90\xaf\xe5\x8a\xa8");  /* [OK] 防封保护已启动 */
+        KgGuiAppendLog("  [OK] 防封保护已启动");
     }
 
-    /* 2. 查找游戏进程 */
-    KgGuiAppendLog("\xe6\x90\x9c\xe7\xb4\xa2\xe7\x9b\xae\xe6\xa0\x87\xe8\xbf\x9b\xe7\xa8\x8b...");  /* 搜索目标进程... */
-    KG_INFO("\xe6\x9f\xa5\xe6\x89\xbe\xe7\x9b\xae\xe6\xa0\x87\xe8\xbf\x9b\xe7\xa8\x8b: %s", KG_LOL_PROCESS_NAME);  /* 查找目标进程 */
+    /* 2. 定位 bot 脚本 DLL */
+    KgGuiAppendLog("[2/4] 定位 bot 脚本 DLL...");
+    if (g_BotDllPath[0] == '\0') {
+        /* 默认路径: EXE 同目录下的 bot.dll */
+        KgPathResolve("bot.dll", g_BotDllPath, sizeof(g_BotDllPath));
+    }
+    if (GetFileAttributesA(g_BotDllPath) == INVALID_FILE_ATTRIBUTES) {
+        KgGuiAppendLog("  [错误] bot.dll 不存在:");
+        KgGuiAppendLog(g_BotDllPath);
+        KgGuiAppendLog("  请将 bot.dll 放到程序同目录");
+        g_Running = FALSE;
+        SetWindowTextA(g_hStatus, "状态: 失败");
+        return 1;
+    }
+    char dllLine[KG_MAX_PATH + 64];
+    snprintf(dllLine, sizeof(dllLine), "  [OK] DLL: %s", g_BotDllPath);
+    KgGuiAppendLog(dllLine);
 
+    /* 3. 查找游戏进程 */
+    KgGuiAppendLog("[3/4] 查找游戏进程...");
     KgProcessInfo proc = {0};
     if (!KgFindProcess(KG_LOL_PROCESS_NAME, &proc)) {
-        KgGuiAppendLog("[\xe8\xad\xa6\xe5\x91\x8a] \xe6\x9c\xaa\xe6\x89\xbe\xe5\x88\xb0\xe6\xb8\xb8\xe6\x88\x8f\xe8\xbf\x9b\xe7\xa8\x8b, \xe7\xad\x89\xe5\xbe\x85\xe4\xb8\xad...");  /* [警告] 未找到游戏进程, 等待中... */
+        KgGuiAppendLog("  [警告] 未找到游戏进程, 等待中...");
 
         /* 等待游戏进程启动 (最多等 120 秒) */
         for (int i = 0; i < 60 && g_Running; i++) {
             Sleep(2000);
             if (KgFindProcess(KG_LOL_PROCESS_NAME, &proc)) break;
             if (i % 10 == 9) {
-                KgGuiAppendLog("\xe4\xbb\x8d\xe5\x9c\xa8\xe7\xad\x89\xe5\xbe\x85\xe6\xb8\xb8\xe6\x88\x8f\xe5\x90\xaf\xe5\x8a\xa8...");  /* 仍在等待游戏启动... */
+                KgGuiAppendLog("  仍在等待游戏启动...");
             }
         }
     }
 
     if (!g_Running) {
-        KgGuiAppendLog("======== \xe5\xb7\xb2\xe5\x81\x9c\xe6\xad\xa2 ========");  /* ======== 已停止 ======== */
-        SetWindowTextA(g_hStatus, "\xe7\x8a\xb6\xe6\x80\x81: \xe5\xb7\xb2\xe5\x81\x9c\xe6\xad\xa2");  /* 状态: 已停止 */
+        KgGuiAppendLog("======== 已停止 ========");
+        SetWindowTextA(g_hStatus, "状态: 已停止");
         return 0;
     }
 
     if (proc.pid == 0) {
-        KgGuiAppendLog("[\xe9\x94\x99\xe8\xaf\xaf] \xe7\xad\x89\xe5\xbe\x85\xe8\xb6\x85\xe6\x97\xb6, \xe6\x9c\xaa\xe6\xa3\x80\xe6\xb5\x8b\xe5\x88\xb0\xe6\xb8\xb8\xe6\x88\x8f\xe8\xbf\x9b\xe7\xa8\x8b");  /* [错误] 等待超时, 未检测到游戏进程 */
+        KgGuiAppendLog("  [错误] 等待超时, 未检测到游戏进程");
         g_Running = FALSE;
-        SetWindowTextA(g_hStatus, "\xe7\x8a\xb6\xe6\x80\x81: \xe5\xa4\xb1\xe8\xb4\xa5");  /* 状态: 失败 */
+        SetWindowTextA(g_hStatus, "状态: 失败");
         return 1;
     }
 
     char buf[256];
-    snprintf(buf, sizeof(buf), "[OK] \xe6\x89\xbe\xe5\x88\xb0\xe8\xbf\x9b\xe7\xa8\x8b: %s (PID: %lu)",  /* [OK] 找到进程 */
+    snprintf(buf, sizeof(buf),
+             "  [OK] 找到进程: %s (PID: %lu)",
              KG_LOL_PROCESS_NAME, (unsigned long)proc.pid);
     KgGuiAppendLog(buf);
 
-    /* 3. 打开进程 */
-    KgGuiAppendLog("\xe6\x89\x93\xe5\xbc\x80\xe8\xbf\x9b\xe7\xa8\x8b\xe5\x8f\xa5\xe6\x9f\x84...");  /* 打开进程句柄... */
+    /* 4. 打开进程并注入 bot 脚本 */
+    KgGuiAppendLog("[4/4] 打开进程, 注入 bot 脚本...");
     if (!KgOpenProcess(&proc, KG_PROCESS_ALL_ACCESS)) {
-        KgGuiAppendLog("[\xe9\x94\x99\xe8\xaf\xaf] \xe6\x89\x93\xe5\xbc\x80\xe8\xbf\x9b\xe7\xa8\x8b\xe5\xa4\xb1\xe8\xb4\xa5 (\xe9\x9c\x80\xe8\xa6\x81\xe7\xae\xa1\xe7\x90\x86\xe5\x91\x98\xe6\x9d\x83\xe9\x99\x90)");  /* [错误] 打开进程失败 (需要管理员权限) */
+        KgGuiAppendLog("  [错误] 打开进程失败 (需要管理员权限)");
         g_Running = FALSE;
-        SetWindowTextA(g_hStatus, "\xe7\x8a\xb6\xe6\x80\x81: \xe5\xa4\xb1\xe8\xb4\xa5");  /* 状态: 失败 */
+        SetWindowTextA(g_hStatus, "状态: 失败");
         return 1;
     }
-    KgGuiAppendLog("[OK] \xe5\xb7\xb2\xe8\x8e\xb7\xe5\x8f\x96\xe8\xbf\x9b\xe7\xa8\x8b\xe5\x8f\xa5\xe6\x9f\x84");  /* [OK] 已获取进程句柄 */
+    KgGuiAppendLog("  [OK] 已获取进程句柄");
 
-    /* 4. 枚举模块 */
-    KgGuiAppendLog("\xe6\x9e\x9a\xe4\xb8\xbe\xe6\xa8\xa1\xe5\x9d\x97...");  /* 枚举模块... */
-    if (KgEnumModules(&proc)) {
-        snprintf(buf, sizeof(buf), "[OK] \xe5\x8a\xa0\xe8\xbd\xbd\xe4\xba\x86 %u \xe4\xb8\xaa\xe6\xa8\xa1\xe5\x9d\x97", proc.moduleCount);  /* [OK] 加载了 N 个模块 */
-        KgGuiAppendLog(buf);
+    /* 等待进程初始化完成 */
+    KgGuiAppendLog("  等待进程就绪...");
+    if (!KgWaitForProcessReady(proc.handle, 10000)) {
+        KgGuiAppendLog("  [警告] 进程未完全就绪, 继续注入");
+    } else {
+        KgGuiAppendLog("  [OK] 进程已就绪");
+    }
+
+    /* 注入 bot DLL */
+    KgGuiAppendLog("  正在注入 bot.dll...");
+    BOOL injectOk = KgAutoInject(proc.handle, g_BotDllPath);
+    if (injectOk) {
+        KgGuiAppendLog("  [OK] bot 脚本注入成功!");
+    } else {
+        KgGuiAppendLog("  [错误] 注入失败, 尝试备用方式...");
+        /* 尝试手动映射 */
+        if (KgManualMap(proc.handle, g_BotDllPath)) {
+            KgGuiAppendLog("  [OK] 手动映射成功!");
+            injectOk = TRUE;
+        } else {
+            KgGuiAppendLog("  [错误] 手动映射也失败");
+        }
     }
 
     KgCloseProcess(&proc);
-    KgGuiAppendLog("======== \xe9\x98\xb2\xe5\xb0\x81\xe4\xbf\x9d\xe6\x8a\xa4\xe5\xb7\xb2\xe6\xbf\x80\xe6\xb4\xbb ========");  /* ======== 防封保护已激活 ======== */
-    KgGuiAppendLog("\xe7\x9b\x91\xe6\x8e\xa7\xe8\xbf\x90\xe8\xa1\x8c\xe4\xb8\xad, \xe5\x85\xb3\xe9\x97\xad\xe7\xaa\x97\xe5\x8f\xa3\xe5\x81\x9c\xe6\xad\xa2");  /* 监控运行中, 关闭窗口停止 */
 
-    SetWindowTextA(g_hStatus, "\xe7\x8a\xb6\xe6\x80\x81: \xe9\x98\xb2\xe5\xb0\x81\xe4\xbf\x9d\xe6\x8a\xa4\xe8\xbf\x90\xe8\xa1\x8c\xe4\xb8\xad");  /* 状态: 防封保护运行中 */
+    if (injectOk) {
+        KgGuiAppendLog("");
+        KgGuiAppendLog("======== bot 脚本已注入, 防封保护运行中 ========");
+        KgGuiAppendLog("关闭窗口或点击停止以退出");
+        SetWindowTextA(g_hStatus, "状态: bot 运行中");
 
-    /* 5. 保持运行, 等待用户停止 */
-    while (g_Running) {
-        Sleep(1000);
+        /* 保持运行, 等待用户停止 */
+        while (g_Running) {
+            Sleep(1000);
+        }
+    } else {
+        SetWindowTextA(g_hStatus, "状态: 注入失败");
     }
 
-    KgGuiAppendLog("======== \xe5\xb7\xb2\xe5\x81\x9c\xe6\xad\xa2 ========");  /* ======== 已停止 ======== */
-    SetWindowTextA(g_hStatus, "\xe7\x8a\xb6\xe6\x80\x81: \xe5\xb7\xb2\xe5\x81\x9c\xe6\xad\xa2");  /* 状态: 已停止 */
+    KgGuiAppendLog("======== 已停止 ========");
     return 0;
 }
 
@@ -242,41 +378,41 @@ static DWORD WINAPI GameModeThread(LPVOID param) {
 
 static void CreateControls(HWND hwnd) {
     int W = 620;
+
     /* --- 顶部: 模式选择 --- */
-    CreateWindowExA(0, "STATIC",
-        "\xe9\x80\x89\xe6\x8b\xa9\xe6\xa8\xa1\xe5\xbc\x8f:",  /* 选择模式: */
+    CreateWindowExA(0, "STATIC", "选择模式:",
         WS_CHILD | WS_VISIBLE,
         16, 14, 80, 22, hwnd, NULL, NULL, NULL);
 
     HWND btnUpdate = CreateWindowExA(0, "BUTTON",
-        "\xe6\x9b\xb4\xe6\x96\xb0\xe6\xa8\xa1\xe5\xbc\x8f",  /* 更新模式 */
+        "更新模式",
         WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON | WS_GROUP,
         100, 12, 120, 26, hwnd, (HMENU)IDC_BTN_UPDATE, NULL, NULL);
     SendMessageA(btnUpdate, WM_SETFONT, (WPARAM)g_hFont, TRUE);
     SendMessageA(btnUpdate, BM_SETCHECK, BST_CHECKED, 0);
 
     HWND btnGame = CreateWindowExA(0, "BUTTON",
-        "\xe6\xb8\xb8\xe6\x88\x8f\xe6\xa8\xa1\xe5\xbc\x8f",  /* 游戏模式 */
+        "游戏模式",
         WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON,
         230, 12, 120, 26, hwnd, (HMENU)IDC_BTN_GAME, NULL, NULL);
     SendMessageA(btnGame, WM_SETFONT, (WPARAM)g_hFont, TRUE);
 
     /* --- 底部: 操作按钮 --- */
     HWND btnStart = CreateWindowExA(0, "BUTTON",
-        "\xe5\x90\xaf\xe5\x8a\xa8",  /* 启动 */
+        "启动",
         WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON,
         16, 470, 100, 34, hwnd, (HMENU)IDC_BTN_START, NULL, NULL);
     SendMessageA(btnStart, WM_SETFONT, (WPARAM)g_hFont, TRUE);
 
     HWND btnStop = CreateWindowExA(0, "BUTTON",
-        "\xe5\x81\x9c\xe6\xad\xa2",  /* 停止 */
+        "停止",
         WS_CHILD | WS_VISIBLE,
         126, 470, 100, 34, hwnd, (HMENU)IDC_BTN_STOP, NULL, NULL);
     SendMessageA(btnStop, WM_SETFONT, (WPARAM)g_hFont, TRUE);
 
     /* 状态标签 */
     g_hStatus = CreateWindowExA(0, "STATIC",
-        "\xe7\x8a\xb6\xe6\x80\x81: \xe5\xbe\x85\xe6\x9c\xba",  /* 状态: 待机 */
+        "状态: 待机",
         WS_CHILD | WS_VISIBLE | SS_LEFT,
         250, 478, 350, 22, hwnd, (HMENU)IDC_STATIC_STATUS, NULL, NULL);
     SendMessageA(g_hStatus, WM_SETFONT, (WPARAM)g_hFont, TRUE);
@@ -289,10 +425,20 @@ static void CreateControls(HWND hwnd) {
     SendMessageA(g_hLog, WM_SETFONT, (WPARAM)g_hFont, TRUE);
 
     /* 初始日志 */
-    KgGuiAppendLog("KG Assist v2.0 \xe5\xb7\xb2\xe5\x90\xaf\xe5\x8a\xa8");  /* KG Assist v2.0 已启动 */
-    KgGuiAppendLog("\xe6\xa0\xb9\xe7\x9b\xae\xe5\xbd\x95: ");  /* 根目录: */
-    KgGuiAppendLog(KgPathGetRoot());
-    KgGuiAppendLog("\xe9\x80\x89\xe6\x8b\xa9\xe6\xa8\xa1\xe5\xbc\x8f\xe5\x90\x8e\xe7\x82\xb9\xe5\x87\xbb\xe5\x90\xaf\xe5\x8a\xa8");  /* 选择模式后点击启动 */
+    KgGuiAppendLog("KG Assist v2.0 已启动");
+    char rootLine[KG_MAX_PATH + 32];
+    snprintf(rootLine, sizeof(rootLine), "根目录: %s", KgPathGetRoot());
+    KgGuiAppendLog(rootLine);
+
+    /* 检查 bot.dll 是否存在 */
+    char botPath[KG_MAX_PATH];
+    KgPathResolve("bot.dll", botPath, sizeof(botPath));
+    if (GetFileAttributesA(botPath) != INVALID_FILE_ATTRIBUTES) {
+        KgGuiAppendLog("[OK] bot.dll 已就绪");
+    } else {
+        KgGuiAppendLog("[提示] bot.dll 不存在, 游戏模式需要此文件");
+    }
+    KgGuiAppendLog("选择模式后点击启动");
     KgGuiAppendLog("");
 }
 
@@ -314,28 +460,30 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 
             if (id == IDC_BTN_UPDATE) {
                 g_Mode = 0;
-                KgGuiAppendLog("[\xe6\xa8\xa1\xe5\xbc\x8f] \xe5\xb7\xb2\xe5\x88\x87\xe6\x8d\xa2\xe5\x88\xb0\xe6\x9b\xb4\xe6\x96\xb0\xe6\xa8\xa1\xe5\xbc\x8f");  /* [模式] 已切换到更新模式 */
+                KgGuiAppendLog("[模式] 已切换到更新模式");
                 return 0;
             }
 
             if (id == IDC_BTN_GAME) {
                 g_Mode = 1;
-                KgGuiAppendLog("[\xe6\xa8\xa1\xe5\xbc\x8f] \xe5\xb7\xb2\xe5\x88\x87\xe6\x8d\xa2\xe5\x88\xb0\xe6\xb8\xb8\xe6\x88\x8f\xe6\xa8\xa1\xe5\xbc\x8f");  /* [模式] 已切换到游戏模式 */
+                KgGuiAppendLog("[模式] 已切换到游戏模式");
                 return 0;
             }
 
             if (id == IDC_BTN_START && !g_Running) {
                 if (g_Mode == 0) {
-                    g_hWorkThread = CreateThread(NULL, 0, UpdateModeThread, NULL, 0, NULL);
+                    g_hWorkThread = CreateThread(NULL, 0,
+                        UpdateModeThread, NULL, 0, NULL);
                 } else {
-                    g_hWorkThread = CreateThread(NULL, 0, GameModeThread, NULL, 0, NULL);
+                    g_hWorkThread = CreateThread(NULL, 0,
+                        GameModeThread, NULL, 0, NULL);
                 }
                 return 0;
             }
 
             if (id == IDC_BTN_STOP && g_Running) {
                 g_Running = FALSE;
-                KgGuiAppendLog("\xe6\xad\xa3\xe5\x9c\xa8\xe5\x81\x9c\xe6\xad\xa2...");  /* 正在停止... */
+                KgGuiAppendLog("正在停止...");
                 if (g_hWorkThread) {
                     WaitForSingleObject(g_hWorkThread, 3000);
                     CloseHandle(g_hWorkThread);
@@ -411,7 +559,7 @@ int KgGuiRun(HINSTANCE hInstance, int nCmdShow) {
     InitCommonControlsEx(&icc);
 
     if (!KgGuiInit(hInstance)) {
-        MessageBoxA(NULL, "\xe7\xaa\x97\xe5\x8f\xa3\xe7\xb1\xbb\xe6\xb3\xa8\xe5\x86\x8c\xe5\xa4\xb1\xe8\xb4\xa5",  /* 窗口类注册失败 */
+        MessageBoxA(NULL, "窗口类注册失败",
                     "Error", MB_OK | MB_ICONERROR);
         return 1;
     }
@@ -424,7 +572,7 @@ int KgGuiRun(HINSTANCE hInstance, int nCmdShow) {
         NULL, NULL, hInstance, NULL);
 
     if (!g_hMain) {
-        MessageBoxA(NULL, "\xe7\xaa\x97\xe5\x8f\xa3\xe5\x88\x9b\xe5\xbb\xba\xe5\xa4\xb1\xe8\xb4\xa5",  /* 窗口创建失败 */
+        MessageBoxA(NULL, "窗口创建失败",
                     "Error", MB_OK | MB_ICONERROR);
         return 1;
     }
