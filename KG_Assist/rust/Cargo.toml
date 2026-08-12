@@ -1,18 +1,11 @@
 [package]
-name = "kg_core"
-version = "2.0.0"
+name = "kg_assist"
+version = "3.0.0"
 edition = "2021"
-description = "KG Assist 核心引擎 - 基于 KG.exe 反编译重构"
 
-[lib]
-name = "kg_core"
-crate-type = ["cdylib"]
-
-[profile.release]
-opt-level = 3
-lto = true
-panic = "abort"
-strip = true
+[[bin]]
+name = "kg_assist"
+path = "src/main.rs"
 
 [dependencies]
 windows-sys = { version = "0.52", features = [
@@ -27,5 +20,19 @@ windows-sys = { version = "0.52", features = [
     "Win32_System_Registry",
     "Win32_Storage_FileSystem",
     "Win32_UI_WindowsAndMessaging",
+    "Win32_UI_Controls",
+    "Win32_Graphics_Gdi",
+    "Win32_Graphics_Dwm",
     "Win32_Security",
 ] }
+
+[profile.release]
+opt-level = 3
+lto = true
+panic = "abort"
+strip = true
+codegen-units = 1
+
+# Windows GUI 子系统 (不弹控制台窗口)
+# 在 build.rs 中设置 /SUBSYSTEM:WINDOWS
+

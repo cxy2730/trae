@@ -3,8 +3,8 @@
 version = 4
 
 [[package]]
-name = "kg_core"
-version = "2.0.0"
+name = "kg_assist"
+version = "3.0.0"
 dependencies = [
  "windows-sys",
 ]
