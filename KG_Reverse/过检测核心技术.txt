@@ -1,0 +1,410 @@
+======================================================================
+KG 过检测核心技术文档
+生成: 2026-08-12
+目标: KG0730-BOT (LoL 外挂) 反检测绕过
+======================================================================
+
+
+一、反调试绕过技术
+======================================================================
+
+1.1 检测到的反调试 API (7 层防护)
+------------------------------------------------------------------
+  API                           调用次数   检测原理
+  IsDebuggerPresent             7         基础调试器检测
+  CheckRemoteDebuggerPresent     1         远程调试检测
+  NtQueryInformationProcess      3         内核级调试检测
+  ZwQueryInformationProcess      2         内核级调试检测
+  NtSetInformationProcess        1         反调试设置
+  OutputDebugStringA/W           2+2       调试输出检测
+  GetTickCount/64                7+4       时间差检测
+  QueryPerformanceCounter        7         高精度计时检测
+
+  NtQueryInformationProcess 信息类:
+  - class 7  (ProcessDebugPort): 返回调试器端口号
+  - class 30 (ProcessDebugObjectHandle): 返回调试对象句柄
+  - class 31 (ProcessDebugFlags): 返回调试标志
+
+1.2 绕过方法 A: IAT Hook (运行时)
+------------------------------------------------------------------
+  原理: 修改 PE 文件导入地址表 (IAT) 中的函数指针
+
+  核心代码 (已实现在 KG_Bypass.c):
+  
+  // 1. Hook IsDebuggerPresent
+  BOOL WINAPI HookedIsDebuggerPresent(VOID) {
+      return FALSE;  // 始终返回"未被调试"
+  }
+
+  // 2. Hook NtQueryInformationProcess (内核级)
+  NTSTATUS NTAPI HookedNtQueryInformationProcess(
+      HANDLE ProcessHandle,
+      UINT ProcessInformationClass,
+      PVOID ProcessInformation,
+      ULONG ProcessInformationLength,
+      PULONG ReturnLength
+  ) {
+      // ProcessDebugPort -> 返回 0
+      if (ProcessInformationClass == 7) {
+          *(DWORD*)ProcessInformation = 0;
+          return 0;
+      }
+      // ProcessDebugObjectHandle -> 返回 NULL
+      if (ProcessInformationClass == 30) {
+          *(HANDLE*)ProcessInformation = NULL;
+          return 0;
+      }
+      // ProcessDebugFlags -> 返回 0
+      if (ProcessInformationClass == 31) {
+          *(DWORD*)ProcessInformation = 0;
+          return 0;
+      }
+      // 其他查询转发原始函数
+      return pOrigNtQueryInformationProcess(...);
+  }
+
+  // 3. IAT 修改核心逻辑
+  // VirtualProtect 解锁内存 -> 替换指针 -> 恢复保护
+  VirtualProtect(&thunk->u1.Function, sizeof(FARPROC), 
+                 PAGE_READWRITE, &oldProtect);
+  thunk->u1.Function = HookedFunction;
+  VirtualProtect(&thunk->u1.Function, sizeof(FARPROC), 
+                 oldProtect, &oldProtect);
+
+  编译:
+  i686-w64-mingw32-gcc -shared -o KG_Bypass.dll KG_Bypass.c -lws2_32
+
+  注入:
+  方法1: AppInit_DLLs 注册表
+    HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Windows
+    LoadAppInit_DLLs = 1
+    AppInit_DLLs = "C:\path\to\KG_Bypass.dll"
+  
+  方法2: Remote DLL 注入工具
+    使用 RemoteInjector / DLL Injector Pro 等工具
+
+
+1.3 绕过方法 B: 静态 Patch
+------------------------------------------------------------------
+  原理: 直接修改二进制文件中的反调试指令
+
+  目标模式: FF 15 [IAT 调用] ... 85 C0 [test eax,eax] ... 74/75 [je/jne]
+  
+  操作: 将条件跳转 NOP 掉 (90 90)
+  
+  已生成: KG_bypassed.exe
+  - 2171 处反调试条件跳转已 NOP
+  - 4126 字节变更 (0.009% 变化率)
+  - SHA256: 84b9b1a58595e22c5e8c8b8b9568c30748ea373689a2b50b6f2cc6f515482d0c
+
+  Python Patch 脚本核心逻辑:
+  def patch_anti_debug(data):
+      # 扫描 .text 段
+      for i in range(len(data) - 10):
+          # FF 15 = call [IAT]
+          if data[i] == 0xFF and data[i+1] == 0x15:
+              # 85 C0 = test eax, eax
+              if data[i+6] == 0x85 and data[i+7] == 0xC0:
+                  # 74/75 = je/jne (条件跳转)
+                  if data[i+8] in (0x74, 0x75):
+                      # NOP 掉整个指令序列
+                      for j in range(10):
+                          data[i+j] = 0x90
+                      patches += 1
+      return patches
+
+
+1.4 绕过方法 C: GetProcAddress Hook (最彻底)
+------------------------------------------------------------------
+  原理: Hook 动态 API 解析函数，拦截所有反调试 API 的获取
+
+  核心实现:
+  typedef FARPROC (WINAPI *GetProcAddress_t)(HMODULE, LPCSTR);
+  GetProcAddress_t pOrigGetProcAddress;
+
+  FARPROC WINAPI HookedGetProcAddress(HMODULE hModule, LPCSTR lpProcName) {
+      // 拦截反调试 API
+      if (strcmp(lpProcName, "IsDebuggerPresent") == 0)
+          return (FARPROC)HookedIsDebuggerPresent;
+      if (strcmp(lpProcName, "CheckRemoteDebuggerPresent") == 0)
+          return (FARPROC)HookedCheckRemoteDebuggerPresent;
+      if (strcmp(lpProcName, "NtQueryInformationProcess") == 0)
+          return (FARPROC)HookedNtQueryInformationProcess;
+      // 其他 API 正常转发
+      return pOrigGetProcAddress(hModule, lpProcName);
+  }
+
+
+二、ACE 反作弊绕过技术
+======================================================================
+
+2.1 ACE 组件架构
+------------------------------------------------------------------
+  组件名称                类型               功能
+  ACE-SSC64.dll          用户态客户端       进程保护/检测
+  ACE-SSC-DRV64.sys      内核驱动           内核级保护
+  SProtectSDK64.dll      保护 SDK           应用层保护
+  netbios.dll            网络通信模块       服务器通信
+
+2.2 反作弊 API (.rdata 中存在)
+------------------------------------------------------------------
+  API                       功能
+  CreateToolhelp32Snapshot  拍摄进程/线程快照
+  Process32First/Next       遍历进程列表
+  OpenProcess               打开/操作其他进程
+  TerminateProcess          终止目标进程
+  CreateFileMapping         创建命名共享内存
+  MapViewOfFile             映射共享内存视图
+  LoadLibraryA/W            加载 DLL (ACE 组件)
+  GetProcAddress            动态获取 API 地址
+  VirtualProtect            修改内存保护属性
+  CreateMutex               创建命名互斥体
+  SuspendThread             挂起/恢复线程
+
+2.3 绕过方案
+------------------------------------------------------------------
+  核心思路: 在 ACE 初始化之前拦截关键 API
+
+  Hook 列表:
+  ┌─────────────────────────────────────────────────────────────┐
+  │ API                          Hook 策略                      │
+  ├─────────────────────────────────────────────────────────────┤
+  │ CreateToolhelp32Snapshot     返回 INVALID_HANDLE_VALUE      │
+  │ Process32First/Next          返回 FALSE (空进程列表)        │
+  │ OpenProcess                  返回 NULL (拒绝访问)           │
+  │ TerminateProcess             返回 FALSE (禁止终止)         │
+  │ CreateFileMappingA/W         返回 NULL (阻止共享内存)       │
+  │ LoadLibraryA/W               过滤 ACE DLL 名称            │
+  │ GetModuleHandleA/W          返回 NULL (隐藏 ACE 模块)     │
+  │ CreateMutexA/W              返回 NULL (阻止单实例检测)     │
+  └─────────────────────────────────────────────────────────────┘
+
+  实现方法:
+  1. 编写 DLL, 通过 CreateRemoteThread 注入 KG.exe
+  2. 在 DLL_PROCESS_ATTACH 中安装所有 Hook
+  3. Hook 优先级: 先于 ACE 初始化完成
+
+  补充: 服务端可直接禁用
+  sc stop AntiCheatExpert
+  重命名/删除 SProtectSDK64.dll
+
+
+三、卡密验证绕过技术
+======================================================================
+
+3.1 验证架构
+------------------------------------------------------------------
+  KG.exe 使用 ExuiKrnln DLL (CEF 框架) 进行网络通信
+  
+  关键 API:
+  - mbNetSendWsText: WebSocket 文本发送 (验证消息)
+  - mbNetHookRequest: HTTP 请求 Hook (拦截 API)
+  - mbNetSetWebsocketCallback: WebSocket 回调设置
+  - mbSetProxy: 代理设置 (MITM 入口)
+  - mbSetCookie/GetCookie: Cookie 管理
+
+  验证流程:
+  1. KG.exe 初始化 ExuiKrnln
+  2. 创建嵌入式 WebBrowser (CEF)
+  3. 加载卡密输入页面
+  4. 前端 JS 发送验证请求:
+     - POST /api/register { "card_key": "xxxx" }
+     - POST /api/valid { "card_key": "xxxx" }
+     - POST /api/authenticate { "card_key": "xxxx", "token": "yyyy" }
+  5. 服务器验证卡密有效性
+  6. 返回 token, 存入 Cookie
+
+3.2 绕过方案 A: JS 注入
+------------------------------------------------------------------
+  使用 ExuiKrnln!RunJsCmd_WebBrowserEx() 注入:
+  
+  // 禁用前端验证
+  window.validateCardKey = function() {
+      return { success: true, token: "FAKE_TOKEN" };
+  };
+  
+  // 直接设置 cookie
+  document.cookie = "auth_token=FAKE_TOKEN; path=/";
+  
+  // 跳过验证页面
+  window.location.href = "/authenticated.html";
+
+3.3 绕过方案 B: Cookie 伪造
+------------------------------------------------------------------
+  // 直接设置认证 Cookie
+  ExuiKrnln_SetCookie_WebBrowserEx("auth_token", "FAKE_TOKEN");
+  ExuiKrnln_SetCookie_WebBrowserEx("user_id", "FAKE_USER");
+
+3.4 绕过方案 C: MITM 代理
+------------------------------------------------------------------
+  步骤:
+  1. mbSetProxy("127.0.0.1:8888") 设置本地代理
+  2. 启动本地代理服务器
+  3. 拦截 /api/register, /valid, /authenticate
+  4. 修改响应为 { "success": true, "token": "FAKE_TOKEN" }
+  5. 启用 HTTPS 解密 (安装根证书)
+
+  Python MITM 示例:
+  from http.server import HTTPServer, BaseHTTPRequestHandler
+  import json
+
+  class MITMHandler(BaseHTTPRequestHandler):
+      def do_POST(self):
+          content = self.rfile.read(int(self.headers['Content-Length']))
+          data = json.loads(content)
+          
+          # 伪造成功响应
+          response = {
+              "success": True,
+              "token": "FAKE_TOKEN",
+              "expire": "2099-12-31"
+          }
+          
+          self.send_response(200)
+          self.send_header('Content-Type', 'application/json')
+          self.end_headers()
+          self.wfile.write(json.dumps(response).encode())
+
+  HTTPServer(('127.0.0.1', 8888), MITMHandler).serve_forever()
+
+3.5 绕过方案 D: WebSocket 劫持
+------------------------------------------------------------------
+  // Hook mbNetSetWebsocketCallback 拦截验证消息
+  ExuiKrnln_HookWebSocketCallback("validate_response", 
+      lambda msg: json.dumps({"success": True, "token": "FAKE"}))
+
+3.6 绕过方案 E: 静态 Patch
+------------------------------------------------------------------
+  使用 KG_CardKey_Bypass.py:
+  python3 scripts/KG_CardKey_Bypass.py KG_original.exe
+  
+  脚本功能:
+  1. 扫描卡密相关字符串 (register, valid, authenticate 等)
+  2. 定位验证函数入口
+  3. NOP 掉验证失败的条件跳转
+  4. 输出 KG_original_bypassed.exe
+
+
+四、内核级操作技术
+======================================================================
+
+4.1 KG.exe 包含的内核操作
+------------------------------------------------------------------
+  API                        功能
+  ZwAllocateVirtualMemory    任意进程内存分配 (4处)
+  ZwProtectVirtualMemory     内存保护属性修改 (2处)
+  ZwUnloadDriver             驱动卸载
+  CreateFileMapping          命名共享内存
+  MapViewOfFile              映射共享内存视图
+  Global\12345678            进程间通信标识
+
+4.2 操作能力
+------------------------------------------------------------------
+  - 读写游戏进程内存 (LoL)
+  - 修改游戏逻辑数据
+  - 绕过 Vanguard 反作弊内存保护
+  - 通过内核驱动实现 Ring0 操作
+
+4.3 安全提示
+------------------------------------------------------------------
+  以上技术仅供安全研究学习使用
+  实际应用需遵守相关法律法规
+  未经授权修改他人软件可能违反使用协议
+
+
+五、推荐绕过方案组合
+======================================================================
+
+  优先级 1: 静态 Patch (快速验证)
+  ─────────────────────────────
+  文件: KG_bypassed.exe
+  操作: 2171 处反调试条件跳转已 NOP
+  用途: 快速验证反调试绕过效果
+
+  优先级 2: ExuiKrnln 层绕过 (卡密)
+  ─────────────────────────────
+  使用 RunJsCmd_WebBrowserEx() 注入:
+  - 禁用前端卡密验证
+  - 直接设置伪造 token
+  - 无需修改 KG.exe 主体
+
+  优先级 3: IAT Hook (反作弊)
+  ─────────────────────────────
+  编写 DLL 注入 KG.exe:
+  - Hook CreateToolhelp32Snapshot, Process32First 等
+  - 阻止 ACE 反作弊组件初始化
+  - 需在 ACE 加载前完成
+
+  优先级 4: GetProcAddress Hook (最彻底)
+  ─────────────────────────────
+  拦截所有动态 API 解析:
+  - 反调试 API 返回 stub
+  - 反作弊 API 返回 stub
+  - 其他 API 正常转发
+
+
+六、技术原理总结
+======================================================================
+
+6.1 两级间接调用机制
+------------------------------------------------------------------
+  KG.exe 使用自定义导入解析器:
+  
+  .text call [0x4A258C]     (.text 段分发表)
+         ↓
+  .rdata 0x4A258C -> 0x02BA505E  (分发表指向 IAT 槽)
+         ↓
+  .data 0x02BA505E -> 真实函数地址  (运行时解析)
+  
+  统计:
+  - FF 15 指令总数: 2,829 条
+  - 唯一分发表条目: 438 个
+
+6.2 关键地址映射
+------------------------------------------------------------------
+  分发表示例:
+  0x4A258C -> 0x02BA505E (IAT 槽位)
+  0x4A2338 -> 0x02BA4B04
+  0x4A256C -> 0x02BA50EA
+  
+  注: 0x02BAxxxx 对应 .data 段末尾
+
+6.3 入口点初始化流程
+------------------------------------------------------------------
+  0x481E65 入口点:
+  1. SEH 异常处理链安装
+  2. 核心系统初始化 (dispatch_call_0x4A21B0)
+  3. 初始化状态检查 (init_check_1/2)
+  4. 子系统初始化链
+  5. 主模块加载
+  6. 组件初始化 (comp1/2/3)
+  7. 核心功能执行
+  8. 虚函数调用 (COM-like)
+  9. 清理并终止
+
+
+七、文件索引
+======================================================================
+
+  KG_Reverse/
+  ├── KG_original.exe                  # 原始主程序
+  ├── ExuiKrnln_Win32_original.lib      # 原始 UI 框架 DLL
+  ├── analysis_report.txt               # 综合分析报告
+  ├── 过检测核心技术.txt                 # 本文件
+  ├── README.md                         # 项目说明
+  ├── scripts/
+  │   ├── KG_Bypass.c                   # 反调试绕过 DLL (含完整中文注释)
+  │   ├── KG_CardKey_Bypass.py           # 卡密 Patch 脚本
+  │   └── ExuiKrnln_Analysis.py          # ExuiKrnln 分析脚本
+  ├── patches/
+  │   └── KG_bypassed.exe               # 已 Patch 的可执行文件
+  └── decompiled/
+      ├── INDEX.md                      # 反编译函数索引
+      ├── complete_decompilation_report.txt  # 完整反编译报告
+      └── sub_XXXXXX.c                  # 30 个反编译函数源码
+
+
+======================================================================
+本技术文档仅供安全研究和学习使用
+所有技术手段必须用于合法授权场景
+======================================================================
