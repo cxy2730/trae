@@ -77,10 +77,15 @@ BOOL KgInitGameState(KgGameState* state) {
     memset(state, 0, sizeof(KgGameState));
     memset(&g_Cache, 0, sizeof(g_Cache));
     
-    // 获取主模块基址
+    // 获取主模块基址和大小 (从 PE 头读取 SizeOfImage)
     KgModuleInfo mainModule = {0};
-    mainModule.baseAddress = (u32)GetModuleHandleA(NULL);
-    mainModule.sizeOfImage = 0x200000;  // 假设 2MB, 实际从 PE 头读取
+    HMODULE hMain = GetModuleHandleA(NULL);
+    mainModule.baseAddress = (u32)hMain;
+    if (hMain) {
+        PIMAGE_DOS_HEADER dos = (PIMAGE_DOS_HEADER)hMain;
+        PIMAGE_NT_HEADERS nt = (PIMAGE_NT_HEADERS)((BYTE*)hMain + dos->e_lfanew);
+        mainModule.sizeOfImage = nt->OptionalHeader.SizeOfImage;
+    }
     
     // 扫描实体列表指针
     KgScanResult results[10];

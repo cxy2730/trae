@@ -307,25 +307,23 @@ KgModuleInfo* KgGetMainModule(KgProcessInfo* info) {
  */
 VOID KgDumpProcessInfo(const KgProcessInfo* info) {
     if (!info) return;
-    
-    printf("=== 进程信息 ===\n");
-    printf("  PID:           %lu\n", (unsigned long)info->pid);
-    printf("  父PID:         %lu\n", (unsigned long)info->parentPid);
-    wprintf(L"  名称:          %s\n", info->name);
-    printf("  句柄:          %p\n", info->handle);
-    printf("  访问权限:      0x%08lX\n", (unsigned long)info->accessRights);
-    printf("  模块数:        %u\n", info->moduleCount);
-    
-    if (info->moduleCount > 0) {
-        printf("\n=== 模块列表 ===\n");
-        for (u32 i = 0; i < info->moduleCount && i < 10; i++) {
-            printf("  [%2u] %-30s 基址: 0x%08X 大小: 0x%08X\n",
-                   i, info->modules[i].name,
-                   info->modules[i].baseAddress,
-                   info->modules[i].sizeOfImage);
-        }
-        if (info->moduleCount > 10) {
-            printf("  ... 还有 %u 个模块\n", info->moduleCount - 10);
-        }
+
+    KG_INFO("=== 进程信息 ===");
+    KG_INFO("  PID: %lu  父PID: %lu",
+            (unsigned long)info->pid,
+            (unsigned long)info->parentPid);
+    KG_INFO("  句柄: %p  权限: 0x%08lX  模块数: %u",
+            info->handle,
+            (unsigned long)info->accessRights,
+            info->moduleCount);
+
+    for (u32 i = 0; i < info->moduleCount && i < 10; i++) {
+        KG_INFO("  [%u] %s  基址: 0x%08X  大小: 0x%08X",
+                i, info->modules[i].name,
+                info->modules[i].baseAddress,
+                info->modules[i].sizeOfImage);
+    }
+    if (info->moduleCount > 10) {
+        KG_INFO("  ... 还有 %u 个模块", info->moduleCount - 10);
     }
 }
