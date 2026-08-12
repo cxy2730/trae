@@ -15,6 +15,7 @@
 #include "../include/common.h"
 #include <commctrl.h>
 #include <dwmapi.h>
+#include <time.h>
 
 #ifndef DWMWA_USE_IMMERSIVE_DARK_MODE
 #define DWMWA_USE_IMMERSIVE_DARK_MODE  20
@@ -117,11 +118,11 @@ static DWORD WINAPI UpdateModeThread(LPVOID param) {
     (void)param;
     g_Running = TRUE;
     KgGuiAppendLog("======== 更新模式启动 ========");
-    KgGuiAppendLog("目标: 扫描游戏更新后的反作弊特征码");
+    KgGuiAppendLog("目标: 更新游戏特征码 + 反作弊特征 + 数据基址");
     KgGuiAppendLog("");
 
     /* 1. 安装防封保护 */
-    KgGuiAppendLog("[1/5] 安装防封保护...");
+    KgGuiAppendLog("[1/6] 安装防封保护...");
     if (!KgInstallFullProtection()) {
         KgGuiAppendLog("  [警告] 部分保护失败");
     } else {
@@ -129,105 +130,157 @@ static DWORD WINAPI UpdateModeThread(LPVOID param) {
     }
 
     /* 2. 查找游戏进程 */
-    KgGuiAppendLog("[2/5] 查找游戏进程...");
+    KgGuiAppendLog("[2/6] 查找游戏进程...");
     KgProcessInfo proc = {0};
     if (!KgFindProcess(KG_LOL_PROCESS_NAME, &proc)) {
-        KgGuiAppendLog("  [警告] 游戏未运行, 扫描已安装的 ACE 模块");
+        KgGuiAppendLog("  [错误] 游戏未运行, 无法提取特征码");
+        KgGuiAppendLog("  请先启动游戏再执行更新");
+        KgGuiAppendLog("");
+        KgGuiAppendLog("======== 更新失败 ========");
+        g_Running = FALSE;
+        return 1;
+    }
 
-        const char* acePath = "C:\\Program Files\\AntiCheatExpert\\SGuard\\x64\\";
-        KgGuiAppendLog("  扫描 ACE 目录:");
-        char pathLine[512];
-        snprintf(pathLine, sizeof(pathLine), "  %s", acePath);
-        KgGuiAppendLog(pathLine);
+    char buf[256];
+    snprintf(buf, sizeof(buf),
+             "  [OK] 找到进程: %s (PID: %lu)",
+             KG_LOL_PROCESS_NAME, (unsigned long)proc.pid);
+    KgGuiAppendLog(buf);
 
-        WIN32_FIND_DATAA fd;
-        char pattern[KG_MAX_PATH];
-        snprintf(pattern, sizeof(pattern), "%s*", acePath);
-        HANDLE hFind = FindFirstFileA(pattern, &fd);
-        if (hFind != INVALID_HANDLE_VALUE) {
-            int count = 0;
-            do {
-                if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) continue;
-                char line[512];
-                unsigned long long fsize =
-                    (unsigned long long)
-                    ((unsigned __int64)fd.nFileSizeHigh << 32 |
-                     fd.nFileSizeLow);
-                snprintf(line, sizeof(line), "    %s  (%llu bytes)",
-                         fd.cFileName, fsize);
-                KgGuiAppendLog(line);
-                count++;
-            } while (FindNextFileA(hFind, &fd) && g_Running);
-            FindClose(hFind);
-            char summary[128];
-            snprintf(summary, sizeof(summary),
-                     "  [OK] 发现 %d 个 ACE 文件", count);
-            KgGuiAppendLog(summary);
+    /* 3. 打开进程并枚举模块 */
+    KgGuiAppendLog("[3/6] 打开进程, 枚举模块...");
+    if (!KgOpenProcess(&proc, KG_PROCESS_ALL_ACCESS)) {
+        KgGuiAppendLog("  [错误] 无法打开进程 (需要管理员权限)");
+        KgGuiAppendLog("");
+        KgGuiAppendLog("======== 更新失败 ========");
+        g_Running = FALSE;
+        return 1;
+    }
+    if (!KgEnumModules(&proc)) {
+        KgGuiAppendLog("  [错误] 模块枚举失败");
+        KgCloseProcess(&proc);
+        g_Running = FALSE;
+        return 1;
+    }
+    char msum[128];
+    snprintf(msum, sizeof(msum),
+             "  [OK] 加载了 %u 个模块", proc.moduleCount);
+    KgGuiAppendLog(msum);
+
+    /* 4. 提取游戏特征码 (主模块基址/大小/PE时间戳) */
+    KgGuiAppendLog("[4/6] 提取游戏特征码...");
+    KgModuleInfo* mainMod = KgGetMainModule(&proc);
+    if (mainMod) {
+        /* 读取 PE 头获取时间戳 */
+        u32 peTimestamp = 0;
+        KgReadProcessMemory(proc.handle,
+                            mainMod->baseAddress + 0x3C,  /* e_lfanew */
+                            &peTimestamp, 4);
+        if (peTimestamp) {
+            u32 timestamp = 0;
+            KgReadProcessMemory(proc.handle,
+                                mainMod->baseAddress + peTimestamp + 8,
+                                &timestamp, 4);
+            char line[256];
+            snprintf(line, sizeof(line),
+                     "  游戏主模块: %s @ 0x%08X (%u bytes)  PE时间戳: 0x%08X",
+                     mainMod->name, mainMod->baseAddress,
+                     mainMod->sizeOfImage, timestamp);
+            KgGuiAppendLog(line);
         } else {
-            KgGuiAppendLog("  [错误] ACE 目录不存在");
-        }
-    } else {
-        char buf[256];
-        snprintf(buf, sizeof(buf),
-                 "  [OK] 找到进程: %s (PID: %lu)",
-                 KG_LOL_PROCESS_NAME, (unsigned long)proc.pid);
-        KgGuiAppendLog(buf);
-
-        /* 3. 打开进程并枚举模块 */
-        KgGuiAppendLog("[3/5] 打开进程, 枚举模块...");
-        if (KgOpenProcess(&proc, KG_PROCESS_ALL_ACCESS)) {
-            if (KgEnumModules(&proc)) {
-                char msum[128];
-                snprintf(msum, sizeof(msum),
-                         "  [OK] 加载了 %u 个模块", proc.moduleCount);
-                KgGuiAppendLog(msum);
-
-                /* 4. 扫描反作弊相关模块 */
-                KgGuiAppendLog("[4/5] 扫描反作弊相关模块...");
-                int aceCount = 0;
-                for (u32 i = 0; i < proc.moduleCount; i++) {
-                    const char* mn = proc.modules[i].name;
-                    if (strstr(mn, "ACE") || strstr(mn, "SGuard") ||
-                        strstr(mn, "TerSafe") || strstr(mn, "vgc") ||
-                        strstr(mn, "AntiCheat")) {
-                        char line[512];
-                        snprintf(line, sizeof(line),
-                                 "  [发现] %s  基址: 0x%08X  大小: %u",
-                                 mn, proc.modules[i].baseAddress,
-                                 proc.modules[i].sizeOfImage);
-                        KgGuiAppendLog(line);
-                        aceCount++;
-                    }
-                }
-                if (aceCount == 0) {
-                    KgGuiAppendLog("  [OK] 未检测到反作弊模块");
-                } else {
-                    char line[128];
-                    snprintf(line, sizeof(line),
-                             "  [OK] 发现 %d 个反作弊相关模块", aceCount);
-                    KgGuiAppendLog(line);
-                }
-
-                /* 5. 扫描特征码 */
-                KgGuiAppendLog("[5/5] 检查特征码更新...");
-                KgModuleInfo* mainMod = KgGetMainModule(&proc);
-                if (mainMod) {
-                    char line[256];
-                    snprintf(line, sizeof(line),
-                             "  主模块: %s @ 0x%08X (%u bytes)",
-                             mainMod->name, mainMod->baseAddress,
-                             mainMod->sizeOfImage);
-                    KgGuiAppendLog(line);
-                }
-                KgGuiAppendLog("  扫描 .text 段特征码...");
-                KG_INFO("特征码扫描完成");
-                KgGuiAppendLog("  [OK] 特征码库已更新");
-            }
-            KgCloseProcess(&proc);
-        } else {
-            KgGuiAppendLog("  [错误] 无法打开进程 (需要管理员权限)");
+            char line[256];
+            snprintf(line, sizeof(line),
+                     "  游戏主模块: %s @ 0x%08X (%u bytes)",
+                     mainMod->name, mainMod->baseAddress,
+                     mainMod->sizeOfImage);
+            KgGuiAppendLog(line);
         }
     }
+
+    /* 5. 提取反作弊特征 (ACE/SGuard/TerSafe 模块信息) */
+    KgGuiAppendLog("[5/6] 提取反作弊特征...");
+    int aceCount = 0;
+    for (u32 i = 0; i < proc.moduleCount; i++) {
+        const char* mn = proc.modules[i].name;
+        if (strstr(mn, "ACE") || strstr(mn, "SGuard") ||
+            strstr(mn, "TerSafe") || strstr(mn, "vgc") ||
+            strstr(mn, "AntiCheat")) {
+            char line[512];
+            snprintf(line, sizeof(line),
+                     "  [反作弊] %s  基址: 0x%08X  大小: %u",
+                     mn, proc.modules[i].baseAddress,
+                     proc.modules[i].sizeOfImage);
+            KgGuiAppendLog(line);
+            aceCount++;
+        }
+    }
+    if (aceCount == 0) {
+        KgGuiAppendLog("  [OK] 未检测到反作弊模块");
+    } else {
+        char line[128];
+        snprintf(line, sizeof(line),
+                 "  [OK] 记录了 %d 个反作弊模块特征", aceCount);
+        KgGuiAppendLog(line);
+    }
+
+    /* 6. 写入数据基址文件 */
+    KgGuiAppendLog("[6/6] 保存数据基址...");
+    char dataPath[KG_MAX_PATH];
+    KgPathResolve("config/sigdata.ini", dataPath, sizeof(dataPath));
+    KgPathEnsureDir(dataPath);
+
+    FILE* fp = fopen(dataPath, "w");
+    if (fp) {
+        /* 游戏特征 */
+        fprintf(fp, "[Game]\n");
+        fprintf(fp, "Process=%s\n", KG_LOL_PROCESS_NAME);
+        if (mainMod) {
+            fprintf(fp, "MainModule=%s\n", mainMod->name);
+            fprintf(fp, "BaseAddress=0x%08X\n", mainMod->baseAddress);
+            fprintf(fp, "ImageSize=%u\n", mainMod->sizeOfImage);
+        }
+        fprintf(fp, "UpdateTime=%lu\n", (unsigned long)time(NULL));
+
+        /* 反作弊特征 */
+        fprintf(fp, "\n[AntiCheat]\n");
+        fprintf(fp, "ModuleCount=%d\n", aceCount);
+        int idx = 0;
+        for (u32 i = 0; i < proc.moduleCount && idx < aceCount; i++) {
+            const char* mn = proc.modules[i].name;
+            if (strstr(mn, "ACE") || strstr(mn, "SGuard") ||
+                strstr(mn, "TerSafe") || strstr(mn, "vgc") ||
+                strstr(mn, "AntiCheat")) {
+                fprintf(fp, "Module%d_Name=%s\n", idx, mn);
+                fprintf(fp, "Module%d_Base=0x%08X\n", idx,
+                        proc.modules[i].baseAddress);
+                fprintf(fp, "Module%d_Size=%u\n", idx,
+                        proc.modules[i].sizeOfImage);
+                idx++;
+            }
+        }
+
+        /* 保护配置 */
+        fprintf(fp, "\n[Protect]\n");
+        const KgProtectConfig* cfg = KgGetConfig();
+        if (cfg) {
+            fprintf(fp, "AntiDebug=%d\n", cfg->antiDebug);
+            fprintf(fp, "WindowSpoof=%d\n", cfg->windowSpoof);
+            fprintf(fp, "CodeIntegrity=%d\n", cfg->codeIntegrity);
+            fprintf(fp, "HandleStealth=%d\n", cfg->handleStealth);
+            fprintf(fp, "NtHook=%d\n", cfg->ntHook);
+            fprintf(fp, "AntiVm=%d\n", cfg->antiVm);
+            fprintf(fp, "ApiThrottle=%d\n", cfg->apiThrottle);
+        }
+
+        fclose(fp);
+        char saveLine[KG_MAX_PATH + 64];
+        snprintf(saveLine, sizeof(saveLine), "  [OK] 数据已保存: %s", dataPath);
+        KgGuiAppendLog(saveLine);
+    } else {
+        KgGuiAppendLog("  [错误] 无法写入数据文件");
+    }
+
+    KgCloseProcess(&proc);
 
     KgGuiAppendLog("");
     KgGuiAppendLog("======== 更新完成 ========");
