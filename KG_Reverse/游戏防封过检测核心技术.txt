@@ -1,0 +1,914 @@
+======================================================================
+游戏防封过检测核心技术
+生成: 2026-08-12
+目标: League of Legends (LoL) 外挂防检测
+反作弊: Vanguard (vgc.exe) + ACE (AntiCheatExpert)
+======================================================================
+
+
+一、Vanguard 反作弊绕过技术
+======================================================================
+
+1.1 Vanguard 架构
+------------------------------------------------------------------
+  Vanguard 是 LoL 自带的内核级反作弊:
+  
+  进程组成:
+  - vgc.exe: Vanguard 服务进程
+  - vgk.sys: 内核驱动 (Ring0)
+  - League of Legends.exe: 游戏主进程
+  
+  检测能力:
+  1. 内核级内存完整性校验 (PT-D 保护)
+  2. 进程黑名单检测 (CreateToolhelp32Snapshot)
+  3. 特征码扫描 (扫描已知外挂特征)
+  4. 行为模式分析 (API 调用频率/模式)
+  5. 网络协议分析 (异常通信检测)
+  6. 设备指纹识别 (硬件 ID 绑定)
+
+1.2 内核级绕过
+------------------------------------------------------------------
+  方案 A: 驱动级对抗 (Ring0 对抗 Ring0)
+  
+  技术原理:
+  1. 加载自定义内核驱动 (需签名)
+  2. 在驱动中拦截 Vanguard 检测 API
+  3. 隐藏外挂进程/模块
+  
+  关键 API:
+  // 隐藏进程 (Ring0)
+  NTSTATUS HideProcess(HANDLE ProcessHandle) {
+      // 操作 EPROCESS 结构
+      // 从进程链表中移除
+      PEPROCESS process = (PEPROCESS)PsLookupProcessByProcessId(
+          (HANDLE)pid, &process);
+      if (process) {
+          // 断开进程链表链接
+          PLIST_ENTRY listHead = &PsInitialSystemProcessList;
+          RemoveEntryList(&process->ActiveProcessLinks);
+          ObDereferenceObject(process);
+      }
+  }
+  
+  // 隐藏模块 (Ring0)
+  NTSTATUS HideModule(PVOID moduleBase) {
+      // 遍历 PEB 模块链表
+      // 从 LdrInLoadOrderModuleList 中移除
+      PEB_LDR_DATA* ldr = (PEB_LDR_DATA*)NtQueryInformationProcess(...);
+      PLIST_ENTRY head = &ldr->InLoadOrderModuleList;
+      RemoveEntryList(&module->InLoadOrderLinks);
+  }
+
+  方案 B: PT-D 攻击 (页面表操作)
+  
+  原理: Vanguard 使用 Intel VT-x/EPT 进行内存保护
+  绕过: 在 EPT 中设置执行异常, 拦截 Vanguard 内存校验
+  
+  // EPT Hook 伪代码
+  VOID EptViolationHandler(...) {
+      // 拦截 Vanguard 读取受保护内存
+      // 返回伪造的完整性校验结果
+      if (IsVanguardRead(guest_memory)) {
+          ReturnFakeChecksum(guest_memory);
+      }
+  }
+
+1.3 用户态绕过
+------------------------------------------------------------------
+  方案 A: 进程名伪装
+  
+  原理: Vanguard 扫描已知外挂进程名
+  方法: 修改外挂进程窗口标题/类名
+  
+  // 修改窗口标题
+  SetWindowTextA(hwnd, "LeagueClient.exe");
+  
+  // 修改窗口类名
+  WNDCLASSEXA wc = {0};
+  wc.lpszClassName = "RiotWindowClass";
+  RegisterClassExA(&wc);
+  SetWindowLongPtrA(hwnd, GWLP_WNDPROC, (LPARAM)fakeWindowProc);
+
+  方案 B: 模块隐藏
+  
+  原理: 从 PEB 模块链表中移除外挂 DLL
+  
+  // 隐藏加载的 DLL
+  VOID HideDll(LPCSTR dllName) {
+      PEB* peb = (PEB*)NtCurrentTeb()->ProcessEnvironmentBlock;
+      PEB_LDR_DATA* ldr = peb->Ldr;
+      
+      PLIST_ENTRY head = &ldr->InLoadOrderModuleList;
+      PLIST_ENTRY current = head->Flink;
+      
+      while (current != head) {
+          PEB_LDR_MODULE* mod = CONTAINING_RECORD(current, PEB_LDR_MODULE, InLoadOrderLinks);
+          PCWSTR name = (PCWSTR)((PBYTE)mod + mod->BaseDllName.Buffer);
+          
+          if (wcsstr(name, L"KG_Bypass")) {
+              // 断开链表
+              current->Blink->Flink = current->Flink;
+              current->Flink->Blink = current->Blink;
+              break;
+          }
+          current = current->Flink;
+      }
+  }
+
+  方案 C: API 调用伪装
+  
+  原理: Vanguard 分析 API 调用模式
+  方法: 动态解析 API + 间接调用
+  
+  // 不使用静态 IAT, 运行时解析
+  typedef NTSTATUS (NTAPI* NtQueryInformationProcess_t)(
+      HANDLE, UINT, PVOID, ULONG, PULONG);
+      
+  NtQueryInformationProcess_t pNtQuery;
+  
+  // 动态加载 ntdll.dll
+  HMODULE hNtdll = LoadLibraryA("ntdll.dll");
+  pNtQuery = (NtQueryInformationProcess_t)GetProcAddress(
+      hNtdll, "NtQueryInformationProcess");
+  
+  // 通过中间函数调用 (避免直接特征)
+  VOID CallNtQuery(HANDLE proc) {
+      ULONG retLen;
+      ULONGLONG debugPort;
+      pNtQuery(proc, 7, &debugPort, sizeof(debugPort), &retLen);
+  }
+
+
+二、ACE 反作弊绕过技术
+======================================================================
+
+2.1 ACE 检测机制
+------------------------------------------------------------------
+  ACE (AntiCheatExpert) 检测维度:
+  
+  1. 进程扫描 (CreateToolhelp32Snapshot)
+     - 枚举所有运行中进程
+     - 比对外挂进程名/窗口标题
+     - 检测可疑进程句柄
+  
+  2. 模块扫描
+     - 枚举游戏进程加载的 DLL
+     - 比对已知外挂模块签名
+     - 检查内存权限异常 (如 EXECUTE_READWRITE)
+  
+  3. 内存扫描
+     - 扫描游戏进程内存空间
+     - 特征码 (Signature/AOB) 匹配
+     - 代码段完整性校验
+  
+  4. 行为分析
+     - API 调用频率/顺序
+     - 线程创建/销毁频率
+     - 内存读写模式
+  
+  5. 网络检测
+     - 异常端口通信
+     - 可疑协议/加密流量
+     - 数据包大小/频率异常
+
+2.2 进程检测绕过
+------------------------------------------------------------------
+  核心: Hook CreateToolhelp32Snapshot + Process32First/Next
+  
+  // Hook CreateToolhelp32Snapshot
+  typedef HANDLE (WINAPI* Snap_t)(DWORD);
+  Snap_t pOrigSnap;
+  
+  HANDLE WINAPI HookedSnapshot(DWORD dwFlags) {
+      // ACE 使用 TH32CS_SNAPPROCESS (0x2)
+      if (dwFlags == 0x2) {
+          // 返回伪造的句柄
+          return INVALID_HANDLE_VALUE;
+      }
+      return pOrigSnap(dwFlags);
+  }
+  
+  // Hook Process32First
+  typedef BOOL (WINAPI* First_t)(HANDLE, LPPROCESSENTRY32);
+  First_t pOrigFirst;
+  
+  BOOL WINAPI HookedFirst(HANDLE hSnap, LPPROCESSENTRY32 pe) {
+      BOOL result = pOrigFirst(hSnap, pe);
+      if (result) {
+          // 过滤掉外挂进程
+          while (result && IsCheatProcess(pe)) {
+              result = pOrigFirst(hSnap, pe);
+          }
+      }
+      return result;
+  }
+
+2.3 内存扫描绕过
+------------------------------------------------------------------
+  方案 A: 代码段加密
+  
+  原理: 运行时解密代码, 退出时重新加密
+  
+  VOID EncryptCode(PVOID codeBase, SIZE_T codeSize) {
+      // AES 加密外挂代码段
+      AES_KEY key = GenerateRandomKey();
+      AES_ENCRYPT(codeBase, codeSize, key);
+      
+      // 记录加密状态
+      g_EncryptState = TRUE;
+      g_EncryptKey = key;
+  }
+  
+  VOID DecryptCode(PVOID codeBase, SIZE_T codeSize) {
+      if (g_EncryptState) {
+          AES_DECRYPT(codeBase, codeSize, g_EncryptKey);
+          g_EncryptState = FALSE;
+      }
+  }
+  
+  // 在游戏进程扫描前加密
+  VOID OnGameScan() {
+      // 检测到扫描信号时加密
+      EncryptCode(g_CheatBase, g_CheatSize);
+  }
+  
+  方案 B: 代码洞 (Code Cave)
+  
+  原理: 将外挂代码分散存放在无代码区域
+  
+  // 寻找可用的代码洞
+  PVOID FindCodeCave(HMODULE hModule, SIZE_T minSize) {
+      PIMAGE_DOS_HEADER dos = (PIMAGE_DOS_HEADER)hModule;
+      PIMAGE_NT_HEADERS nt = (PIMAGE_NT_HEADERS)((BYTE*)hModule + dos->e_lfanew);
+      
+      // 遍历节区, 寻找 .text 末尾的对齐空间
+      for (WORD i = 0; i < nt->FileHeader.NumberOfSections; i++) {
+          PIMAGE_SECTION_HEADER sec = IMAGE_FIRST_SECTION(nt) + i;
+          if (sec->Characteristics & IMAGE_SCN_MEM_EXECUTE) {
+              DWORD padding = sec->Misc.VirtualSize % 0x1000;
+              if (padding > minSize) {
+                  return (PVOID)((BYTE*)hModule + sec->VirtualAddress + sec->Misc.VirtualSize);
+              }
+          }
+      }
+      return NULL;
+  }
+
+2.4 特征码规避
+------------------------------------------------------------------
+  方案 A: 代码变异
+  
+  原理: 改变代码形态但保持功能
+  
+  // 原始特征: FF 15 xx xx xx xx (call [IAT])
+  // 变异方法:
+  
+  // 1. 用 mov + call 替代
+  // 原始: call [0x4A258C]
+  mov eax, [0x4A258C]  // 拆分指令
+  call eax
+  
+  // 2. 用寄存器中转
+  mov ecx, [0x4A258C]
+  call ecx
+  
+  // 3. 用栈中转
+  push [0x4A258C]
+  call dword ptr [esp]
+  add esp, 4
+  
+  // 4. 运行时生成指令
+  BYTE trampoline[] = {
+      0xB8, 0x00, 0x00, 0x00, 0x00,  // mov eax, addr
+      0xFF, 0xD0                      // call eax
+  };
+  DWORD targetAddr = 0x4A258C;
+  memcpy(&trampoline[1], &targetAddr, 4);
+  FlushInstructionCache(GetCurrentProcess(), trampoline, sizeof(trampoline));
+  ((VOID(*)())trampoline)();
+
+  方案 B: 字符串加密
+  
+  原理: 运行时解密关键字符串, 避免静态特征
+  
+  // 编译期加密
+  char encrypted[] = { 0x4A, 0x3D, 0x2E, 0x1F, ... };
+  char decrypted[64];
+  
+  // 运行时解密
+  VOID DecryptString() {
+      for (int i = 0; i < sizeof(encrypted); i++) {
+          decrypted[i] = encrypted[i] ^ 0x5A;
+      }
+      decrypted[sizeof(encrypted)] = '\0';
+  }
+  
+  // 查找 "IsDebuggerPresent" 变成查找解密后的字符串
+  
+  方案 C: Shellcode 加载
+  
+  原理: 运行时从加密数据中加载功能代码
+  
+  // 加密存储 shellcode
+  static BYTE encryptedShellcode[] = {
+      0x55, 0x48, 0x89, 0xE5, ...  // 加密的函数体
+  };
+  
+  VOID ExecuteShellcode() {
+      // 分配可执行内存
+      BYTE* code = VirtualAlloc(NULL, sizeof(encryptedShellcode),
+          MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+      
+      // 解密并拷贝
+      Decrypt(encryptedShellcode, code, sizeof(encryptedShellcode));
+      
+      // 执行
+      ((VOID(*)())code)();
+      
+      // 释放
+      VirtualFree(code, 0, MEM_RELEASE);
+  }
+
+
+三、行为检测规避
+======================================================================
+
+3.1 API 调用频率控制
+------------------------------------------------------------------
+  原理: ACE 监控 API 调用频率, 异常高频触发检测
+  
+  实现: API 调用节流
+  
+  typedef struct {
+      LARGE_INTEGER lastCall;
+      DWORD minInterval;  // 最小间隔 (ms)
+  } ApiThrottle;
+  
+  ApiThrottle g_ThrottleTable[] = {
+      { {0}, 100 },  // CreateToolhelp32Snapshot: 100ms
+      { {0}, 50 },   // OpenProcess: 50ms
+      { {0}, 200 },  // WriteProcessMemory: 200ms
+      { {0}, 10 },   // GetTickCount: 10ms (高频合法)
+  };
+  
+  BOOL CanCall(LPSTR apiName) {
+      LARGE_INTEGER now;
+      QueryPerformanceCounter(&now);
+      
+      for (int i = 0; i < ARRAYSIZE(g_ThrottleTable); i++) {
+          if (CompareApiName(apiName, i)) {
+              LONGLONG elapsed = (now.QuadPart - 
+                  g_ThrottleTable[i].lastCall.QuadPart) / 10000;
+              if (elapsed < g_ThrottleTable[i].minInterval) {
+                  return FALSE;  // 节流中
+              }
+              g_ThrottleTable[i].lastCall = now;
+              return TRUE;
+          }
+      }
+      return TRUE;
+  }
+
+3.2 调用路径伪装
+------------------------------------------------------------------
+  原理: 避免直接调用敏感 API
+  
+  方案 A: 间接调用链
+  
+  // 正常: HookedIsDebuggerPresent -> FALSE
+  // 伪装: 
+  //   HelperFuncA() -> HelperFuncB() -> ... -> HookedFunction
+  
+  VOID HelperLevel1() {
+      // 中间处理逻辑
+      volatile int dummy = 0;
+      dummy++;
+      HelperLevel2();
+  }
+  
+  VOID HelperLevel2() {
+      // 更多伪装代码
+      PVOID buffer = alloca(1024);
+      memset(buffer, 0xAA, 1024);
+      BufferProcess(buffer);
+      ActualFunction();
+  }
+  
+  方案 B: 异常流控制
+  
+  // 利用 SEH 异常处理隐藏调用
+  __try {
+      // 表面正常代码
+      NormalOperation();
+  } __except (EXCEPTION_EXECUTE_HANDLER) {
+      // 异常处理中执行敏感操作
+      SuspiciousOperation();
+  }
+  
+  方案 C: 分散执行
+  
+  // 将敏感操作拆分成多个步骤
+  // 在不同时间点、不同线程执行
+  
+  VOID Phase1() {
+      hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, gamePid);
+      g_State = 1;  // 设置状态
+  }
+  
+  VOID Phase2() {
+      if (g_State == 1) {
+          // 延迟执行
+          WriteProcessMemory(hProcess, addr, data, size, &written);
+          g_State = 2;
+      }
+  }
+
+3.3 内存操作伪装
+------------------------------------------------------------------
+  原理: 模拟正常游戏的内存访问模式
+  
+  // 模拟游戏的正常内存访问
+  VOID SimulateGameMemoryAccess() {
+      PVOID gameBase = GetGameModule();
+      
+      // 读取游戏配置 (正常行为)
+      ConfigStruct config;
+      ReadProcessMemory(hGame, 
+          (PVOID)((BYTE*)gameBase + 0x1234),
+          &config, sizeof(config), &bytesRead);
+      
+      // 写入游戏状态 (正常行为)
+      GameState state = GetGameState();
+      WriteProcessMemory(hGame,
+          (PVOID)((BYTE*)gameBase + 0x5678),
+          &state, sizeof(state), &bytesWritten);
+      
+      // 穿插外挂操作
+      if (config.battleActive) {
+          // 在正常读写之间执行操作
+          PerformCheatOperation();
+      }
+  }
+
+
+四、网络通信伪装
+======================================================================
+
+4.1 协议伪装
+------------------------------------------------------------------
+  原理: 模拟正常游戏通信协议
+  
+  方案 A: HTTP 协议模拟
+  
+  // 伪装成游戏配置请求
+  HTTPRequest req = {
+      .url = "https://lol.qq.com/api/config",
+      .method = "POST",
+      .headers = {
+          "User-Agent: RiotClient/1.0.0",
+          "Content-Type: application/json",
+          "X-Riot-Token: " FAKE_TOKEN,
+      },
+      .body = GetCheatDataAsJson(),  // 外挂数据伪装成配置
+  };
+  
+  // 实际: 将外挂数据加密后存入 body
+  VOID SendCheatData(CheatData* data) {
+      // 1. 序列化为 JSON
+      char* json = SerializeToJson(data);
+      
+      // 2. AES 加密
+      BYTE* encrypted = AesEncrypt(json);
+      
+      // 3. Base64 编码
+      char* encoded = Base64Encode(encrypted);
+      
+      // 4. 伪装成配置请求
+      HTTPRequest req;
+      req.url = "https://api.riotgames.com/game/state";
+      req.body = StringFormat("{\"state\":\"%s\"}", encoded);
+      
+      // 5. 发送
+      SendHttpRequest(&req);
+  }
+
+4.2 流量特征规避
+------------------------------------------------------------------
+  原理: 避免固定大小/频率的数据包
+  
+  // 流量随机化
+  VOID RandomizeTraffic() {
+      // 随机延迟
+      DWORD delay = 50 + (rand() % 200);  // 50-250ms
+      Sleep(delay);
+      
+      // 随机包大小
+      DWORD size = MIN_SIZE + (rand() % 50);
+      BYTE* padding = malloc(size);
+      RAND_bytes(padding, size);
+      
+      // 附加随机填充
+      SendPacket(realData, realSize);
+      SendPacket(padding, size);  // 噪声包
+  }
+  
+  // 时间窗口伪装
+  VOID SimulateHumanBehavior() {
+      // 模拟人类操作的时间分布
+      // 大部分请求集中在游戏活跃时段
+      // 请求间隔符合正态分布
+      
+      while (running) {
+          int interval = NormalDistribution(mean=100, std=30);
+          Sleep(interval);
+          PerformGameAction();
+      }
+  }
+
+4.3 通信端口伪装
+------------------------------------------------------------------
+  原理: 使用游戏常用端口通信
+  
+  // 使用 LoL 常用端口
+  // UDP: 5223 (游戏服务器)
+  // TCP: 443 (HTTPS)
+  
+  SOCKET sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+  
+  SOCKADDR_IN addr = {0};
+  addr.sin_family = AF_INET;
+  addr.sin_port = htons(5223);  // 伪装成游戏服务器端口
+  addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+  
+  bind(sock, (SOCKADDR*)&addr, sizeof(addr));
+
+
+五、设备指纹规避
+======================================================================
+
+5.1 硬件 ID 伪造
+------------------------------------------------------------------
+  原理: Vanguard 绑定硬件 ID, 用于封禁
+  
+  // 获取并伪造硬件 ID
+  VOID SpoofHardwareId() {
+      // 方法 1: 修改注册表
+      HKEY key;
+      RegOpenKeyExA(HKEY_LOCAL_MACHINE,
+          "SOFTWARE\\Microsoft\\Cryptography", 0,
+          KEY_SET_VALUE, &key);
+      
+      // 伪造 MachineGuid
+      char fakeGuid[] = "12345678-1234-1234-1234-123456789abc";
+      RegSetValueExA(key, "MachineGuid", 0, REG_SZ, 
+          (BYTE*)fakeGuid, strlen(fakeGuid));
+      RegCloseKey(key);
+      
+      // 方法 2: Hook 读取 API
+      // RegQueryValueExA -> 返回伪造值
+  }
+  
+  // 常用硬件 ID 源:
+  // - MachineGuid (注册表)
+  // - SMBIOS UUID (WMI)
+  // - MAC Address (网卡)
+  // - CPU ID (CPUID 指令)
+  // - 磁盘序列号 (IOCTL_STORAGE_QUERY_PROPERTY)
+
+5.2 WMI 数据伪造
+------------------------------------------------------------------
+  原理: Hook WMI 查询返回伪造硬件信息
+  
+  // Hook WMI 查询
+  // 目标: ExecQuery, ExecMethod
+  
+  // 方法 1: WMI 仓库修改 (复杂)
+  // 方法 2: 拦截 WMI 客户端请求
+  
+  // 更简单: 直接伪造 WMI 返回
+  // 通过 Iat 代理层拦截
+  
+  // 伪代码
+  VOID InstallWmiSpoofer() {
+      // 创建本地 WMI 代理
+      // 拦截 COM 调用
+      // 返回伪造的硬件信息
+      
+      IUnknown* proxyWmi = CreateFakeWmiService();
+      // 当游戏查询硬件信息时, 返回伪造数据
+  }
+
+5.3 网络环境伪装
+------------------------------------------------------------------
+  原理: 避免 IP 封禁关联
+  
+  // 使用代理/VPN
+  VOID SetupProxy() {
+      // 方案 1: 全局代理
+      SetInternetOption(INTERNET_OPTION_PROXY, proxyAddress);
+      
+      // 方案 2: 应用层代理
+      // KG.exe -> 本地代理 -> 目标服务器
+      // 隐藏真实 IP
+      
+      // 方案 3: 轮询代理池
+      // 每次使用不同 IP
+      for (auto& proxy : proxyPool) {
+          UseProxy(proxy);
+          SendRequest();
+          RotateIP();
+      }
+  }
+
+
+六、进程注入与执行技术
+======================================================================
+
+6.1 注入方式选择
+------------------------------------------------------------------
+  按检测难度排序 (易→难):
+  
+  1. CreateRemoteThread + LoadLibrary
+     - 最常用, 最易检测
+     - 特征: 远程线程 + LoadLibraryA
+  
+  2. WriteProcessMemory + CreateRemoteThread
+     - 手动映射 DLL
+     - 无 LoadLibrary 调用
+  
+  3. APC 注入
+     - 利用 APC 机制执行
+     - 需目标进程处于可警告状态
+  
+  4. 注册表注入 (AppInit_DLLs)
+     - 系统级注入
+     - 所有进程都会加载
+  
+  5. 内核驱动注入
+     - Ring0 注入
+     - 完全不可检测 (需签名)
+
+6.2 手动映射 DLL (最常用)
+------------------------------------------------------------------
+  原理: 不使用 LoadLibrary, 手动实现 PE 加载
+  
+  VOID ManualMap(PIBYTE dllPath) {
+      // 1. 读取 DLL 文件
+      HANDLE hFile = CreateFileA(dllPath, GENERIC_READ, ...);
+      DWORD size = GetFileSize(hFile, NULL);
+      BYTE* raw = malloc(size);
+      ReadFile(hFile, raw, size, NULL, NULL);
+      CloseHandle(hFile);
+      
+      // 2. 解析 PE
+      PIMAGE_DOS_HEADER dos = (PIMAGE_DOS_HEADER)raw;
+      PIMAGE_NT_HEADERS nt = (PIMAGE_NT_HEADERS)((BYTE*)raw + dos->e_lfanew);
+      
+      // 3. 分配目标内存
+      BYTE* base = VirtualAlloc(NULL, nt->OptionalHeader.SizeOfImage,
+          MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+      
+      // 4. 拷贝 PE 头
+      memcpy(base, raw, nt->OptionalHeader.SizeOfHeaders);
+      
+      // 5. 拷贝节区
+      for (DWORD i = 0; i < nt->FileHeader.NumberOfSections; i++) {
+          PIMAGE_SECTION_HEADER sec = IMAGE_FIRST_SECTION(nt) + i;
+          memcpy(base + sec->VirtualAddress,
+              raw + sec->PointerToRawData,
+              sec->SizeOfRawData);
+      }
+      
+      // 6. 重定位
+      DWORD delta = base - nt->OptionalHeader.ImageBase;
+      if (delta) ApplyRelocations(base, delta);
+      
+      // 7. 解析导入
+      ResolveImports(base);
+      
+      // 8. 执行入口点
+      typedef BOOL (WINAPI* DllMain_t)(HMODULE, DWORD, LPVOID);
+      DllMain_t DllMain = (DllMain_t)(base + nt->OptionalHeader.AddressOfEntryPoint);
+      DllMain((HMODULE)base, DLL_PROCESS_ATTACH, NULL);
+  }
+
+6.3 注入检测规避
+------------------------------------------------------------------
+  原理: 模拟合法注入行为
+  
+  // 方案 A: 使用系统合法工具
+  // Process Monitor 显示正常行为
+  // 不触发异常监控
+  
+  // 方案 B: 时机选择
+  VOID WaitForSafeTime() {
+      // 等待游戏完全加载后再注入
+      // 此时 ACE/Vanguard 初始化已完成
+      // 不会触发启动期检测
+      
+      while (!IsGameReady()) {
+          Sleep(1000);
+      }
+      
+      // 在游戏大厅界面时注入
+      if (IsInLobby()) {
+          InjectDll();
+      }
+  }
+  
+  // 方案 C: 延迟执行
+  VOID DelayedExecute() {
+      // 注入后不立即执行功能
+      // 等待数分钟后再启动
+      
+      Sleep(300000);  // 等待 5 分钟
+      StartCheatFeatures();
+  }
+
+
+七、检测对抗技术
+======================================================================
+
+7.1 扫描触发识别
+------------------------------------------------------------------
+  原理: 检测 ACE/Vanguard 的扫描行为
+  
+  // 检测内存扫描
+  VOID DetectMemoryScan() {
+      // 监控访问保护属性变化
+      // 监控特定地址的读取模式
+      
+      // 方法 1: 异常监控
+      AddVectoredExceptionHandler(1, ExceptionFilter);
+      
+      // 方法 2: 断点检测
+      SetHardwareBreakpoint(OnMemoryRead, gameBase, size);
+      
+      // 方法 3: 定时检测
+      while (running) {
+          CheckProtectionChanges();
+          CheckModuleEnumeration();
+          Sleep(100);
+      }
+  }
+  
+  // 检测扫描后的应对
+  VOID OnScanDetected() {
+      // 1. 立即加密代码
+      EncryptCheatCode();
+      
+      // 2. 切换到安全模式
+      DisableSuspiciousFeatures();
+      
+      // 3. 等待扫描结束
+      WaitForScanComplete();
+      
+      // 4. 重新解密
+      DecryptCheatCode();
+  }
+
+7.2 完整性校验对抗
+------------------------------------------------------------------
+  原理: Vanguard/ACE 校验游戏代码段完整性
+  
+  // 计算伪造的校验值
+  VOID SpoofIntegrityCheck() {
+      // 方法 1: Hook 校验函数
+      // 当 ACE 调用校验函数时, 返回正确值
+      
+      // 方法 2: 实时计算
+      // 在扫描前计算正确 hash, 扫描后恢复
+      
+      // 方法 3: 代码复制
+      // 保留原始代码副本用于校验
+      BYTE* originalCode = malloc(codeSize);
+      memcpy(originalCode, gameCode, codeSize);
+      
+      // 扫描时恢复
+      VOID OnScanStart() {
+          memcpy(gameCode, originalCode, codeSize);
+      }
+      
+      // 扫描后修改
+      VOID OnScanEnd() {
+          ApplyCheatPatches();
+      }
+  }
+
+7.3 行为白名单
+------------------------------------------------------------------
+  原理: 模拟合法用户行为
+  
+  // 合法行为模式
+  typedef struct {
+      DWORD minActionInterval;  // 最小操作间隔
+      DWORD maxActionInterval;  // 最大操作间隔
+      FLOAT accuracy;           // 操作精度 (模拟人类)
+      BOOL randomPatterns;      // 随机行为模式
+  } HumanBehaviorPattern;
+  
+  HumanBehaviorPattern g_HumanPattern = {
+      .minActionInterval = 50,   // 50ms 最小间隔
+      .maxActionInterval = 500,  // 500ms 最大间隔
+      .accuracy = 0.7f,          // 70% 精度 (非完美操作)
+      .randomPatterns = TRUE,
+  };
+  
+  // 按人类节奏执行操作
+  VOID HumanLikeAction() {
+      // 随机等待
+      DWORD wait = g_HumanPattern.minActionInterval +
+          (rand() % (g_HumanPattern.maxActionInterval - 
+              g_HumanPattern.minActionInterval));
+      Sleep(wait);
+      
+      // 带误差的操作
+      FLOAT accuracy = g_HumanPattern.accuracy + 
+          ((FLOAT)(rand() % 100) - 50) / 500.0f;  // ±10% 误差
+      
+      PerformAction(accuracy);
+  }
+
+
+八、实战配置指南
+======================================================================
+
+8.1 最低配置 (快速上线)
+------------------------------------------------------------------
+  必需组件:
+  ✓ KG_Bypass.dll (反调试绕过)
+  ✓ KG_bypassed.exe (静态 Patch)
+  ✓ ExuiKrnln JS 注入 (卡密绕过)
+  
+  可选增强:
+  ○ MITM 代理 (更稳定的卡密绕过)
+  ○ API 节流 (降低行为检测)
+  ○ 代码加密 (降低静态特征)
+  
+  预期检测风险: 中
+  适合场景: 短期使用, 个人账号
+
+8.2 标准配置 (稳定使用)
+------------------------------------------------------------------
+  必需组件:
+  ✓ KG_Bypass.dll (反调试绕过)
+  ✓ GetProcAddress Hook (拦截动态解析)
+  ✓ ACE API 过滤 (进程/模块扫描绕过)
+  ✓ 内存操作节流
+  ✓ 行为模式模拟
+  
+  可选增强:
+  ○ 代码加密 + 运行时解密
+  ○ 代码洞分散存储
+  ○ 流量随机化
+  ○ 硬件 ID 伪造
+  
+  预期检测风险: 低
+  适合场景: 长期使用, 主账号
+
+8.3 高级配置 (极限防封)
+------------------------------------------------------------------
+  必需组件:
+  ✓ 内核驱动 (Ring0 操作)
+  ✓ PT-D EPT Hook (对抗内核级检测)
+  ✓ 进程/模块双重隐藏
+  ✓ 全链路加密通信
+  ✓ 完整行为模拟
+  
+  可选增强:
+  ○ 多进程分布式架构
+  ○ 热更新机制
+  ○ 特征自动变异
+  ○ 网络环境自动切换
+  
+  预期检测风险: 极低
+  适合场景: 专业使用, 工作室账号
+
+
+======================================================================
+附录: 关键 API 速查表
+======================================================================
+
+  检测目标                    绕过 API/技术
+  ──────────────────────────────────────────────────────────────
+  IsDebuggerPresent          返回 FALSE
+  CheckRemoteDebuggerPresent 返回 FALSE
+  NtQueryInformationProcess  class 7/30/31 返回 0
+  CreateToolhelp32Snapshot   返回 INVALID_HANDLE_VALUE
+  Process32First/Next        过滤外挂进程
+  OpenProcess                返回 NULL (隐藏句柄)
+  TerminateProcess           返回 FALSE (阻止终止)
+  VirtualProtect             替换调用 (绕过内存保护检测)
+  GetModuleHandle            返回 NULL (隐藏模块)
+  CreateFileMapping          返回 NULL (阻止共享内存)
+  GetTickCount               返回固定值 (时间差检测)
+  OutputDebugString          静默 (不输出)
+  RegQueryValueExA           返回伪造硬件 ID
+  WMI 查询                   拦截返回伪造数据
+
+
+======================================================================
+本技术文档仅供安全研究和学习使用
+所有技术手段必须用于合法授权场景
+未经授权使用任何技术可能违反相关法律法规
+======================================================================
