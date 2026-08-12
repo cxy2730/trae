@@ -62,6 +62,7 @@ mkdir -p "$OUT_DIR"
 # 源文件
 SOURCES=(
     "$SRC_DIR/main.c"
+    "$SRC_DIR/logger.c"
     "$SRC_DIR/memory.c"
     "$SRC_DIR/antidetect.c"
     "$SRC_DIR/process.c"

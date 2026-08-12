@@ -237,8 +237,13 @@ static VOID StartCheatMode(VOID) {
  * ============================================================ */
 
 int main(int argc, char* argv[]) {
+    // 初始化日志系统 (终端 + 文件双输出)
+    KgLogInit();
+    
     // 注册控制台信号处理
     SetConsoleCtrlHandler(ConsoleHandler, TRUE);
+    
+    KG_INFO("KG Assist v1.0 启动");
     
     // 解析命令行参数
     const char* targetName = KG_LOL_PROCESS_NAME;
@@ -312,6 +317,9 @@ int main(int argc, char* argv[]) {
     // 清理
     KgCloseProcess(&g_TargetProcess);
     KG_INFO("程序退出");
+    
+    // 关闭日志系统
+    KgLogClose();
     
     return 0;
 }

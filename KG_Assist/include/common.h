@@ -65,33 +65,51 @@ typedef void*           ptr;
 #endif
 
 /* ============================================================
- * 日志宏 (带中文化)
+ * 日志系统 (双输出: 终端 + 文件)
  * ============================================================ */
 
+// 日志文件名
+#define KG_LOG_FILE     "kg_assist.log"
+
+// 日志文件句柄 (在 logger.c 中定义)
+extern FILE* g_LogFile;
+
+// 日志文件操作
+BOOL KgLogInit(VOID);
+VOID KgLogClose(VOID);
+
+// 核心日志写入函数
+VOID KgLogWrite(const char* level, const char* fmt, ...);
+
+/* 日志宏: 同时输出到终端和日志文件 */
 #if KG_LOG_LEVEL >= KG_LOG_ERROR
 #define KG_ERROR(fmt, ...) \
-    do { printf("[错误] " fmt "\n", ##__VA_ARGS__); } while(0)
+    do { printf("[错误] " fmt "\n", ##__VA_ARGS__); \
+         KgLogWrite("[错误]", fmt, ##__VA_ARGS__); } while(0)
 #else
 #define KG_ERROR(fmt, ...) ((void)0)
 #endif
 
 #if KG_LOG_LEVEL >= KG_LOG_WARN
 #define KG_WARN(fmt, ...) \
-    do { printf("[警告] " fmt "\n", ##__VA_ARGS__); } while(0)
+    do { printf("[警告] " fmt "\n", ##__VA_ARGS__); \
+         KgLogWrite("[警告]", fmt, ##__VA_ARGS__); } while(0)
 #else
 #define KG_WARN(fmt, ...) ((void)0)
 #endif
 
 #if KG_LOG_LEVEL >= KG_LOG_INFO
 #define KG_INFO(fmt, ...) \
-    do { printf("[信息] " fmt "\n", ##__VA_ARGS__); } while(0)
+    do { printf("[信息] " fmt "\n", ##__VA_ARGS__); \
+         KgLogWrite("[信息]", fmt, ##__VA_ARGS__); } while(0)
 #else
 #define KG_INFO(fmt, ...) ((void)0)
 #endif
 
 #if KG_LOG_LEVEL >= KG_LOG_DEBUG
 #define KG_DEBUG(fmt, ...) \
-    do { printf("[调试] " fmt "\n", ##__VA_ARGS__); } while(0)
+    do { printf("[调试] " fmt "\n", ##__VA_ARGS__); \
+         KgLogWrite("[调试]", fmt, ##__VA_ARGS__); } while(0)
 #else
 #define KG_DEBUG(fmt, ...) ((void)0)
 #endif
