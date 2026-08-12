@@ -1,0 +1,110 @@
+KG.exe 反编译分析报告
+============================================================
+
+文件: KG.exe (PE32 x86, 44MB)
+ImageBase: 0x00400000
+入口点: 0x481E65
+
+------------------------------------------------------------
+1. PE 结构
+------------------------------------------------------------
+  .text: 代码段, 435 个函数 (prologue), VA=0x1000, Size=0xA1000
+  .rdata: 只读数据段, 包含 API 名字符串, VA=0xA2000, Size=0x2B05000
+  .data: 数据段, VA=0x2BA7000, Size=0x36000
+  .rsrc: 资源段, VA=0x2C17000, Size=0x9000
+
+------------------------------------------------------------
+2. IAT 分析
+------------------------------------------------------------
+  IAT 条目总数: 432
+  静态 IAT 调用点: 0
+  动态解析: 是 (GetProcAddress 运行时解析)
+
+  关键导入 DLL:
+    - ADVAPI32.dll: 5 个 API
+    - COMCTL32.dll: 1 个 API
+    - GDI32.dll: 82 个 API
+    - KERNEL32.dll: 148 个 API
+    - SHELL32.dll: 6 个 API
+    - USER32.dll: 158 个 API
+    - VERSION.dll: 4 个 API
+    - WINMM.dll: 18 个 API
+    - WINSPOOL.DRV: 3 个 API
+    - comdlg32.dll: 4 个 API
+    - ole32.dll: 3 个 API
+
+------------------------------------------------------------
+3. 反调试技术检测
+------------------------------------------------------------
+  发现的反调试 API (.rdata 中存在):
+    [✓ 存在] IsDebuggerPresent
+    [✗ 未找到] CheckRemoteDebuggerPresent
+    [✓ 存在] NtQueryInformationProcess
+    [✗ 未找到] OutputDebugString
+    [✓ 存在] GetTickCount
+    [✓ 存在] QueryPerformanceCounter
+
+------------------------------------------------------------
+4. 反作弊技术检测
+------------------------------------------------------------
+  KG.exe 集成 ACE (AntiCheatExpert) 组件:
+    - ACE-SSC64.dll (客户端)
+    - ACE-SSC-DRV64.sys (内核驱动)
+    - SProtectSDK64.dll (SDK)
+    - netbios.dll (网络通信)
+
+  关键反作弊 API (.rdata):
+    [✗ 未找到] CreateToolhelp32Snapshot
+    [✗ 未找到] Process32First
+    [✗ 未找到] Process32Next
+    [✗ 未找到] OpenProcess
+    [✗ 未找到] TerminateProcess
+    [✗ 未找到] CreateFileMapping
+    [✗ 未找到] MapViewOfFile
+    [✓ 存在] LoadLibraryA
+    [✓ 存在] GetProcAddress
+    [✓ 存在] VirtualProtect
+    [✓ 存在] VirtualAlloc
+    [✓ 存在] GetModuleHandleA
+    [✗ 未找到] CreateMutex
+    [✗ 未找到] SuspendThread
+
+------------------------------------------------------------
+5. 卡密验证机制
+------------------------------------------------------------
+  KG.exe 使用 ExuiKrnln.dll (CEF 框架) 进行网络通信
+  卡密验证流程:
+    1. ExuiKrnln!mbCreateBrowser() 创建浏览器实例
+    2. 加载前端 UI 页面 (load URL)
+    3. 用户输入卡密
+    4. 通过 ExuiKrnln!mbNetSendWsText() 发送 WebSocket 消息
+    5. 服务器验证卡密并返回 token
+    6. ExuiKrnln!mbSetCookie() 存储 token
+
+------------------------------------------------------------
+6. 绕过策略
+------------------------------------------------------------
+
+  策略 A: IAT Hook (运行时绕过)
+  方法: 注入 DLL, 启动时 Hook 关键 API
+  代码示例 (KG_Bypass.c 已生成):
+    - IsDebuggerPresent -> 返回 FALSE
+    - CheckRemoteDebuggerPresent -> 返回 FALSE
+    - NtQueryInformationProcess -> ProcessDebugPort=0
+    - GetTickCount/QueryPerformanceCounter -> 返回固定值
+
+  策略 B: GetProcAddress Hook (拦截动态解析)
+  方法: Hook GetProcAddress, 检查被解析的 API 名称
+  当请求反调试/反作弊 API 时,返回自定义 stub 函数
+
+  策略 C: ExuiKrnln MITM (卡密绕过)
+  方法:
+    1. ExuiKrnln!mbSetProxy("127.0.0.1:8888") 设置代理
+    2. 启动本地代理服务器
+    3. 拦截 register/valid/authenticate API
+    4. 修改响应为 {"success": true, "token": "fake_token"}
+
+  策略 D: 静态 Patch
+  文件: KG_bypassed.exe
+  修改: 2171 处反调试条件跳转 (NOP)
+  SHA256: 84b9b1a58595e22c5e8c8b8b9568c30748ea373689a2b50b6f2cc6f515482d0c

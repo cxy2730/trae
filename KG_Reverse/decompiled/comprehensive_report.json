@@ -1,0 +1,85 @@
+{
+  "file": "KG.exe",
+  "architecture": "PE32 x86",
+  "image_base": "0x00400000",
+  "sections": [
+    {
+      "name": ".text",
+      "va": "0x1000",
+      "size": "0xA1000",
+      "functions": 435,
+      "prologues": 435
+    },
+    {
+      "name": ".rdata",
+      "va": "0xA2000",
+      "size": "0x2B05000"
+    },
+    {
+      "name": ".data",
+      "va": "0x2BA7000",
+      "size": "0x36000"
+    },
+    {
+      "name": ".rsrc",
+      "va": "0x2C17000",
+      "size": "0x9000"
+    }
+  ],
+  "iat_analysis": {
+    "total_iat_entries": 432,
+    "static_iat_calls_found": 0,
+    "dynamic_resolution": true,
+    "key_apis_found": [
+      "GetProcAddress",
+      "LoadLibraryA",
+      "GetModuleHandleA",
+      "VirtualProtect",
+      "VirtualAlloc"
+    ],
+    "anti_debug_apis_in_rdata": [
+      "IsDebuggerPresent",
+      "NtQueryInformationProcess"
+    ],
+    "string_references_found": 0
+  },
+  "decompiled_functions": {
+    "entry_point": {
+      "address": "0x481E65",
+      "analysis": "CRT startup + initialization chain",
+      "key_calls": [
+        "0x4A21B0: initial IAT call",
+        "0x487396: init check",
+        "0x481F92: error handling",
+        "0x490D7C: main function dispatch"
+      ]
+    }
+  },
+  "bypass_strategy": {
+    "method_1_static_iat_hook": {
+      "description": "\u8fd0\u884c\u65f6 IAT Hook - \u66ff\u6362\u5173\u952e API \u7684 IAT \u5165\u53e3\u4e3a\u81ea\u5b9a\u4e49 stub",
+      "targets": [],
+      "stub_code": "\n// Hook \u6846\u67b6\u793a\u4f8b\ntypedef BOOL (WINAPI *IsDebuggerPresent_t)(VOID);\nIsDebuggerPresent_t orig_IsDebuggerPresent;\n\nBOOL WINAPI HookedIsDebuggerPresent(VOID) {\n    return FALSE;  // \u6c38\u8fdc\u8fd4\u56de\"\u672a\u88ab\u8c03\u8bd5\"\n}\n\nvoid InstallHook() {\n    HMODULE h = GetModuleHandle(NULL);\n    // \u904d\u5386 PE \u7684 IAT,\u66ff\u6362\u76ee\u6807\u51fd\u6570\u6307\u9488\n    PIMAGE_DOS_HEADER dos = (PIMAGE_DOS_HEADER)h;\n    PIMAGE_NT_HEADERS nt = (PIMAGE_NT_HEADERS)((BYTE*)h + dos->e_lfanew);\n    PIMAGE_IMPORT_DESCRIPTOR imports = (PIMAGE_IMPORT_DESCRIPTOR)((BYTE*)h + \n        nt->OptionalHeader.ImageBase + nt->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].VirtualAddress);\n    // \u904d\u5386 IAT \u5e76 Hook...\n}"
+    },
+    "method_2_dynamic_resolution_hook": {
+      "description": "Hook GetProcAddress \u62e6\u622a\u52a8\u6001 API \u89e3\u6790",
+      "detail": "KG.exe \u4f7f\u7528 GetProcAddress \u52a8\u6001\u89e3\u6790\u5173\u952e API (\u53cd\u8c03\u8bd5\u3001\u53cd\u4f5c\u5f0a\u3001\u7f51\u7edc)",
+      "approach": "\u5728 GetProcAddress \u4e2d\u68c0\u67e5\u88ab\u8bf7\u6c42\u7684 API \u540d\u79f0,\u8fd4\u56de\u81ea\u5b9a\u4e49 stub"
+    },
+    "method_3_exuikrnln_mitm": {
+      "description": "ExuiKrnln.dll \u4ee3\u7406\u52ab\u6301 (\u5361\u5bc6\u9a8c\u8bc1\u7ed5\u8fc7)",
+      "apis": [
+        "mbSetProxy",
+        "mbNetHookRequest",
+        "mbNetSendWsText"
+      ],
+      "detail": "\u8bbe\u7f6e\u672c\u5730\u4ee3\u7406\u670d\u52a1\u5668,\u4fee\u6539\u9a8c\u8bc1 API \u8fd4\u56de\u503c\u4e3a\"\u5df2\u6388\u6743\""
+    },
+    "method_4_static_patch": {
+      "file": "KG_bypassed.exe",
+      "description": "\u9759\u6001 Patch - NOP \u53cd\u8c03\u8bd5\u6761\u4ef6\u8df3\u8f6c",
+      "patches_applied": 2171,
+      "sha256": "84b9b1a58595e22c5e8c8b8b9568c30748ea373689a2b50b6f2cc6f515482d0c"
+    }
+  }
+}

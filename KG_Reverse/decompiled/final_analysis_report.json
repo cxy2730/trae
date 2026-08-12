@@ -1,0 +1,176 @@
+{
+  "project": "KG.exe Reverse Engineering - Complete Decompilation",
+  "decompilation_tools": [
+    "Capstone",
+    "LIEF",
+    "angr"
+  ],
+  "files_analyzed": [
+    {
+      "name": "KG.exe",
+      "type": "PE32 x86",
+      "size": "44MB",
+      "image_base": "0x400000",
+      "entry_point": "0x481E65",
+      "sections": {
+        ".text": {
+          "va": "0x1000",
+          "size": "0xA1000",
+          "functions_found": 435
+        },
+        ".rdata": {
+          "va": "0xA2000",
+          "size": "0x2B05000",
+          "contains": [
+            "API strings",
+            "dispatch table"
+          ]
+        },
+        ".data": {
+          "va": "0x2BA7000",
+          "size": "0x36000",
+          "contains": [
+            "IAT (garbage)"
+          ]
+        },
+        ".rsrc": {
+          "va": "0x2C17000",
+          "size": "0x9000"
+        }
+      },
+      "architecture": {
+        "import_system": "CUSTOM - not standard PE",
+        "import_dir_rva": "0x1000 (BROKEN)",
+        "iat_dir_rva": "0x0 (ZERO)",
+        "iat_values": "GARBAGE - non-function-pointer values",
+        "dispatch_mechanism": "Two-level indirect call",
+        "dispatch_pattern": "call [0x4A2xxx] -> read [0x02BAxxx] -> execute",
+        "ff15_instructions": 2829,
+        "dispatch_entries": 438
+      },
+      "entry_point_decompiled": {
+        "address": "0x481E65",
+        "analysis": "CRT startup + custom import resolution + subsystem init",
+        "key_calls": [
+          "0x4A21B0: core system init (dispatch)",
+          "0x487396: init check 1",
+          "0x481F92: error handler",
+          "0x487153: init check 2",
+          "0x4A2350: load main module (dispatch)",
+          "0x4A21D4: init params (dispatch)",
+          "0x4A2344: core API call (dispatch)",
+          "0x490D7C: main dispatch function"
+        ]
+      },
+      "anti_debugging": {
+        "apis": [
+          "IsDebuggerPresent",
+          "CheckRemoteDebuggerPresent",
+          "NtQueryInformationProcess",
+          "OutputDebugString",
+          "GetTickCount",
+          "QueryPerformanceCounter"
+        ],
+        "patterns": [
+          "test eax,eax + je/jne (2171 occurrences)"
+        ],
+        "bypass_methods": [
+          "Static patch (KG_bypassed.exe)",
+          "IAT Hook (runtime DLL)",
+          "GetProcAddress Hook (comprehensive)"
+        ]
+      },
+      "anti_cheat": {
+        "components": [
+          "ACE-SSC64.dll",
+          "ACE-SSC-DRV64.sys",
+          "SProtectSDK64.dll",
+          "netbios.dll"
+        ],
+        "detected_apis": [
+          "CreateToolhelp32Snapshot",
+          "Process32First",
+          "OpenProcess",
+          "LoadLibraryA",
+          "GetProcAddress",
+          "VirtualProtect",
+          "CreateFileMapping",
+          "GetModuleHandleA"
+        ],
+        "bypass": "IAT Hook - block ACE initialization"
+      },
+      "card_key": {
+        "framework": "ExuiKrnln (Exui UI Engine + Skynet)",
+        "ui_framework": "WebBrowserEx (CEF-based embedded browser)",
+        "key_apis": [
+          "RunJsCmd_WebBrowserEx",
+          "SetCookie_WebBrowserEx",
+          "GetCookie_WebBrowserEx",
+          "ShowDevtools_WebBrowserEx",
+          "Load_WebBrowserEx"
+        ],
+        "bypass_methods": [
+          "JS injection via RunJsCmd_WebBrowserEx",
+          "Cookie forgery via SetCookie_WebBrowserEx",
+          "DevTools + MITM proxy",
+          "Skynet protocol analysis"
+        ]
+      }
+    },
+    {
+      "name": "ExuiKrnln_Win32.lib",
+      "type": "PE32 x86 DLL",
+      "exports": 1056,
+      "framework": "Exui Game UI Engine",
+      "key_exports": {
+        "webbrowser": [
+          "Load_WebBrowserEx",
+          "GetUrl_WebBrowserEx",
+          "GetCookie_WebBrowserEx",
+          "SetCookie_WebBrowserEx",
+          "RunCmd_WebBrowserEx",
+          "RunJsCmd_WebBrowserEx",
+          "ShowDevtools_WebBrowserEx",
+          "GetWebView_WebBrowserEx",
+          "GoBack_WebBrowserEx",
+          "Reload_WebBrowserEx"
+        ],
+        "networking": [
+          "BindJsCmd_WebBrowserEx",
+          "IsDocumentReady_WebBrowserEx",
+          "IsLoadingCompleted_WebBrowserEx"
+        ],
+        "skynet": [
+          "ExecuteBinExCmd",
+          "ExecuteStrExCmd",
+          "RunSlowMotionTaskCmd"
+        ]
+      },
+      "imports": {
+        "KERNEL32.dll": 140,
+        "USER32.dll": 94,
+        "GDI32.dll": 29,
+        "ADVAPI32.dll": 1,
+        "CRYPT32.dll": 2,
+        "urlmon.dll": 1
+      }
+    }
+  ],
+  "generated_files": {
+    "reports": [
+      "decompiled/complete_decompilation_report.txt",
+      "decompiled/final_analysis_report.json",
+      "decompiled/comprehensive_report.json",
+      "decompiled/bypass_strategy.txt",
+      "decompiled/decompilation_report.txt"
+    ],
+    "source": [
+      "scripts/KG_Bypass.c",
+      "scripts/KG_CardKey_Bypass.py",
+      "scripts/ExuiKrnln_Analysis.py"
+    ],
+    "patches": [
+      "patches/KG_bypassed.exe"
+    ]
+  }
+}

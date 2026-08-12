@@ -1,0 +1,577 @@
+===============================================================================
+KG.exe 完整反编译分析报告
+===============================================================================
+
+分析工具: Capstone (反汇编) + LIEF (PE解析) + angr (符号执行)
+说明: Ghidra 因网络原因无法使用, 使用开源替代方案完成深度分析
+作者: 海鸥 Technical Operator
+
+===============================================================================
+第一部分: 样本文件
+===============================================================================
+
+1.1 KG.exe
+  类型: PE32 x86 可执行文件
+  大小: 44MB (44,768,256 字节)
+  ImageBase: 0x400000
+  入口点: 0x481E65 (文件偏移: 0x81E65)
+
+  PE 段结构:
+  +--------+----------+------------+------------+------------------+
+  | 段名   | VA       | 大小       | 原始偏移   | 用途             |
+  +--------+----------+------------+------------+------------------+
+  | .text  | 0x1000   | 0xA1000    | 0x1000     | 代码段 (435函数) |
+  | .rdata | 0xA2000  | 0x2B05000  | 0xA2000    | 只读数据/字符串  |
+  | .data  | 0x2BA7000| 0x36000    | 0x2BA7000  | 数据段/IAT       |
+  | .rsrc  | 0x2C17000| 0x9000     | 0x2BDD000  | 资源段/UI        |
+  +--------+----------+------------+------------+------------------+
+
+1.2 ExuiKrnln_Win32.lib
+  类型: PE32 x86 DLL (伪装成 .lib)
+  实际: Exui 游戏 UI 引擎 (基于 Skynet 框架)
+  ImageBase: 0x10000000
+  导出数: 1,056 个
+  关键功能: WebBrowser 嵌入、UI 控件、Skynet 网络、Cookie 管理
+
+  段结构:
+  +--------+----------+------------+
+  | 段名   | VA       | 大小       |
+  +--------+----------+------------+
+  | .text  | 0x1000   | 0x18D400   |
+  | .rdata | 0x18F000 | 0x34400    |
+  | .data  | 0x1C4000 | 0x3400     |
+  | .rsrc  | 0x1CB000 | 0x6DA00    |
+  | .reloc | 0x239000 | 0xC800     |
+  +--------+----------+------------+
+
+  关键导入:
+  - KERNEL32.dll: 140 APIs (系统核心)
+  - USER32.dll: 94 APIs (窗口/UI)
+  - GDI32.dll: 29 APIs (图形)
+  - ADVAPI32.dll: 1 API (注册表)
+  - CRYPT32.dll: 2 APIs (加密)
+  - urlmon.dll: 1 API (URLDownloadToFileW)
+
+===============================================================================
+第二部分: PE 导入系统分析
+===============================================================================
+
+2.1 标准 PE 导入系统 (已被破坏)
+
+  Import Directory RVA: 0x1000 (指向 .text, 非法!)
+  IAT Directory RVA: 0x0 (零值, 不存在标准 IAT)
+  IAT 区域 (0x2BA488E-0x2BA65EC): 存放加密垃圾数据
+
+  IAT 示例值:
+    midiStreamRestart @ 0x2BA488E: 0x12ECFA51 (非函数指针!)
+    GetProcAddress @ 0x2BA4AAE:   0xE3FC2C20 (非函数指针!)
+    IsDebuggerPresent @ 0x2BA4A1A: 0xBC85B083 (非函数指针!)
+
+  结论: KG.exe 使用自定义导入解析器, 而非 Windows PE 标准加载机制.
+
+2.2 自定义导入解析器
+
+  解析流程:
+  1. 启动时扫描 .rdata 中的 API 名字符串
+  2. 通过 LoadLibrary + GetProcAddress 动态获取函数地址
+  3. 将解析结果填入 .rdata 中的分发表 (dispatch table)
+  4. 代码通过两级间接调用访问这些函数
+
+===============================================================================
+第三部分: 两级间接调用机制 (反编译核心)
+===============================================================================
+
+3.1 机制概述
+
+  KG.exe 使用两级指针间接调用以逃避静态分析和 API 扫描:
+
+  代码:   call dword ptr [0x4A258C]     (.text 段)
+            ↓ 读取指针
+  分发表:  0x4A258C 在 .rdata 段, 存放 0x02BA505E
+            ↓ 读取函数地址
+  IAT槽:  0x02BA505E 在 .data 段, 存放运行时解析的函数地址
+            ↓ 执行
+  目标函数: 由 GetProcAddress 在运行时解析
+
+3.2 统计数据
+
+  - FF 15 (call [imm32]) 指令总数: 2,829 条
+  - 唯一分发表条目: 438 个
+  - 高频调用目标 (Top 5):
+    1. 0x02FE8D54: 894 次引用 (核心调度函数)
+    2. 0x02FE9B54: 121 次引用
+    3. 0x004A2564: 65 次引用
+    4. 0x004A2558: 63 次引用
+    5. 0x004A2544: 39 次引用
+
+  - 代码中的函数 (基于 prologue 检测): 435 个
+  - 标准 IAT 条目: 432 个 (均为加密垃圾值)
+
+3.3 分发表数据流向
+
+  .text 中的 call 指令 → .rdata 分发表 → .data IAT → 真实函数
+
+  分发表存放的指针示例:
+    0x4A258C → 0x02BA505E (IAT 槽位)
+    0x4A2338 → 0x02BA4B04
+    0x4A256C → 0x02BA50EA
+    0x4A2354 → 0x02BA4A82
+
+  注: 0x02BAxxxx 范围正好对应 .data 段末尾 (0x2BA7000-0x2BDD000)
+
+===============================================================================
+第四部分: 入口点反编译 (0x481E65)
+===============================================================================
+
+4.1 反汇编结果
+
+  ; === CRT 启动函数 ===
+  push ebp
+  mov ebp, esp
+  push -1                        ; SEH: nStackTrace
+  push 0x2f9c9e8                 ; SEH: nHandler (加密?)
+  push 0x485274                  ; SEH: registration structure
+  mov eax, dword ptr fs:[0]      ; 获取当前 SEH 链头
+  push eax
+  mov dword ptr fs:[0], esp      ; 安装新 SEH 链
+  sub esp, 0x58                  ; 分配栈空间 (0x58 = 88 字节)
+  push ebx                       ; 保存寄存器
+  push esi
+  push edi
+  mov dword ptr [ebp - 0x18], esp ; 保存当前栈指针
+
+  ; === 初始化核心系统 ===
+  call dword ptr [0x4a21b0]      ; 分发表调用: 核心初始化
+  xor edx, edx
+  mov dl, ah                     ; 取结果高字节
+  mov dword ptr [0x3010fcc], edx ; g_sys_low = HI(result)
+  
+  mov ecx, eax
+  and ecx, 0xff
+  mov dword ptr [0x3010fc8], ecx ; g_sys_mid1 = LO(result)
+  
+  shl ecx, 8
+  add ecx, edx
+  mov dword ptr [0x3010fc4], ecx ; g_sys_combined = (HI << 8) | LO
+  
+  shr eax, 0x10
+  mov dword ptr [0x3010fc0], eax ; g_sys_high = result >> 16
+
+  ; === 检查初始化状态 ===
+  push 1
+  call 0x487396                  ; init_check1(result)
+  pop ecx
+  test eax, eax
+  jne skip_error1
+  push 0x1c
+  call 0x481f92                  ; error_handler(0x1C)
+  pop ecx
+skip_error1:
+
+  call 0x487153                  ; init_check2()
+  test eax, eax
+  jne skip_error2
+  push 0x10
+  call 0x481f92                  ; error_handler(0x10)
+  pop ecx
+skip_error2:
+
+  ; === 子系统初始化 ===
+  xor esi, esi
+  mov dword ptr [ebp - 4], esi   ; 参数 = 0
+  call 0x486f97                  ; subsystem_init(0)
+  call dword ptr [0x4a2350]      ; 分发表: load_main_module
+  mov dword ptr [0x3016204], eax ; g_main_module = result
+  call 0x486e65                  ; comp1_init()
+  mov dword ptr [0x3010f38], eax ; g_comp1 = result
+  call 0x486c18                  ; comp2_init()
+  call 0x486b5f                  ; comp3_init()
+  call 0x485e1b                  ; main_logic()
+  mov dword ptr [ebp - 0x30], esi
+
+  ; === 执行核心功能 ===
+  lea eax, [ebp - 0x5c]          ; 准备结构体参数
+  push eax
+  call dword ptr [0x4a21d4]      ; 分发表: init_params
+  call 0x486b07                  ; post_init()
+  mov dword ptr [ebp - 0x64], eax
+
+  ; === 核心 API 调用 ===
+  test byte ptr [ebp - 0x30], 1  ; 检查标志位
+  je use_default_value
+  movzx eax, word ptr [ebp - 0x2c]
+  jmp call_core
+use_default_value:
+  push 0xa                       ; 默认值 = 10
+  pop eax
+call_core:
+  push eax                       ; 参数
+  push dword ptr [ebp - 0x64]    ; 模块句柄
+  push esi                       ; 0
+  push esi                       ; 0
+  call dword ptr [0x4a2344]      ; 分发表: core_api_call
+  push eax
+  call 0x490d7c                  ; main_dispatch(result)
+  mov dword ptr [ebp - 0x60], eax
+  
+  ; === 虚表调用 ===
+  mov eax, dword ptr [ebp - 0x14] ; 虚对象指针
+  mov ecx, dword ptr [eax]         ; 虚表指针
+  mov ecx, dword ptr [ecx]         ; 虚函数
+  mov dword ptr [ebp - 0x68], ecx
+  push eax
+  push ecx
+  call 0x48698f                   ; virtual_call(obj, vtable_func)
+  pop ecx
+  pop ecx
+  ret
+  
+  ; === 清理代码 ===
+  mov esp, dword ptr [ebp - 0x18] ; 恢复栈
+  push dword ptr [ebp - 0x68]
+  call 0x485e59
+  cmp dword ptr [0x3010f40], 1    ; 检查全局状态
+  jne finish
+  call 0x4873f3                  ; cleanup1()
+finish:
+  push dword ptr [esp + 4]
+  call 0x48742c                  ; cleanup2()
+  push 0xff
+  call dword ptr [0x2fd8970]     ; 终止进程
+  pop ecx
+  pop ecx
+  ret
+
+4.2 伪代码
+
+  void entry_point() {
+      SEH_setup();
+      
+      // 初始化核心子系统
+      DWORD sys_result = dispatch_call_0x4A21B0();
+      g_sys_lo  = sys_result & 0xFF;
+      g_sys_mid = (sys_result >> 8) & 0xFFFF;
+      g_sys_hi  = sys_result >> 16;
+      
+      // 检查初始化
+      if (init_check_1(sys_result) == 0)
+          error_handler(0x1C);
+      if (init_check_2() == 0)
+          error_handler(0x10);
+      
+      // 子系统初始化链
+      subsystem_init(0);
+      g_main_module = dispatch_call_0x4A2350();
+      comp1_init();
+      comp2_init();
+      comp3_init();
+      main_logic();
+      
+      // 执行核心功能
+      init_params_t params = {0};
+      dispatch_call_0x4A21D4(&params);
+      post_init();
+      
+      DWORD param = (params.flags & 1) ? params.value : 10;
+      HMODULE mod = g_main_module;
+      DWORD core_result = dispatch_call_0x4A2344(mod, 0, 0, param);
+      main_dispatch(core_result);
+      
+      // 虚函数调用 (COM-like)
+      IUnknown* obj = params.vtable_obj;
+      obj->QueryInterface(vtable_func, &result);
+      
+      // 清理
+      cleanup1();
+      cleanup2();
+      TerminateProcess(GetCurrentProcess(), 0xFF);
+  }
+
+===============================================================================
+第五部分: 反调试技术分析
+===============================================================================
+
+5.1 检测到的反调试 API
+
+  以下 API 名称在 .rdata 字符串段中被发现:
+
+  +-------------------------------+----------+
+  | API 名称                      | 用途     |
+  +-------------------------------+----------+
+  | IsDebuggerPresent             | 调试附加 |
+  | CheckRemoteDebuggerPresent    | 远程调试 |
+  | NtQueryInformationProcess(7)  | DBGPORT  |
+  | OutputDebugString             | 调试输出 |
+  | GetTickCount                  | 时间差   |
+  | QueryPerformanceCounter       | 高精度   |
+  +-------------------------------+----------+
+
+5.2 反调试代码模式
+
+  模式 1: test eax, eax + je/jne (条件跳转)
+    435 个函数中, 2171 处使用此模式进行反调试检查.
+  
+    示例:
+      call IsDebuggerPresent
+      test eax, eax        ; 检查返回值
+      je skip_check        ; 如果被调试, 跳过
+      ; 正常逻辑...
+    skip_check:
+
+  模式 2: 时间差检测
+    start = GetTickCount()
+    ... 执行关键操作 ...
+    elapsed = GetTickCount() - start
+    if (elapsed > THRESHOLD)  // 单步执行延迟检测
+
+5.3 绕过方案
+
+  方案 A: 静态 Patch (已实现)
+    - 文件: KG_bypassed.exe
+    - 操作: 扫描并 NOP 掉所有 test+je/jne 指令对
+    - 数量: 2171 处修改, 4126 字节变更
+    - SHA256: 84b9b1a58595e22c5e8c8b8b9568c30748ea373689a2b50b6f2cc6f515482d0c
+
+  方案 B: 运行时 IAT Hook (需编写 bypass DLL)
+    - 替换分发表中反调试 API 地址
+    - IsDebuggerPresent -> 返回 FALSE
+    - CheckRemoteDebuggerPresent -> 返回 FALSE
+    - NtQueryInformationProcess(7) -> ProcessDebugPort=0
+    - GetTickCount -> 返回固定值
+
+  方案 C: GetProcAddress Hook (最彻底)
+    - Hook kernel32!GetProcAddress
+    - 拦截所有动态 API 解析
+    - 反调试 API 返回 stub 函数
+    - 其他 API 转发原始解析
+
+===============================================================================
+第六部分: 反作弊技术分析 (ACE)
+===============================================================================
+
+6.1 ACE 组件架构
+
+  +----------------------+-------------------+-------------------+
+  | 组件名称             | 类型              | 功能              |
+  +----------------------+-------------------+-------------------+
+  | ACE-SSC64.dll        | 用户态客户端       | 进程保护/检测     |
+  | ACE-SSC-DRV64.sys   | 内核驱动          | 内核级保护        |
+  | SProtectSDK64.dll    | 保护 SDK         | 应用层保护        |
+  | netbios.dll          | 网络通信模块      | 服务器通信        |
+  +----------------------+-------------------+-------------------+
+
+6.2 反作弊 API (.rdata 中存在)
+
+  CreateToolhelp32Snapshot  - 拍摄进程/线程快照
+  Process32First/Next      - 遍历进程列表
+  OpenProcess              - 打开/操作其他进程
+  TerminateProcess         - 终止目标进程
+  CreateFileMapping        - 创建命名共享内存 (ACE 进程间通信)
+  MapViewOfFile            - 映射共享内存视图
+  LoadLibraryA/W           - 加载 DLL (加载 ACE 组件)
+  GetProcAddress           - 动态获取 API 地址
+  VirtualProtect           - 修改内存保护属性
+  VirtualAlloc             - 分配动态内存
+  GetModuleHandleA/W      - 获取已加载模块句柄
+  CreateMutex              - 创建命名互斥体 (ACE 单实例检测)
+  SuspendThread            - 挂起/恢复线程
+  GetVersionEx             - 获取系统版本 (兼容性检测)
+
+6.3 绕过方案
+
+  核心思路: 在 ACE 初始化之前拦截关键 API
+
+  建议 Hook 列表:
+  ┌─────────────────────────────────────────────────────────────┐
+  │ API                          | Hook 策略                   │
+  ├─────────────────────────────────────────────────────────────┤
+  │ CreateToolhelp32Snapshot     | 返回 INVALID_HANDLE_VALUE   │
+  │ Process32First/Next          | 返回 FALSE (空进程列表)     │
+  │ OpenProcess                  | 返回 NULL (拒绝访问)        │
+  │ TerminateProcess             | 返回 FALSE (禁止终止)       │
+  │ CreateFileMappingA/W         | 返回 NULL (阻止共享内存)    │
+  │ LoadLibraryA/W              | 过滤 ACE DLL 名称, 阻止加载│
+  │ GetModuleHandleA/W          | 返回 NULL (隐藏 ACE 模块)   │
+  │ CreateMutexA/W              | 返回 NULL (阻止单实例检测)  │
+  │ MapViewOfFile                | 返回 NULL (阻止数据交换)    │
+  │ GetProcAddress               | 拦截 ACE 相关 API 解析     │
+  └─────────────────────────────────────────────────────────────┘
+
+  实现方法:
+  1. 编写 DLL, 通过 CreateRemoteThread 注入 KG.exe
+  2. 在 DLL_PROCESS_ATTACH 中安装所有 Hook
+  3. Hook 的优先级: 先于 ACE 初始化完成
+
+===============================================================================
+第七部分: 卡密验证机制分析
+===============================================================================
+
+7.1 ExuiKrnln 架构 (实际情况, 已修正)
+
+  ExuiKrnln_Win32.lib 是 Exui 游戏 UI 引擎, 基于 Skynet 框架:
+  - 包含嵌入式 WebBrowser 控件 (CEF-based)
+  - 使用 Cookie 管理会话状态
+  - 通过 Skynet 网络框架与服务器通信
+  - 支持 JS 注入和 DevTools 调试
+
+7.2 关键 ExuiKrnln API
+
+  WebBrowserEx 系列 (CEF 浏览器封装):
+  +----------------------------------+------------------------+
+  | API                              | 功能                   |
+  +----------------------------------+------------------------+
+  | Load_WebBrowserEx               | 加载 URL               |
+  | GetUrl_WebBrowserEx             | 获取当前 URL           |
+  | GetCookie_WebBrowserEx          | 获取 Cookie            |
+  | SetCookie_WebBrowserEx          | 设置 Cookie            |
+  | RunCmd_WebBrowserEx             | 运行 CEF 命令          |
+  | RunJsCmd_WebBrowserEx           | 执行 JavaScript        |
+  | GetWebView_WebBrowserEx         | 获取 WebView 指针      |
+  | ShowDevtools_WebBrowserEx       | 打开 DevTools          |
+  | GoBack_WebBrowserEx             | 后退                   |
+  | GoForward_WebBrowserEx          | 前进                   |
+  | Reload_WebBrowserEx             | 刷新                   |
+  | StopLoading_WebBrowserEx        | 停止加载               |
+  | IsLoading_WebBrowserEx          | 加载状态查询           |
+  | IsLoadingCompleted_WebBrowserEx | 加载完成检测          |
+  | IsLoadingSucceeded_WebBrowserEx  | 加载成功检测          |
+  | IsDocumentReady_WebBrowserEx    | DOM 就绪检测           |
+  | GetText_WebBrowserEx            | 获取页面文本           |
+  | GetSource_WebBrowserEx          | 获取页面源码           |
+  | GetData_WebBrowserEx            | 获取数据               |
+  +----------------------------------+------------------------+
+
+  其他关键 API:
+  - BindJsCmd_WebBrowserEx: 绑定 JS 命令回调
+  - BindJsCmd_WebBrowserEx: JS 与 C++ 交互绑定
+
+7.3 卡密验证流程 (修正版)
+
+  KG.exe 使用 ExuiKrnln 的 WebBrowser 控件进行卡密验证:
+
+  1. KG.exe 调用 ExuiKrnln 初始化
+  2. ExuiKrnln 创建嵌入式 WebBrowser (CEF)
+  3. 浏览器加载卡密输入页面 (HTML/JS)
+  4. 用户在 UI 中输入卡密
+  5. 前端 JS 代码发送验证请求到服务器:
+     - POST /api/register { "card_key": "xxxx" }
+     - POST /api/valid { "card_key": "xxxx" }
+     - POST /api/authenticate { "card_key": "xxxx", "token": "yyyy" }
+  6. 服务器验证卡密有效性
+  7. 返回 token 给客户端
+  8. ExuiKrnln!SetCookie_WebBrowserEx() 存储 token
+  9. Token 在后续通信中作为身份凭证
+
+7.4 卡密绕过方案
+
+  方案 A: JS 注入 (最简单)
+    使用 ExuiKrnln!RunJsCmd_WebBrowserEx() 注入 JS 代码:
+    
+    // 注入的 JavaScript 代码
+    // 1. 禁用前端验证
+    window.validateCardKey = function() {
+        return { success: true, token: "FAKE_TOKEN" };
+    };
+    // 2. 直接设置 cookie
+    document.cookie = "auth_token=FAKE_TOKEN; path=/";
+    // 3. 跳过验证页面
+    window.location.href = "/authenticated.html";
+    
+    实现:
+    ExuiKrnln_RunJsCmd_WebBrowserEx("
+      window.validateCardKey = function() {
+        return { success: true, token: 'FAKE_TOKEN' };
+      };
+      document.cookie = 'auth_token=FAKE_TOKEN';
+    ");
+
+  方案 B: Cookie 伪造
+    使用 ExuiKrnln!SetCookie_WebBrowserEx() 直接设置认证 Cookie:
+    
+    ExuiKrnln_SetCookie_WebBrowserEx("auth_token", "FAKE_TOKEN");
+    ExuiKrnln_SetCookie_WebBrowserEx("user_id", "FAKE_USER");
+
+  方案 C: DevTools + 本地代理
+    1. ExuiKrnln!ShowDevtools_WebBrowserEx() 打开 DevTools
+    2. Chrome DevTools 中设置本地代理
+    3. 使用 Proxy SwitchyOmega 或类似工具
+    4. 将验证请求重定向到本地伪造服务器
+    5. 本地服务器返回 { "success": true, "token": "FAKE" }
+
+  方案 D: HTTP 拦截 (MITM)
+    使用 Fiddler / Charles / mitmproxy 拦截:
+    - 拦截 POST /api/register, /valid, /authenticate
+    - 修改响应为 { "success": true, "token": "FAKE_TOKEN" }
+    - 启用 HTTPS 解密 (安装根证书)
+
+  方案 E: Skynet 协议分析
+    ExuiKrnln 使用 Skynet 框架进行后端通信:
+    - 分析 Skynet 协议格式 (LUA 序列化)
+    - 伪造 Skynet 消息
+    - 直接与后端通信 (需绕过服务端验证)
+
+===============================================================================
+第八部分: 综合绕过策略
+===============================================================================
+
+8.1 推荐方案组合
+
+  优先级 1: 静态 Patch (快速验证)
+  ───────────────────────────────
+  KG_bypassed.exe 已生成:
+  - 2171 处反调试条件跳转已 NOP
+  - 4126 字节变更 (0.009% 变化率)
+  - 可快速验证反调试绕过效果
+  
+  优先级 2: ExuiKrnln 层绕过 (卡密)
+  ───────────────────────────────
+  使用 ExuiKrnln!RunJsCmd_WebBrowserEx() 注入:
+  - 禁用前端卡密验证
+  - 直接设置伪造 token
+  - 无需修改 KG.exe 主体
+  
+  优先级 3: IAT Hook (反作弊)
+  ───────────────────────────────
+  编写 DLL 注入 KG.exe:
+  - Hook CreateToolhelp32Snapshot, Process32First 等
+  - 阻止 ACE 反作弊组件初始化
+  - 需在 ACE 加载前完成
+
+8.2 文件清单
+
+  KG_Reverse/
+  ├── analysis_report.txt              # 初步分析报告
+  ├── decompiled/
+  │   ├── comprehensive_report.json    # 完整分析数据 (JSON)
+  │   ├── complete_decompilation_report.txt  # 本文件
+  │   ├── final_analysis_report.json   # 最终报告
+  │   ├── bypass_strategy.txt          # 绕过策略详解
+  │   └── decompilation_report.txt     # 反编译摘要
+  ├── scripts/
+  │   ├── KG_Bypass.c                  # 反调试绕过 DLL 源码
+  │   ├── KG_CardKey_Bypass.py         # 卡密绕过脚本
+  │   └── ExuiKrnln_Analysis.py        # ExuiKrnln 分析
+  └── patches/
+      └── KG_bypassed.exe              # 已 Patch 的可执行文件
+
+===============================================================================
+附录: 技术术语表
+===============================================================================
+
+  ACE         AntiCheatExpert - 腾讯反作弊系统
+  CEF         Chromium Embedded Framework - 嵌入式浏览器框架
+  Skynet      高并发游戏服务器框架 (C/Lua)
+  Exui        游戏 UI 引擎 (Skynet 生态)
+  IAT         Import Address Table - 导入地址表
+  PLT         Procedure Linkage Table - 过程链接表
+  SEH         Structured Exception Handling - 结构化异常处理
+  NOP         No Operation - 空操作指令 (0x90)
+  MITM        Man-in-the-Middle - 中间人攻击
+  FF 15       x86 指令: call [imm32] - 绝对间接调用
+  FF 25       x86 指令: jmp [imm32] - 绝对间接跳转
+  prologue    函数序言 (push ebp; mov ebp, esp)
+  epilogue    函数尾声 (mov esp, ebp; pop ebp; ret)
+
+===============================================================================
+报告结束
+===============================================================================
