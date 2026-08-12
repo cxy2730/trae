@@ -1,0 +1,18 @@
+; Function: FUN_00445b40
+; Entry:    00445b40
+; Size:     60 bytes
+
+00445b40  PUSH -0x1
+00445b42  PUSH 0x4a1098
+00445b47  MOV EAX,FS:[0x0]
+00445b4d  PUSH EAX
+00445b4e  MOV dword ptr FS:[0x0],ESP
+00445b55  PUSH ECX
+00445b56  MOV dword ptr [ESP],ECX
+00445b5a  MOV dword ptr [ECX],0x2f980d0
+00445b60  MOV dword ptr [ESP + 0xc],0x0
+00445b68  CALL 0x00499e74
+00445b6d  MOV ECX,dword ptr [ESP + 0x4]
+00445b71  MOV dword ptr FS:[0x0],ECX
+00445b78  ADD ESP,0x10
+00445b7b  RET

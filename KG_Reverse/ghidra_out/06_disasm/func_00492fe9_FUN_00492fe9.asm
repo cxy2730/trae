@@ -1,0 +1,9 @@
+; Function: FUN_00492fe9
+; Entry:    00492fe9
+; Size:     18 bytes
+
+00492fe9  PUSH 0x40
+00492feb  PUSH 0x110
+00492ff0  MOV ECX,0x300ef40
+00492ff5  CALL 0x00481ce2
+00492ffa  RET

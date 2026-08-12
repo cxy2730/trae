@@ -1,0 +1,10 @@
+; Function: FUN_004992c8
+; Entry:    004992c8
+; Size:     21 bytes
+
+004992c8  PUSH 0x1
+004992ca  CALL 0x00499256
+004992cf  MOV ECX,EAX
+004992d1  PUSH dword ptr [ESP + 0x4]
+004992d5  CALL 0x00498c25
+004992da  RET 0x4

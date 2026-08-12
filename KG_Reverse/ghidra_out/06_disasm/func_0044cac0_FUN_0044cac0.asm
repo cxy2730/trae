@@ -1,0 +1,75 @@
+; Function: FUN_0044cac0
+; Entry:    0044cac0
+; Size:     226 bytes
+
+0044cac0  MOV EAX,dword ptr [ESP + 0x4]
+0044cac4  PUSH EBX
+0044cac5  PUSH EBP
+0044cac6  PUSH ESI
+0044cac7  PUSH EDI
+0044cac8  MOV DI,word ptr [EAX + 0x150]
+0044cacf  XOR EBX,EBX
+0044cad1  TEST DI,DI
+0044cad4  JBE 0x0044cafe
+0044cad6  MOV ESI,EDI
+0044cad8  XOR EDX,EDX
+0044cada  AND ESI,0xffff
+0044cae0  JLE 0x0044cafe
+0044cae2  MOV EBP,dword ptr [EAX + 0x1b4]
+0044cae8  MOV CL,byte ptr [EDX + EBP*0x1]
+0044caeb  CMP CL,0xff
+0044caee  JZ 0x0044caf9
+0044caf0  TEST CL,CL
+0044caf2  JNZ 0x0044cb25
+0044caf4  MOV EBX,0x1
+0044caf9  INC EDX
+0044cafa  CMP EDX,ESI
+0044cafc  JL 0x0044cae8
+0044cafe  MOV EBP,dword ptr [EAX + 0x7c]
+0044cb01  MOV ESI,dword ptr [EAX + 0x78]
+0044cb04  AND EBP,0xff7fffff
+0044cb0a  AND ESI,0xffffdfff
+0044cb10  TEST EBX,EBX
+0044cb12  MOV dword ptr [EAX + 0x7c],EBP
+0044cb15  MOV ECX,EBP
+0044cb17  MOV dword ptr [EAX + 0x78],ESI
+0044cb1a  JNZ 0x0044cb25
+0044cb1c  AND ECX,0xfffffe7f
+0044cb22  MOV dword ptr [EAX + 0x7c],ECX
+0044cb25  MOV EDX,dword ptr [EAX + 0x7c]
+0044cb28  TEST DH,0x1
+0044cb2b  JZ 0x0044cb9d
+0044cb2d  TEST DH,0x10
+0044cb30  JZ 0x0044cb9d
+0044cb32  MOV ESI,dword ptr [EAX + 0x144]
+0044cb38  XOR ECX,ECX
+0044cb3a  MOV CL,byte ptr [EAX + 0x168]
+0044cb40  LEA ECX,[ECX + ECX*0x2]
+0044cb43  ADD ECX,ESI
+0044cb45  TEST EDX,0x80000
+0044cb4b  MOVZX SI,byte ptr [ECX]
+0044cb4f  MOV word ptr [EAX + 0x16a],SI
+0044cb56  MOVZX SI,byte ptr [ECX + 0x1]
+0044cb5b  MOV word ptr [EAX + 0x16c],SI
+0044cb62  MOVZX CX,byte ptr [ECX + 0x2]
+0044cb67  MOV word ptr [EAX + 0x16e],CX
+0044cb6e  JZ 0x0044cb9d
+0044cb70  TEST EDX,0x2000000
+0044cb76  JNZ 0x0044cb9d
+0044cb78  AND EDI,0xffff
+0044cb7e  MOV ECX,0x0
+0044cb83  JLE 0x0044cb9d
+0044cb85  MOV EDX,dword ptr [EAX + 0x1b4]
+0044cb8b  MOV BL,byte ptr [EDX + ECX*0x1]
+0044cb8e  LEA ESI,[EDX + ECX*0x1]
+0044cb91  OR DL,0xff
+0044cb94  SUB DL,BL
+0044cb96  INC ECX
+0044cb97  CMP ECX,EDI
+0044cb99  MOV byte ptr [ESI],DL
+0044cb9b  JL 0x0044cb85
+0044cb9d  POP EDI
+0044cb9e  POP ESI
+0044cb9f  POP EBP
+0044cba0  POP EBX
+0044cba1  RET

@@ -1,0 +1,11 @@
+; Function: FUN_004025f5
+; Entry:    004025f5
+; Size:     17 bytes
+
+004025f5  PUSH EBP
+004025f6  MOV EBP,ESP
+004025f8  MOV EAX,dword ptr [EBP + 0x8]
+004025fb  MOV EAX,dword ptr [EAX]
+004025fd  ADD EAX,0x8
+00402602  LEAVE
+00402603  RET 0x4

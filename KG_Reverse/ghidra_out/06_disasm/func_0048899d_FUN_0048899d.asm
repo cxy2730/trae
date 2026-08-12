@@ -1,0 +1,12 @@
+; Function: FUN_0048899d
+; Entry:    0048899d
+; Size:     15 bytes
+
+0048899d  PUSH EBP
+0048899e  MOV EBP,ESP
+004889a0  PUSH ECX
+004889a1  FNSTSW word ptr [EBP + -0x2]
+004889a4  FNCLEX
+004889a6  MOVSX EAX,word ptr [EBP + -0x2]
+004889aa  LEAVE
+004889ab  RET

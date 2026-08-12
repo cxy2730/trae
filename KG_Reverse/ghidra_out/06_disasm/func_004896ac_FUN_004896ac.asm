@@ -1,0 +1,58 @@
+; Function: FUN_004896ac
+; Entry:    004896ac
+; Size:     178 bytes
+
+004896ac  PUSH EDX
+004896ad  SUB ESP,0x30
+004896b0  FSTP extended double ptr [ESP + 0x18]
+004896b4  FSTP extended double ptr [ESP]
+004896b7  XOR EDX,EDX
+004896b9  MOV EAX,dword ptr [ESP + 0x6]
+004896bd  TEST EAX,0x7fff0000
+004896c2  JZ 0x004896ce
+004896c4  CALL 0x004894a6
+004896c9  ADD ESP,0x30
+004896cc  POP EDX
+004896cd  RET
+004896ce  FLD extended double ptr [ESP]
+004896d1  FLD extended double ptr [ESP + 0x18]
+004896d5  MOV EAX,dword ptr [ESP]
+004896d8  OR EAX,dword ptr [ESP + 0x4]
+004896dc  JZ 0x00489757
+004896de  FXCH
+004896e0  FSTP extended double ptr [ESP + 0xc]
+004896e4  FLD extended double ptr [ESP]
+004896e7  FXCH
+004896e9  OR EDX,0x2
+004896ec  FNSTCW word ptr [ESP + 0x24]
+004896f0  MOV EAX,dword ptr [ESP + 0x24]
+004896f4  OR EAX,0x33f
+004896f9  MOV dword ptr [ESP + 0x28],EAX
+004896fd  FLDCW word ptr [ESP + 0x28]
+00489701  MOV EAX,dword ptr [ESP + 0x20]
+00489705  AND EAX,0x7fff
+0048970a  CMP EAX,0x7fbe
+0048970f  JA 0x00489729
+00489711  OR EDX,0x1
+00489714  FMUL double ptr [0x02fd96b4]
+0048971a  FSTP extended double ptr [ESP + 0x18]
+0048971e  FMUL double ptr [0x02fd96b4]
+00489724  FSTP extended double ptr [ESP]
+00489727  JMP 0x00489749
+00489729  FNSTCW word ptr [ESP + 0x24]
+0048972d  MOV EAX,dword ptr [ESP + 0x24]
+00489731  OR EAX,0x300
+00489736  MOV dword ptr [ESP + 0x28],EAX
+0048973a  FLDCW word ptr [ESP + 0x28]
+0048973e  FSTP ST0
+00489740  FMUL double ptr [0x02fd96b4]
+00489746  FSTP extended double ptr [ESP]
+00489749  FLDCW word ptr [ESP + 0x24]
+0048974d  CALL 0x004894a6
+00489752  ADD ESP,0x30
+00489755  POP EDX
+00489756  RET
+00489757  FPREM
+00489759  ADD ESP,0x30
+0048975c  POP EDX
+0048975d  RET

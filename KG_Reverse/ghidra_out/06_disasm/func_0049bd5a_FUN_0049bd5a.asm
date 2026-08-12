@@ -1,0 +1,49 @@
+; Function: FUN_0049bd5a
+; Entry:    0049bd5a
+; Size:     116 bytes
+
+0049bd5a  PUSH EBX
+0049bd5b  PUSH ESI
+0049bd5c  PUSH EDI
+0049bd5d  PUSH 0x0
+0049bd5f  PUSH dword ptr [ESP + 0x14]
+0049bd63  MOV ESI,ECX
+0049bd65  MOV EAX,dword ptr [ESI]
+0049bd67  PUSH 0x199
+0049bd6c  CALL dword ptr [EAX + 0xa0]
+0049bd72  MOV EDI,EAX
+0049bd74  CMP EDI,-0x1
+0049bd77  JZ 0x0049bdc6
+0049bd79  TEST EDI,EDI
+0049bd7b  MOV EBX,EDI
+0049bd7d  JNZ 0x0049bd9d
+0049bd7f  PUSH 0xc
+0049bd81  CALL 0x00492f17
+0049bd86  TEST EAX,EAX
+0049bd88  POP ECX
+0049bd89  JZ 0x0049bd99
+0049bd8b  AND dword ptr [EAX],EDI
+0049bd8d  AND dword ptr [EAX + 0x8],EDI
+0049bd90  MOV dword ptr [EAX + 0x4],0x1
+0049bd97  JMP 0x0049bd9b
+0049bd99  XOR EAX,EAX
+0049bd9b  MOV EBX,EAX
+0049bd9d  MOV EAX,dword ptr [ESP + 0x14]
+0049bda1  PUSH EBX
+0049bda2  PUSH dword ptr [ESP + 0x14]
+0049bda6  MOV dword ptr [EBX + 0x8],EAX
+0049bda9  MOV EAX,dword ptr [ESI]
+0049bdab  MOV ECX,ESI
+0049bdad  PUSH 0x19a
+0049bdb2  CALL dword ptr [EAX + 0xa0]
+0049bdb8  MOV EDI,EAX
+0049bdba  CMP EDI,-0x1
+0049bdbd  JNZ 0x0049bdc6
+0049bdbf  PUSH EBX
+0049bdc0  CALL 0x00492f40
+0049bdc5  POP ECX
+0049bdc6  MOV EAX,EDI
+0049bdc8  POP EDI
+0049bdc9  POP ESI
+0049bdca  POP EBX
+0049bdcb  RET 0x8

@@ -1,0 +1,16 @@
+; Function: FUN_004754d0
+; Entry:    004754d0
+; Size:     27 bytes
+
+004754d0  MOV EDX,dword ptr [ECX + 0x14]
+004754d3  MOV ECX,dword ptr [ECX + 0x2c]
+004754d6  PUSH ESI
+004754d7  MOV ESI,dword ptr [ESP + 0x8]
+004754db  ADD ECX,EDX
+004754dd  MOV EAX,dword ptr [ESI]
+004754df  CMP EAX,ECX
+004754e1  JC 0x004754e5
+004754e3  SUB EAX,EDX
+004754e5  MOV dword ptr [ESI],EAX
+004754e7  POP ESI
+004754e8  RET 0x4

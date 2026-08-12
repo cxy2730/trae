@@ -1,0 +1,11 @@
+; Function: FUN_0041b0a0
+; Entry:    0041b0a0
+; Size:     18 bytes
+
+0041b0a0  PUSH EBP
+0041b0a1  MOV EBP,ESP
+0041b0a3  PUSH 0x41b0c0
+0041b0a8  CALL 0x00483c3b
+0041b0ad  ADD ESP,0x4
+0041b0b0  POP EBP
+0041b0b1  RET

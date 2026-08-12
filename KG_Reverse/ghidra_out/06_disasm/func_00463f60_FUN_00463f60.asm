@@ -1,0 +1,21 @@
+; Function: FUN_00463f60
+; Entry:    00463f60
+; Size:     44 bytes
+
+00463f60  MOV ECX,dword ptr [ESP + 0x8]
+00463f64  MOV EAX,dword ptr [ECX + 0x10]
+00463f67  TEST EAX,EAX
+00463f69  JNZ 0x00463f8b
+00463f6b  MOV ECX,dword ptr [ECX + 0x24]
+00463f6e  TEST CL,0x40
+00463f71  JZ 0x00463f7d
+00463f73  MOV EAX,dword ptr [ESP + 0x4]
+00463f77  MOV ECX,dword ptr [EAX]
+00463f79  MOV EAX,dword ptr [ECX + 0x20]
+00463f7c  RET
+00463f7d  TEST CL,0x80
+00463f80  JZ 0x00463f8b
+00463f82  MOV EDX,dword ptr [ESP + 0x4]
+00463f86  MOV EAX,dword ptr [EDX]
+00463f88  MOV EAX,dword ptr [EAX + 0x24]
+00463f8b  RET

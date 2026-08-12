@@ -1,0 +1,27 @@
+; Function: FUN_0043a2a0
+; Entry:    0043a2a0
+; Size:     89 bytes
+
+0043a2a0  PUSH -0x1
+0043a2a2  PUSH 0x4a0bc8
+0043a2a7  MOV EAX,FS:[0x0]
+0043a2ad  PUSH EAX
+0043a2ae  MOV dword ptr FS:[0x0],ESP
+0043a2b5  SUB ESP,0x5c
+0043a2b8  LEA ECX,[ESP]
+0043a2bc  CALL 0x0043ada0
+0043a2c1  MOV EAX,dword ptr [ESP + 0x70]
+0043a2c5  MOV ECX,dword ptr [ESP + 0x6c]
+0043a2c9  PUSH EAX
+0043a2ca  PUSH ECX
+0043a2cb  LEA ECX,[ESP + 0x8]
+0043a2cf  MOV dword ptr [ESP + 0x6c],0x0
+0043a2d7  CALL 0x00475bc0
+0043a2dc  MOV EDX,dword ptr [ESP + 0x74]
+0043a2e0  LEA ECX,[ESP]
+0043a2e4  PUSH EDX
+0043a2e5  CALL 0x0043ae30
+0043a2ea  MOV ECX,dword ptr [ESP + 0x5c]
+0043a2ee  MOV dword ptr FS:[0x0],ECX
+0043a2f5  ADD ESP,0x68
+0043a2f8  RET

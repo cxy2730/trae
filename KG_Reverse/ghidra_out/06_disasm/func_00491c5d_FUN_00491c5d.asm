@@ -1,0 +1,26 @@
+; Function: FUN_00491c5d
+; Entry:    00491c5d
+; Size:     63 bytes
+
+00491c5d  PUSH EBP
+00491c5e  MOV EBP,ESP
+00491c60  SUB ESP,0x28
+00491c63  MOV EAX,dword ptr [EBP + 0x8]
+00491c66  MOV dword ptr [EBP + -0x28],0x22
+00491c6d  MOV dword ptr [EBP + -0x24],EAX
+00491c70  LEA EAX,[EBP + -0x28]
+00491c73  PUSH EAX
+00491c74  PUSH 0x0
+00491c76  PUSH 0x110c
+00491c7b  PUSH dword ptr [ECX + 0x1c]
+00491c7e  CALL dword ptr [0x004a2564]
+00491c84  TEST EAX,EAX
+00491c86  JZ 0x00491c98
+00491c88  MOV ECX,dword ptr [EBP + 0xc]
+00491c8b  MOV EDX,dword ptr [EBP + -0x10]
+00491c8e  MOV dword ptr [ECX],EDX
+00491c90  MOV ECX,dword ptr [EBP + 0x10]
+00491c93  MOV EDX,dword ptr [EBP + -0xc]
+00491c96  MOV dword ptr [ECX],EDX
+00491c98  LEAVE
+00491c99  RET 0xc

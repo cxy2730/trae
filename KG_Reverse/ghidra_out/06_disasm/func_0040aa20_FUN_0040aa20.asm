@@ -1,0 +1,31 @@
+; Function: FUN_0040aa20
+; Entry:    0040aa20
+; Size:     65 bytes
+
+0040aa20  PUSH EBX
+0040aa21  PUSH ESI
+0040aa22  MOV ESI,ECX
+0040aa24  PUSH EDI
+0040aa25  MOV EDI,dword ptr [ESP + 0x10]
+0040aa29  MOV ECX,dword ptr [ESI + 0x7c]
+0040aa2c  MOV EAX,dword ptr [EDI]
+0040aa2e  PUSH ECX
+0040aa2f  MOV ECX,EDI
+0040aa31  CALL dword ptr [EAX + 0x30]
+0040aa34  MOV EDX,dword ptr [ESI + 0x80]
+0040aa3a  MOV EBX,dword ptr [EDI]
+0040aa3c  PUSH EDX
+0040aa3d  CALL 0x00406fe0
+0040aa42  ADD ESP,0x4
+0040aa45  MOV ECX,EDI
+0040aa47  PUSH EAX
+0040aa48  CALL dword ptr [EBX + 0x2c]
+0040aa4b  LEA EAX,[ESI + 0xa0]
+0040aa51  POP EDI
+0040aa52  POP ESI
+0040aa53  POP EBX
+0040aa54  TEST EAX,EAX
+0040aa56  JNZ 0x0040aa5b
+0040aa58  RET 0x8
+0040aa5b  MOV EAX,dword ptr [EAX + 0x4]
+0040aa5e  RET 0x8

@@ -1,0 +1,22 @@
+; Function: FUN_0049af71
+; Entry:    0049af71
+; Size:     47 bytes
+
+0049af71  PUSH EBP
+0049af72  MOV EBP,ESP
+0049af74  LEA EAX,[EBP + 0x8]
+0049af77  PUSH ESI
+0049af78  MOV ESI,ECX
+0049af7a  PUSH EAX
+0049af7b  PUSH dword ptr [EBP + 0x8]
+0049af7e  MOV ECX,dword ptr [ESI + 0x4]
+0049af81  CALL 0x00497368
+0049af86  CMP dword ptr [EBP + 0x8],0x0
+0049af8a  JNZ 0x0049af91
+0049af8c  CALL 0x00491343
+0049af91  MOV EAX,dword ptr [EBP + 0x8]
+0049af94  AND dword ptr [ESI + 0xc],0x0
+0049af98  MOV dword ptr [ESI + 0x8],EAX
+0049af9b  POP ESI
+0049af9c  POP EBP
+0049af9d  RET 0x4

@@ -1,0 +1,12 @@
+; Function: FUN_00499e74
+; Entry:    00499e74
+; Size:     22 bytes
+
+00499e74  CMP dword ptr [ECX + 0x4],0x0
+00499e78  JNZ 0x00499e7d
+00499e7a  XOR EAX,EAX
+00499e7c  RET
+00499e7d  CALL 0x00499e4a
+00499e82  PUSH EAX
+00499e83  CALL dword ptr [0x004a2088]
+00499e89  RET

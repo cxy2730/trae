@@ -1,0 +1,21 @@
+; Function: FUN_0049b221
+; Entry:    0049b221
+; Size:     46 bytes
+
+0049b221  PUSH EBP
+0049b222  MOV EBP,ESP
+0049b224  CMP dword ptr [EBP + 0x8],0x2b
+0049b228  JZ 0x0049b23d
+0049b22a  PUSH dword ptr [EBP + 0x14]
+0049b22d  PUSH dword ptr [EBP + 0x10]
+0049b230  PUSH dword ptr [EBP + 0xc]
+0049b233  PUSH dword ptr [EBP + 0x8]
+0049b236  CALL 0x00496508
+0049b23b  JMP 0x0049b24b
+0049b23d  MOV EAX,dword ptr [ECX]
+0049b23f  PUSH dword ptr [EBP + 0x10]
+0049b242  CALL dword ptr [EAX + 0xb8]
+0049b248  PUSH 0x1
+0049b24a  POP EAX
+0049b24b  POP EBP
+0049b24c  RET 0x10

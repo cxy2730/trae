@@ -1,0 +1,39 @@
+; Function: FUN_0040db50
+; Entry:    0040db50
+; Size:     125 bytes
+
+0040db50  PUSH ESI
+0040db51  MOV ESI,ECX
+0040db53  PUSH EDI
+0040db54  XOR EDI,EDI
+0040db56  CMP dword ptr [ESI + 0x24c],EDI
+0040db5c  JZ 0x0040dba7
+0040db5e  MOV EAX,dword ptr [ESI + 0x25c]
+0040db64  MOV dword ptr [ESI + 0x244],EDI
+0040db6a  CMP EAX,0x1
+0040db6d  MOV dword ptr [ESI + 0x240],EDI
+0040db73  JNZ 0x0040db88
+0040db75  MOV EAX,dword ptr [ESI + 0x24c]
+0040db7b  PUSH EAX
+0040db7c  CALL dword ptr [0x004a20f8]
+0040db82  MOV dword ptr [ESI + 0x25c],EDI
+0040db88  MOV ECX,ESI
+0040db8a  CALL 0x0040db10
+0040db8f  MOV ECX,dword ptr [ESI + 0x24c]
+0040db95  PUSH ECX
+0040db96  CALL dword ptr [0x004a20f4]
+0040db9c  LEA ECX,[ESI + 0x248]
+0040dba2  CALL 0x00499345
+0040dba7  CMP dword ptr [ESI + 0xf4],EDI
+0040dbad  JZ 0x0040dbc3
+0040dbaf  LEA EDI,[ESI + 0xd8]
+0040dbb5  MOV ECX,EDI
+0040dbb7  CALL 0x0041d9a0
+0040dbbc  MOV EDX,dword ptr [EDI]
+0040dbbe  MOV ECX,EDI
+0040dbc0  CALL dword ptr [EDX + 0x58]
+0040dbc3  MOV ECX,ESI
+0040dbc5  CALL 0x0046b0c0
+0040dbca  POP EDI
+0040dbcb  POP ESI
+0040dbcc  RET

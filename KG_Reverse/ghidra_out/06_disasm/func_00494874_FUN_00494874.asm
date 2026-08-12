@@ -1,0 +1,15 @@
+; Function: FUN_00494874
+; Entry:    00494874
+; Size:     35 bytes
+
+00494874  PUSH ESI
+00494875  MOV ESI,dword ptr [ESP + 0x8]
+00494879  PUSH dword ptr [ESP + 0xc]
+0049487d  PUSH dword ptr [ESI + 0x1c]
+00494880  CALL dword ptr [0x004a2530]
+00494886  MOV ECX,ESI
+00494888  CALL 0x00497418
+0049488d  MOV ECX,dword ptr [ESP + 0x10]
+00494891  POP ESI
+00494892  MOV dword ptr [ECX],EAX
+00494894  RET 0xc

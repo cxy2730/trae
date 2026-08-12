@@ -1,0 +1,20 @@
+; Function: FUN_0041b210
+; Entry:    0041b210
+; Size:     49 bytes
+
+0041b210  LEA EAX,[ESP + 0x8]
+0041b214  SUB ESP,0xc
+0041b217  PUSH EAX
+0041b218  PUSH dword ptr [ESP + 0x14]
+0041b21c  XOR EAX,EAX
+0041b21e  MOV dword ptr [ESP + 0x8],EAX
+0041b222  MOV dword ptr [ESP + 0xc],EAX
+0041b226  MOV dword ptr [ESP + 0x10],EAX
+0041b22a  LEA EDX,[ESP + 0x8]
+0041b22e  PUSH EDX
+0041b22f  CALL EBX
+0041b231  MOV EAX,dword ptr [ESP + 0xc]
+0041b235  MOV EDX,dword ptr [ESP + 0x10]
+0041b239  MOV ECX,dword ptr [ESP + 0x14]
+0041b23d  ADD ESP,0x18
+0041b240  RET

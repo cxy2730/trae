@@ -1,0 +1,31 @@
+; Function: FUN_00444e80
+; Entry:    00444e80
+; Size:     74 bytes
+
+00444e80  MOV EAX,dword ptr [ESP + 0x4]
+00444e84  CMP EAX,-0x2
+00444e87  JNZ 0x00444e9b
+00444e89  MOV EAX,dword ptr [ECX + 0x5c]
+00444e8c  MOV ECX,dword ptr [EAX + -0x8]
+00444e8f  TEST ECX,ECX
+00444e91  JZ 0x00444ec4
+00444e93  MOV EAX,0xfffffffe
+00444e98  RET 0x4
+00444e9b  CMP EAX,-0x3
+00444e9e  JNZ 0x00444eb2
+00444ea0  MOV ECX,dword ptr [ECX + 0x58]
+00444ea3  MOV EAX,dword ptr [ECX + -0x8]
+00444ea6  TEST EAX,EAX
+00444ea8  JZ 0x00444ec4
+00444eaa  MOV EAX,0xfffffffd
+00444eaf  RET 0x4
+00444eb2  TEST EAX,EAX
+00444eb4  JL 0x00444ec4
+00444eb6  CMP EAX,dword ptr [ECX + 0x3c]
+00444eb9  JGE 0x00444ec4
+00444ebb  CDQ
+00444ebc  IDIV dword ptr [ECX + 0x40]
+00444ebf  MOV EAX,EDX
+00444ec1  RET 0x4
+00444ec4  OR EAX,0xffffffff
+00444ec7  RET 0x4

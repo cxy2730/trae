@@ -1,0 +1,18 @@
+; Function: FUN_00443e20
+; Entry:    00443e20
+; Size:     60 bytes
+
+00443e20  PUSH -0x1
+00443e22  PUSH 0x4a0e48
+00443e27  MOV EAX,FS:[0x0]
+00443e2d  PUSH EAX
+00443e2e  MOV dword ptr FS:[0x0],ESP
+00443e35  PUSH ECX
+00443e36  MOV dword ptr [ESP],ECX
+00443e3a  MOV dword ptr [ECX],0x2f97efc
+00443e40  MOV dword ptr [ESP + 0xc],0x0
+00443e48  CALL 0x00499e74
+00443e4d  MOV ECX,dword ptr [ESP + 0x4]
+00443e51  MOV dword ptr FS:[0x0],ECX
+00443e58  ADD ESP,0x10
+00443e5b  RET

@@ -1,0 +1,24 @@
+; Function: FUN_0041b6c0
+; Entry:    0041b6c0
+; Size:     51 bytes
+
+0041b6c0  PUSH EBP
+0041b6c1  MOV EBP,ESP
+0041b6c3  PUSH ECX
+0041b6c4  MOV EAX,dword ptr [EBP + 0x8]
+0041b6c7  PUSH EAX
+0041b6c8  PUSH 0x0
+0041b6ca  MOV ECX,dword ptr [0x02fe863c]
+0041b6d0  PUSH ECX
+0041b6d1  CALL dword ptr [0x004a22f4]
+0041b6d7  MOV dword ptr [EBP + -0x4],EAX
+0041b6da  CMP dword ptr [EBP + -0x4],0x0
+0041b6de  JNZ 0x0041b6ec
+0041b6e0  MOV EDX,dword ptr [EBP + 0x8]
+0041b6e3  PUSH EDX
+0041b6e4  CALL 0x00412f50
+0041b6e9  ADD ESP,0x4
+0041b6ec  MOV EAX,dword ptr [EBP + -0x4]
+0041b6ef  MOV ESP,EBP
+0041b6f1  POP EBP
+0041b6f2  RET

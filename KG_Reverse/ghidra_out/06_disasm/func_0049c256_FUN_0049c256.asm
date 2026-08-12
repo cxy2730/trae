@@ -1,0 +1,9 @@
+; Function: FUN_0049c256
+; Entry:    0049c256
+; Size:     15 bytes
+
+0049c256  PUSH 0x40
+0049c258  PUSH 0x8
+0049c25a  MOV ECX,0x300f228
+0049c25f  CALL 0x00481ce2
+0049c264  RET

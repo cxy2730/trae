@@ -1,0 +1,10 @@
+; Function: Catch@004957e3
+; Entry:    004957e3
+; Size:     16 bytes
+
+004957e3  PUSH 0x1
+004957e5  CALL 0x0049d9fa
+004957ea  XOR EBX,EBX
+004957ec  PUSH EBX
+004957ed  PUSH EBX
+004957ee  CALL 0x0048534c

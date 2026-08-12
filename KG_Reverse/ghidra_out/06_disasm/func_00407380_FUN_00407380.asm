@@ -1,0 +1,9 @@
+; Function: FUN_00407380
+; Entry:    00407380
+; Size:     14 bytes
+
+00407380  MOV EAX,dword ptr [ESP + 0x4]
+00407384  PUSH EAX
+00407385  CALL 0x00492f40
+0040738a  POP ECX
+0040738b  RET 0x4

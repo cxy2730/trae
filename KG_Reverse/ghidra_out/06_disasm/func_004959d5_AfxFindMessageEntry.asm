@@ -1,0 +1,31 @@
+; Function: AfxFindMessageEntry
+; Entry:    004959d5
+; Size:     64 bytes
+
+004959d5  PUSH EBP
+004959d6  MOV EBP,ESP
+004959d8  PUSH EBX
+004959d9  MOV EBX,dword ptr [EBP + 0x8]
+004959dc  MOV EAX,dword ptr [EBP + 0xc]
+004959df  MOV EDX,dword ptr [EBP + 0x10]
+004959e2  MOV ECX,dword ptr [EBP + 0x14]
+004959e5  CMP dword ptr [EBX + 0x10],0x0
+004959e9  JZ 0x00495a08
+004959eb  CMP EAX,dword ptr [EBX]
+004959ed  JZ 0x004959f4
+004959ef  ADD EBX,0x18
+004959f2  JMP 0x004959e5
+004959f4  CMP EDX,dword ptr [EBX + 0x4]
+004959f7  JNZ 0x004959ef
+004959f9  CMP ECX,dword ptr [EBX + 0x8]
+004959fc  JC 0x004959ef
+004959fe  CMP ECX,dword ptr [EBX + 0xc]
+00495a01  JA 0x004959ef
+00495a03  MOV dword ptr [EBP + 0x8],EBX
+00495a06  JMP 0x00495a0d
+00495a08  XOR EAX,EAX
+00495a0a  MOV dword ptr [EBP + 0x8],EAX
+00495a0d  MOV EAX,dword ptr [EBP + 0x8]
+00495a10  POP EBX
+00495a11  POP EBP
+00495a12  RET 0x10

@@ -1,0 +1,37 @@
+; Function: __local_unwind2
+; Entry:    00482b06
+; Size:     104 bytes
+
+00482b06  PUSH EBX
+00482b07  PUSH ESI
+00482b08  PUSH EDI
+00482b09  MOV EAX,dword ptr [ESP + 0x10]
+00482b0d  PUSH EAX
+00482b0e  PUSH -0x2
+00482b10  PUSH 0x482ae4
+00482b15  PUSH dword ptr FS:[0x0]
+00482b1c  MOV dword ptr FS:[0x0],ESP
+00482b23  MOV EAX,dword ptr [ESP + 0x20]
+00482b27  MOV EBX,dword ptr [EAX + 0x8]
+00482b2a  MOV ESI,dword ptr [EAX + 0xc]
+00482b2d  CMP ESI,-0x1
+00482b30  JZ 0x00482b60
+00482b32  CMP ESI,dword ptr [ESP + 0x24]
+00482b36  JZ 0x00482b60
+00482b38  LEA ESI,[ESI + ESI*0x2]
+00482b3b  MOV ECX,dword ptr [EBX + ESI*0x4]
+00482b3e  MOV dword ptr [ESP + 0x8],ECX
+00482b42  MOV dword ptr [EAX + 0xc],ECX
+00482b45  CMP dword ptr [EBX + ESI*0x4 + 0x4],0x0
+00482b4a  JNZ 0x00482b5e
+00482b4c  PUSH 0x101
+00482b51  MOV EAX,dword ptr [EBX + ESI*0x4 + 0x8]
+00482b55  CALL 0x00482b9a
+00482b5a  CALL dword ptr [EBX + ESI*0x4 + 0x8]
+00482b5e  JMP 0x00482b23
+00482b60  POP dword ptr FS:[0x0]
+00482b67  ADD ESP,0xc
+00482b6a  POP EDI
+00482b6b  POP ESI
+00482b6c  POP EBX
+00482b6d  RET

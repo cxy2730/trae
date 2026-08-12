@@ -1,0 +1,8 @@
+; Function: FUN_00482819
+; Entry:    00482819
+; Size:     7 bytes
+
+00482819  POP EAX
+0048281a  POP ECX
+0048281b  XCHG dword ptr [ESP],EAX
+0048281e  JMP EAX

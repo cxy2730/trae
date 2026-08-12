@@ -1,0 +1,21 @@
+; Function: Catch@00494a91
+; Entry:    00494a91
+; Size:     49 bytes
+
+00494a91  CALL 0x00497f17
+00494a96  TEST EAX,EAX
+00494a98  JZ 0x00494ab0
+00494a9a  MOV ECX,dword ptr [EBP + -0x14]
+00494a9d  MOV EDX,dword ptr [EAX]
+00494a9f  ADD ECX,0x34
+00494aa2  PUSH ECX
+00494aa3  MOV ECX,EAX
+00494aa5  PUSH dword ptr [EBP + 0x10]
+00494aa8  CALL dword ptr [EDX + 0x6c]
+00494aab  MOV dword ptr [EBP + 0x8],EAX
+00494aae  JMP 0x00494ab4
+00494ab0  AND dword ptr [EBP + 0x8],0x0
+00494ab4  MOV ECX,dword ptr [EBP + 0x10]
+00494ab7  CALL 0x00493701
+00494abc  MOV EAX,0x494ac2
+00494ac1  RET

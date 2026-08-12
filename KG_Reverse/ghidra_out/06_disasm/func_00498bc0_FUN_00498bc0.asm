@@ -1,0 +1,38 @@
+; Function: FUN_00498bc0
+; Entry:    00498bc0
+; Size:     101 bytes
+
+00498bc0  MOV EAX,0x4a1bfa
+00498bc5  CALL 0x004858b8
+00498bca  PUSH ECX
+00498bcb  PUSH ESI
+00498bcc  MOV ESI,ECX
+00498bce  PUSH EDI
+00498bcf  PUSH 0xa
+00498bd1  LEA ECX,[ESI + 0x4]
+00498bd4  MOV dword ptr [EBP + -0x10],ESI
+00498bd7  CALL 0x00492a36
+00498bdc  AND dword ptr [EBP + -0x4],0x0
+00498be0  LEA EDI,[ESI + 0x20]
+00498be3  PUSH 0x4
+00498be5  MOV ECX,EDI
+00498be7  CALL 0x00492a36
+00498bec  PUSH 0x0
+00498bee  PUSH 0x7
+00498bf0  MOV ECX,EDI
+00498bf2  MOV byte ptr [EBP + -0x4],0x1
+00498bf6  MOV dword ptr [ESI],0x2f9c8e4
+00498bfc  CALL 0x00492cdf
+00498c01  MOV EAX,dword ptr [EBP + 0x8]
+00498c04  MOV ECX,dword ptr [EBP + -0xc]
+00498c07  MOV dword ptr [ESI + 0x3c],EAX
+00498c0a  MOV EAX,dword ptr [EBP + 0xc]
+00498c0d  MOV dword ptr [ESI + 0x40],EAX
+00498c10  MOV EAX,dword ptr [EBP + 0x10]
+00498c13  MOV dword ptr [ESI + 0x44],EAX
+00498c16  MOV EAX,ESI
+00498c18  POP EDI
+00498c19  POP ESI
+00498c1a  MOV dword ptr FS:[0x0],ECX
+00498c21  LEAVE
+00498c22  RET 0xc

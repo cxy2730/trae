@@ -1,0 +1,19 @@
+; Function: FUN_00401b4e
+; Entry:    00401b4e
+; Size:     48 bytes
+
+00401b4e  PUSH EBP
+00401b4f  MOV EBP,ESP
+00401b51  SUB ESP,0x8
+00401b57  PUSH 0x1
+00401b59  PUSH 0x24
+00401b5e  MOV dword ptr [EBP + -0x4],0x0
+00401b65  PUSH 0x0
+00401b67  PUSH dword ptr [EBP + -0x4]
+00401b6a  CALL 0x00401b7e
+00401b6f  MOV dword ptr [EBP + -0x8],EAX
+00401b72  MOV EAX,dword ptr [EBP + -0x8]
+00401b75  JMP 0x00401b7a
+00401b7a  MOV ESP,EBP
+00401b7c  POP EBP
+00401b7d  RET

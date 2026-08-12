@@ -1,0 +1,12 @@
+; Function: FUN_0048ed97
+; Entry:    0048ed97
+; Size:     12 bytes
+
+0048ed97  PUSH EDI
+0048ed98  MOV EDI,dword ptr [ESP + 0x8]
+0048ed9c  XOR EAX,EAX
+0048ed9e  STOSD ES:EDI
+0048ed9f  STOSD ES:EDI
+0048eda0  STOSD ES:EDI
+0048eda1  POP EDI
+0048eda2  RET

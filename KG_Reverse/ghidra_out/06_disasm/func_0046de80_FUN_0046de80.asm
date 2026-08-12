@@ -1,0 +1,66 @@
+; Function: FUN_0046de80
+; Entry:    0046de80
+; Size:     188 bytes
+
+0046de80  PUSH ECX
+0046de81  MOV EAX,[0x02fff19c]
+0046de86  XOR EDX,EDX
+0046de88  CMP EAX,EDX
+0046de8a  JNZ 0x0046dea6
+0046de8c  XOR EAX,EAX
+0046de8e  MOV byte ptr [EAX + 0x2fff09c],AL
+0046de94  INC EAX
+0046de95  CMP EAX,0x100
+0046de9a  JL 0x0046de8e
+0046de9c  MOV dword ptr [0x02fff19c],0x1
+0046dea6  MOV EAX,dword ptr [ESP + 0xc]
+0046deaa  PUSH EBX
+0046deab  MOV EBX,dword ptr [ESP + 0x14]
+0046deaf  PUSH ESI
+0046deb0  PUSH EDI
+0046deb1  MOV ECX,0x40
+0046deb6  MOV ESI,0x2fff09c
+0046debb  MOV EDI,EBX
+0046debd  MOVSD.REP ES:EDI,ESI
+0046debf  CMP EAX,EDX
+0046dec1  MOV byte ptr [EBX + 0x100],DL
+0046dec7  MOV byte ptr [EBX + 0x101],DL
+0046decd  JLE 0x0046df37
+0046decf  XOR ESI,ESI
+0046ded1  PUSH EBP
+0046ded2  MOV byte ptr [ESP + 0x20],DL
+0046ded6  XOR ECX,ECX
+0046ded8  MOV EDI,dword ptr [ESP + 0x20]
+0046dedc  MOV EBP,dword ptr [ESP + 0x18]
+0046dee0  MOV AL,byte ptr [ESI + EBX*0x1]
+0046dee3  AND EDI,0xff
+0046dee9  XOR EDX,EDX
+0046deeb  MOV DL,byte ptr [EDI + EBP*0x1]
+0046deee  MOV EBP,EAX
+0046def0  AND EBP,0xff
+0046def6  ADD ECX,EDX
+0046def8  ADD ECX,EBP
+0046defa  AND ECX,0x800000ff
+0046df00  JNS 0x0046df0a
+0046df02  DEC ECX
+0046df03  OR ECX,0xffffff00
+0046df09  INC ECX
+0046df0a  MOV byte ptr [ESP + 0x10],CL
+0046df0e  MOV ECX,dword ptr [ESP + 0x10]
+0046df12  AND ECX,0xff
+0046df18  MOV DL,byte ptr [ECX + EBX*0x1]
+0046df1b  MOV byte ptr [ESI + EBX*0x1],DL
+0046df1e  MOV byte ptr [ECX + EBX*0x1],AL
+0046df21  LEA EAX,[EDI + 0x1]
+0046df24  CDQ
+0046df25  IDIV dword ptr [ESP + 0x1c]
+0046df29  INC ESI
+0046df2a  CMP ESI,0x100
+0046df30  MOV byte ptr [ESP + 0x20],DL
+0046df34  JL 0x0046ded8
+0046df36  POP EBP
+0046df37  POP EDI
+0046df38  POP ESI
+0046df39  POP EBX
+0046df3a  POP ECX
+0046df3b  RET

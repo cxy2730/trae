@@ -1,0 +1,28 @@
+; Function: FUN_00487591
+; Entry:    00487591
+; Size:     62 bytes
+
+00487591  PUSH EBP
+00487592  MOV EBP,ESP
+00487594  SUB ESP,0x18
+00487597  FLD double ptr [0x02f9cf08]
+0048759d  FSTP double ptr [EBP + -0x8]
+004875a0  FLD double ptr [0x02f9cf00]
+004875a6  FSTP double ptr [EBP + -0x10]
+004875a9  FLD double ptr [EBP + -0x10]
+004875ac  FDIV double ptr [EBP + -0x8]
+004875af  FMUL double ptr [EBP + -0x8]
+004875b2  FSUBR double ptr [EBP + -0x10]
+004875b5  FSTP double ptr [EBP + -0x18]
+004875b8  FLD double ptr [EBP + -0x18]
+004875bb  FCOMP double ptr [0x02f9c9f8]
+004875c1  FNSTSW AX
+004875c3  SAHF
+004875c4  JBE 0x004875cb
+004875c6  PUSH 0x1
+004875c8  POP EAX
+004875c9  LEAVE
+004875ca  RET
+004875cb  XOR EAX,EAX
+004875cd  LEAVE
+004875ce  RET

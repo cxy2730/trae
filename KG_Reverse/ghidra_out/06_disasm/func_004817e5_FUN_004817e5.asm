@@ -1,0 +1,15 @@
+; Function: FUN_004817e5
+; Entry:    004817e5
+; Size:     41 bytes
+
+004817e5  MOV EAX,0x4a1644
+004817ea  CALL 0x004858b8
+004817ef  PUSH ECX
+004817f0  MOV dword ptr [EBP + -0x10],ECX
+004817f3  MOV dword ptr [ECX],0x2f9afc8
+004817f9  AND dword ptr [EBP + -0x4],0x0
+004817fd  CALL 0x00499e74
+00481802  MOV ECX,dword ptr [EBP + -0xc]
+00481805  MOV dword ptr FS:[0x0],ECX
+0048180c  LEAVE
+0048180d  RET

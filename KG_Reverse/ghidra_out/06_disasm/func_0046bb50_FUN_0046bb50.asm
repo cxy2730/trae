@@ -1,0 +1,13 @@
+; Function: FUN_0046bb50
+; Entry:    0046bb50
+; Size:     20 bytes
+
+0046bb50  PUSH ECX
+0046bb51  MOV ECX,dword ptr [ECX + 0x4]
+0046bb54  LEA EAX,[ESP]
+0046bb58  PUSH EAX
+0046bb59  PUSH 0x1
+0046bb5b  PUSH ECX
+0046bb5c  CALL dword ptr [0x004a2274]
+0046bb62  POP ECX
+0046bb63  RET

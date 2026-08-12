@@ -1,0 +1,101 @@
+; Function: FUN_0049cf71
+; Entry:    0049cf71
+; Size:     310 bytes
+
+0049cf71  MOV EAX,0x4a1968
+0049cf76  CALL 0x004858b8
+0049cf7b  PUSH ECX
+0049cf7c  PUSH EBX
+0049cf7d  PUSH ESI
+0049cf7e  MOV ESI,ECX
+0049cf80  MOV dword ptr [EBP + -0x10],ESI
+0049cf83  MOV dword ptr [ESI],0x2f9bfd8
+0049cf89  MOV ECX,dword ptr [ESI + 0x80]
+0049cf8f  XOR EBX,EBX
+0049cf91  CMP ECX,EBX
+0049cf93  MOV dword ptr [EBP + -0x4],EBX
+0049cf96  JZ 0x0049cf9f
+0049cf98  MOV EAX,dword ptr [ECX]
+0049cf9a  PUSH 0x1
+0049cf9c  CALL dword ptr [EAX + 0x4]
+0049cf9f  MOV ECX,dword ptr [ESI + 0xa8]
+0049cfa5  CMP ECX,EBX
+0049cfa7  JZ 0x0049cfb0
+0049cfa9  MOV EAX,dword ptr [ECX]
+0049cfab  PUSH 0x1
+0049cfad  CALL dword ptr [EAX + 0x14]
+0049cfb0  CALL 0x0049c724
+0049cfb5  CMP byte ptr [EAX + 0x14],BL
+0049cfb8  JNZ 0x0049cfe8
+0049cfba  MOV ECX,dword ptr [0x03010c20]
+0049cfc0  CMP ECX,EBX
+0049cfc2  JZ 0x0049cfd1
+0049cfc4  MOV EAX,dword ptr [ECX]
+0049cfc6  PUSH 0x1
+0049cfc8  CALL dword ptr [EAX + 0x4]
+0049cfcb  MOV dword ptr [0x03010c20],EBX
+0049cfd1  MOV ECX,dword ptr [0x03010c1c]
+0049cfd7  CMP ECX,EBX
+0049cfd9  JZ 0x0049cfe8
+0049cfdb  MOV EAX,dword ptr [ECX]
+0049cfdd  PUSH 0x1
+0049cfdf  CALL dword ptr [EAX + 0x4]
+0049cfe2  MOV dword ptr [0x03010c1c],EBX
+0049cfe8  MOV EAX,dword ptr [ESI + 0x94]
+0049cfee  CMP EAX,EBX
+0049cff0  JZ 0x0049cff8
+0049cff2  PUSH EAX
+0049cff3  CALL 0x0049a83c
+0049cff8  MOV EAX,dword ptr [ESI + 0x98]
+0049cffe  CMP EAX,EBX
+0049d000  JZ 0x0049d008
+0049d002  PUSH EAX
+0049d003  CALL 0x0049a83c
+0049d008  MOV AX,word ptr [ESI + 0xb0]
+0049d00f  PUSH EDI
+0049d010  MOV EDI,dword ptr [0x004a2220]
+0049d016  CMP AX,BX
+0049d019  JZ 0x0049d01e
+0049d01b  PUSH EAX
+0049d01c  CALL EDI
+0049d01e  MOV AX,word ptr [ESI + 0xb2]
+0049d025  CMP AX,BX
+0049d028  JZ 0x0049d02d
+0049d02a  PUSH EAX
+0049d02b  CALL EDI
+0049d02d  MOV ECX,dword ptr [ESI + 0xac]
+0049d033  POP EDI
+0049d034  CMP ECX,EBX
+0049d036  JZ 0x0049d03f
+0049d038  MOV EAX,dword ptr [ECX]
+0049d03a  PUSH 0x1
+0049d03c  CALL dword ptr [EAX + 0x4]
+0049d03f  CALL 0x0049c724
+0049d044  MOV ECX,dword ptr [EAX + 0x10]
+0049d047  CMP ECX,dword ptr [ESI + 0x78]
+0049d04a  JNZ 0x0049d04f
+0049d04c  MOV dword ptr [EAX + 0x10],EBX
+0049d04f  CMP dword ptr [EAX + 0x4],ESI
+0049d052  JNZ 0x0049d057
+0049d054  MOV dword ptr [EAX + 0x4],EBX
+0049d057  PUSH dword ptr [ESI + 0x78]
+0049d05a  CALL 0x004837fe
+0049d05f  PUSH dword ptr [ESI + 0x7c]
+0049d062  CALL 0x004837fe
+0049d067  PUSH dword ptr [ESI + 0x88]
+0049d06d  CALL 0x004837fe
+0049d072  PUSH dword ptr [ESI + 0x8c]
+0049d078  CALL 0x004837fe
+0049d07d  PUSH dword ptr [ESI + 0x90]
+0049d083  CALL 0x004837fe
+0049d088  OR dword ptr [EBP + -0x4],0xffffffff
+0049d08c  ADD ESP,0x14
+0049d08f  MOV ECX,ESI
+0049d091  MOV dword ptr [ESI + 0x28],EBX
+0049d094  CALL 0x0049db4b
+0049d099  MOV ECX,dword ptr [EBP + -0xc]
+0049d09c  POP ESI
+0049d09d  POP EBX
+0049d09e  MOV dword ptr FS:[0x0],ECX
+0049d0a5  LEAVE
+0049d0a6  RET

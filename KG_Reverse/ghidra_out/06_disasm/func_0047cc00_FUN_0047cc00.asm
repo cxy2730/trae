@@ -1,0 +1,40 @@
+; Function: FUN_0047cc00
+; Entry:    0047cc00
+; Size:     87 bytes
+
+0047cc00  MOV EAX,dword ptr [ESP + 0x8]
+0047cc04  TEST EAX,EAX
+0047cc06  JLE 0x0047cc56
+0047cc08  MOV ECX,dword ptr [ESP + 0x4]
+0047cc0c  PUSH ESI
+0047cc0d  PUSH EDI
+0047cc0e  MOV EDI,EAX
+0047cc10  LEA ESI,[ECX + 0x44]
+0047cc13  MOV EAX,0x3011644
+0047cc18  LEA ECX,[ESI + 0x4]
+0047cc1b  MOV EDX,ESI
+0047cc1d  FLD float ptr [EDX]
+0047cc1f  FLD float ptr [ECX]
+0047cc21  FLD ST1
+0047cc23  FMUL float ptr [EAX + -0x4]
+0047cc26  FLD ST1
+0047cc28  FMUL float ptr [EAX]
+0047cc2a  ADD EAX,0x8
+0047cc2d  ADD ECX,0x4
+0047cc30  SUB EDX,0x4
+0047cc33  CMP EAX,0x3011684
+0047cc38  FSUBP
+0047cc3a  FSTP float ptr [EDX + 0x4]
+0047cc3d  FXCH
+0047cc3f  FMUL float ptr [EAX + -0x8]
+0047cc42  FXCH
+0047cc44  FMUL float ptr [EAX + -0xc]
+0047cc47  FADDP
+0047cc49  FSTP float ptr [ECX + -0x4]
+0047cc4c  JL 0x0047cc1d
+0047cc4e  ADD ESI,0x48
+0047cc51  DEC EDI
+0047cc52  JNZ 0x0047cc13
+0047cc54  POP EDI
+0047cc55  POP ESI
+0047cc56  RET

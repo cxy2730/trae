@@ -1,0 +1,31 @@
+; Function: FUN_0041da20
+; Entry:    0041da20
+; Size:     77 bytes
+
+0041da20  PUSH ESI
+0041da21  MOV ESI,ECX
+0041da23  CMP dword ptr [ESI + 0x3c],0x1
+0041da27  JNZ 0x0041da62
+0041da29  MOV ECX,dword ptr [ESI + 0x1c]
+0041da2c  LEA EAX,[ESI + 0x48]
+0041da2f  PUSH EAX
+0041da30  PUSH ECX
+0041da31  CALL dword ptr [0x004a2530]
+0041da37  MOV EDX,dword ptr [ESP + 0xc]
+0041da3b  MOV ECX,dword ptr [ESP + 0x10]
+0041da3f  LEA EAX,[ESI + 0x40]
+0041da42  PUSH EAX
+0041da43  MOV dword ptr [EAX],EDX
+0041da45  MOV EDX,dword ptr [ESI + 0x1c]
+0041da48  PUSH EDX
+0041da49  MOV dword ptr [EAX + 0x4],ECX
+0041da4c  CALL dword ptr [0x004a244c]
+0041da52  MOV EAX,dword ptr [ESI + 0x1c]
+0041da55  PUSH EAX
+0041da56  CALL dword ptr [0x004a24b0]
+0041da5c  PUSH EAX
+0041da5d  CALL 0x00494bb2
+0041da62  MOV ECX,ESI
+0041da64  CALL 0x00494b19
+0041da69  POP ESI
+0041da6a  RET 0xc

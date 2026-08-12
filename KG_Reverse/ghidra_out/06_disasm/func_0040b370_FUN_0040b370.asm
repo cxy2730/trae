@@ -1,0 +1,16 @@
+; Function: FUN_0040b370
+; Entry:    0040b370
+; Size:     38 bytes
+
+0040b370  PUSH ESI
+0040b371  MOV ESI,ECX
+0040b373  CALL 0x004952bc
+0040b378  CMP dword ptr [ESI + 0x50],0x1
+0040b37c  JNZ 0x0040b394
+0040b37e  MOV EAX,dword ptr [ESI + 0x1c]
+0040b381  PUSH 0x3e8
+0040b386  PUSH EAX
+0040b387  CALL dword ptr [0x004a24a0]
+0040b38d  MOV dword ptr [ESI + 0x50],0x0
+0040b394  POP ESI
+0040b395  RET

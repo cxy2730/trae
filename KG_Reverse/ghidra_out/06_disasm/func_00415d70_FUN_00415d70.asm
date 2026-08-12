@@ -1,0 +1,42 @@
+; Function: FUN_00415d70
+; Entry:    00415d70
+; Size:     133 bytes
+
+00415d70  PUSH EBX
+00415d71  PUSH ESI
+00415d72  MOV ESI,ECX
+00415d74  PUSH EDI
+00415d75  LEA ECX,[ESI + 0x4]
+00415d78  CALL 0x00493161
+00415d7d  MOV EBX,0x1
+00415d82  LEA ECX,[ESI + 0x10]
+00415d85  MOV dword ptr [ESI + 0x8],0x2
+00415d8c  MOV dword ptr [ESI + 0x24],EBX
+00415d8f  MOV dword ptr [ESI + 0xc],0xff000000
+00415d96  CALL 0x004064a0
+00415d9b  XOR EDI,EDI
+00415d9d  LEA ECX,[ESI + 0x3c]
+00415da0  MOV dword ptr [ESI + 0x28],EDI
+00415da3  MOV dword ptr [ESI + 0x2c],EBX
+00415da6  MOV dword ptr [ESI + 0x30],EBX
+00415da9  MOV dword ptr [ESI + 0x34],EBX
+00415dac  MOV dword ptr [ESI + 0x38],EBX
+00415daf  CALL 0x004064a0
+00415db4  LEA ECX,[ESI + 0x50]
+00415db7  MOV dword ptr [ESI + 0x64],EDI
+00415dba  MOV dword ptr [ESI + 0x68],EDI
+00415dbd  MOV dword ptr [ESI + 0x6c],EBX
+00415dc0  CALL 0x004064a0
+00415dc5  LEA ECX,[ESI + 0x90]
+00415dcb  MOV dword ptr [ESI + 0x70],EDI
+00415dce  MOV dword ptr [ESI + 0x78],EDI
+00415dd1  MOV dword ptr [ESI + 0x7c],EBX
+00415dd4  MOV dword ptr [ESI + 0x80],EDI
+00415dda  MOV dword ptr [ESI + 0x84],EDI
+00415de0  MOV dword ptr [ESI + 0x88],EDI
+00415de6  MOV dword ptr [ESI + 0x8c],EDI
+00415dec  CALL 0x00493161
+00415df1  POP EDI
+00415df2  POP ESI
+00415df3  POP EBX
+00415df4  RET

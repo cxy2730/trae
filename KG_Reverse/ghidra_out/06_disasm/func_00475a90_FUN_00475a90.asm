@@ -1,0 +1,20 @@
+; Function: FUN_00475a90
+; Entry:    00475a90
+; Size:     59 bytes
+
+00475a90  MOV EDX,ECX
+00475a92  PUSH EDI
+00475a93  MOV ECX,0x10
+00475a98  XOR EAX,EAX
+00475a9a  LEA EDI,[EDX + 0x4]
+00475a9d  MOV dword ptr [EDX],0x2f9a0c4
+00475aa3  STOSD.REP ES:EDI
+00475aa5  MOV dword ptr [EDX + 0x48],EAX
+00475aa8  MOV dword ptr [EDX + 0x44],EAX
+00475aab  MOV dword ptr [EDX + 0x4c],0x67452301
+00475ab2  MOV dword ptr [EDX + 0x50],0xefcdab89
+00475ab9  MOV dword ptr [EDX + 0x54],0x98badcfe
+00475ac0  MOV dword ptr [EDX + 0x58],0x10325476
+00475ac7  MOV EAX,EDX
+00475ac9  POP EDI
+00475aca  RET

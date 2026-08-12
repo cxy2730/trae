@@ -1,0 +1,26 @@
+; Function: FUN_0049a181
+; Entry:    0049a181
+; Size:     70 bytes
+
+0049a181  MOV EAX,0x4a19ff
+0049a186  CALL 0x004858b8
+0049a18b  PUSH ECX
+0049a18c  PUSH ESI
+0049a18d  MOV ESI,ECX
+0049a18f  MOV dword ptr [EBP + -0x10],ESI
+0049a192  AND dword ptr [EBP + -0x4],0x0
+0049a196  CMP dword ptr [ESI + 0x20],0x0
+0049a19a  JZ 0x0049a1a7
+0049a19c  TEST byte ptr [ESI + 0x14],0x2
+0049a1a0  JNZ 0x0049a1a7
+0049a1a2  CALL 0x0049a209
+0049a1a7  MOV ECX,ESI
+0049a1a9  CALL 0x0049a1c7
+0049a1ae  OR dword ptr [EBP + -0x4],0xffffffff
+0049a1b2  LEA ECX,[ESI + 0x10]
+0049a1b5  CALL 0x004931d6
+0049a1ba  MOV ECX,dword ptr [EBP + -0xc]
+0049a1bd  POP ESI
+0049a1be  MOV dword ptr FS:[0x0],ECX
+0049a1c5  LEAVE
+0049a1c6  RET

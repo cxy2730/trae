@@ -1,0 +1,10 @@
+; Function: FUN_00456360
+; Entry:    00456360
+; Size:     16 bytes
+
+00456360  MOV ECX,dword ptr [ESP + 0x8]
+00456364  MOV EAX,dword ptr [ESP + 0x4]
+00456368  LEA EAX,[EAX + ECX*0x1 + -0x1]
+0045636c  CDQ
+0045636d  IDIV ECX
+0045636f  RET

@@ -1,0 +1,19 @@
+; Function: FUN_004929dc
+; Entry:    004929dc
+; Size:     36 bytes
+
+004929dc  MOV EAX,dword ptr [ECX + 0x4]
+004929df  PUSH ESI
+004929e0  MOV EDX,dword ptr [EAX]
+004929e2  MOV ESI,dword ptr [EAX + 0x8]
+004929e5  TEST EDX,EDX
+004929e7  MOV dword ptr [ECX + 0x4],EDX
+004929ea  JZ 0x004929f2
+004929ec  AND dword ptr [EDX + 0x4],0x0
+004929f0  JMP 0x004929f6
+004929f2  AND dword ptr [ECX + 0x8],0x0
+004929f6  PUSH EAX
+004929f7  CALL 0x004929c3
+004929fc  MOV EAX,ESI
+004929fe  POP ESI
+004929ff  RET

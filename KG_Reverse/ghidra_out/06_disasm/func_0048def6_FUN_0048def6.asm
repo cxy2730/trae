@@ -1,0 +1,21 @@
+; Function: FUN_0048def6
+; Entry:    0048def6
+; Size:     36 bytes
+
+0048def6  PUSH ESI
+0048def7  MOV ESI,dword ptr [ESP + 0x8]
+0048defb  PUSH EDI
+0048defc  PUSH dword ptr [ESP + 0x10]
+0048df00  INC dword ptr [ESI]
+0048df02  CALL 0x0048dec5
+0048df07  MOV EDI,EAX
+0048df09  PUSH EDI
+0048df0a  CALL 0x00482d59
+0048df0f  POP ECX
+0048df10  TEST EAX,EAX
+0048df12  POP ECX
+0048df13  JNZ 0x0048defc
+0048df15  MOV EAX,EDI
+0048df17  POP EDI
+0048df18  POP ESI
+0048df19  RET

@@ -1,0 +1,15 @@
+; Function: FUN_004975e9
+; Entry:    004975e9
+; Size:     33 bytes
+
+004975e9  MOV EAX,dword ptr [ECX + 0x38]
+004975ec  TEST EAX,EAX
+004975ee  JNZ 0x00497600
+004975f0  PUSH dword ptr [ECX + 0x1c]
+004975f3  CALL dword ptr [0x004a2408]
+004975f9  PUSH EAX
+004975fa  CALL 0x00494bb2
+004975ff  RET
+00497600  MOV EDX,dword ptr [EAX]
+00497602  MOV ECX,EAX
+00497604  JMP dword ptr [EDX + 0xac]

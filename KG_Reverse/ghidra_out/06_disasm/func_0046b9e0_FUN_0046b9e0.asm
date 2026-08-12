@@ -1,0 +1,18 @@
+; Function: FUN_0046b9e0
+; Entry:    0046b9e0
+; Size:     35 bytes
+
+0046b9e0  PUSH ESI
+0046b9e1  MOV ESI,ECX
+0046b9e3  MOV ECX,dword ptr [ESI + 0x234]
+0046b9e9  TEST ECX,ECX
+0046b9eb  JZ 0x0046ba01
+0046b9ed  CMP dword ptr [ESI + 0x8],0x1
+0046b9f1  JNZ 0x0046ba01
+0046b9f3  MOV EAX,dword ptr [ECX]
+0046b9f5  CALL dword ptr [EAX + 0x8]
+0046b9f8  PUSH 0x2
+0046b9fa  MOV ECX,ESI
+0046b9fc  CALL 0x0046b770
+0046ba01  POP ESI
+0046ba02  RET

@@ -1,0 +1,31 @@
+; Function: FUN_0040b5a0
+; Entry:    0040b5a0
+; Size:     62 bytes
+
+0040b5a0  PUSH EBX
+0040b5a1  PUSH ESI
+0040b5a2  MOV ESI,ECX
+0040b5a4  PUSH EDI
+0040b5a5  MOV EDI,dword ptr [ESP + 0x10]
+0040b5a9  MOV ECX,dword ptr [ESI + 0x6c]
+0040b5ac  MOV EAX,dword ptr [EDI]
+0040b5ae  PUSH ECX
+0040b5af  MOV ECX,EDI
+0040b5b1  CALL dword ptr [EAX + 0x30]
+0040b5b4  MOV EDX,dword ptr [ESI + 0x70]
+0040b5b7  MOV EBX,dword ptr [EDI]
+0040b5b9  PUSH EDX
+0040b5ba  CALL 0x00406fe0
+0040b5bf  ADD ESP,0x4
+0040b5c2  MOV ECX,EDI
+0040b5c4  PUSH EAX
+0040b5c5  CALL dword ptr [EBX + 0x2c]
+0040b5c8  LEA EAX,[ESI + 0x9c]
+0040b5ce  POP EDI
+0040b5cf  POP ESI
+0040b5d0  POP EBX
+0040b5d1  TEST EAX,EAX
+0040b5d3  JNZ 0x0040b5d8
+0040b5d5  RET 0x8
+0040b5d8  MOV EAX,dword ptr [EAX + 0x4]
+0040b5db  RET 0x8

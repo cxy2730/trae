@@ -1,0 +1,34 @@
+; Function: FUN_0049cd41
+; Entry:    0049cd41
+; Size:     75 bytes
+
+0049cd41  MOV EAX,0x4a18d4
+0049cd46  CALL 0x004858b8
+0049cd4b  PUSH ECX
+0049cd4c  PUSH ECX
+0049cd4d  PUSH EBX
+0049cd4e  PUSH ESI
+0049cd4f  PUSH EDI
+0049cd50  MOV ESI,ECX
+0049cd52  XOR EDI,EDI
+0049cd54  MOV dword ptr [EBP + -0x10],ESP
+0049cd57  CMP dword ptr [ESI],EDI
+0049cd59  JNZ 0x0049cd79
+0049cd5b  PUSH 0x10
+0049cd5d  CALL 0x0049d98a
+0049cd62  MOV dword ptr [EBP + -0x4],EDI
+0049cd65  CMP dword ptr [ESI],EDI
+0049cd67  JNZ 0x0049cd6e
+0049cd69  CALL dword ptr [EBP + 0x8]
+0049cd6c  MOV dword ptr [ESI],EAX
+0049cd6e  OR dword ptr [EBP + -0x4],0xffffffff
+0049cd72  PUSH 0x10
+0049cd74  CALL 0x0049d9fa
+0049cd79  MOV EAX,dword ptr [ESI]
+0049cd7b  MOV ECX,dword ptr [EBP + -0xc]
+0049cd7e  POP EDI
+0049cd7f  POP ESI
+0049cd80  MOV dword ptr FS:[0x0],ECX
+0049cd87  POP EBX
+0049cd88  LEAVE
+0049cd89  RET 0x4

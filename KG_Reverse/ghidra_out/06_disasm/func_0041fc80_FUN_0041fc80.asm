@@ -1,0 +1,13 @@
+; Function: FUN_0041fc80
+; Entry:    0041fc80
+; Size:     23 bytes
+
+0041fc80  PUSH ESI
+0041fc81  MOV ESI,ECX
+0041fc83  CMP dword ptr [ESI + 0x78],0x1
+0041fc87  JZ 0x0041fc95
+0041fc89  CALL 0x0041fbf0
+0041fc8e  MOV ECX,ESI
+0041fc90  CALL 0x00494577
+0041fc95  POP ESI
+0041fc96  RET

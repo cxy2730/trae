@@ -1,0 +1,18 @@
+; Function: RemoveAll
+; Entry:    004929a3
+; Size:     32 bytes
+
+004929a3  PUSH ESI
+004929a4  MOV ESI,ECX
+004929a6  PUSH EDI
+004929a7  XOR EDI,EDI
+004929a9  MOV ECX,dword ptr [ESI + 0x14]
+004929ac  MOV dword ptr [ESI + 0xc],EDI
+004929af  MOV dword ptr [ESI + 0x10],EDI
+004929b2  MOV dword ptr [ESI + 0x8],EDI
+004929b5  MOV dword ptr [ESI + 0x4],EDI
+004929b8  CALL 0x00492a20
+004929bd  MOV dword ptr [ESI + 0x14],EDI
+004929c0  POP EDI
+004929c1  POP ESI
+004929c2  RET

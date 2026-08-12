@@ -1,0 +1,24 @@
+; Function: FUN_00435ec0
+; Entry:    00435ec0
+; Size:     79 bytes
+
+00435ec0  PUSH -0x1
+00435ec2  PUSH 0x4a0a08
+00435ec7  MOV EAX,FS:[0x0]
+00435ecd  PUSH EAX
+00435ece  MOV dword ptr FS:[0x0],ESP
+00435ed5  PUSH ECX
+00435ed6  PUSH ESI
+00435ed7  MOV ESI,ECX
+00435ed9  MOV dword ptr [ESP + 0x4],ESI
+00435edd  LEA ECX,[ESI + 0xac]
+00435ee3  MOV dword ptr [ESP + 0x10],0x0
+00435eeb  CALL 0x004931d6
+00435ef0  MOV ECX,ESI
+00435ef2  MOV dword ptr [ESP + 0x10],0xffffffff
+00435efa  CALL 0x00493f68
+00435eff  MOV ECX,dword ptr [ESP + 0x8]
+00435f03  POP ESI
+00435f04  MOV dword ptr FS:[0x0],ECX
+00435f0b  ADD ESP,0x10
+00435f0e  RET

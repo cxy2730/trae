@@ -1,0 +1,15 @@
+; Function: FUN_00469e10
+; Entry:    00469e10
+; Size:     23 bytes
+
+00469e10  PUSH ESI
+00469e11  MOV ESI,ECX
+00469e13  MOV EAX,dword ptr [ESI]
+00469e15  PUSH EAX
+00469e16  CALL 0x00469e30
+00469e1b  XOR EAX,EAX
+00469e1d  MOV dword ptr [ESI],EAX
+00469e1f  MOV dword ptr [ESI + 0x8],EAX
+00469e22  MOV dword ptr [ESI + 0x4],EAX
+00469e25  POP ESI
+00469e26  RET

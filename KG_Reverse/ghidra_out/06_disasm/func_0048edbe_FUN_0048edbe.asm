@@ -1,0 +1,68 @@
+; Function: FUN_0048edbe
+; Entry:    0048edbe
+; Size:     141 bytes
+
+0048edbe  PUSH EBP
+0048edbf  MOV EBP,ESP
+0048edc1  SUB ESP,0xc
+0048edc4  MOV EAX,dword ptr [EBP + 0xc]
+0048edc7  PUSH EBX
+0048edc8  PUSH ESI
+0048edc9  PUSH EDI
+0048edca  PUSH 0x20
+0048edcc  MOV EDI,dword ptr [EBP + 0x8]
+0048edcf  POP EBX
+0048edd0  OR ESI,0xffffffff
+0048edd3  CDQ
+0048edd4  MOV ECX,EBX
+0048edd6  MOV dword ptr [EBP + -0x4],0x3
+0048eddd  IDIV ECX
+0048eddf  MOV dword ptr [EBP + -0xc],EAX
+0048ede2  MOV EAX,dword ptr [EBP + 0xc]
+0048ede5  CDQ
+0048ede6  IDIV ECX
+0048ede8  AND dword ptr [EBP + 0xc],0x0
+0048edec  MOV ECX,EDX
+0048edee  SHL ESI,CL
+0048edf0  SUB EBX,EDX
+0048edf2  NOT ESI
+0048edf4  MOV EAX,dword ptr [EDI]
+0048edf6  MOV ECX,EAX
+0048edf8  AND ECX,ESI
+0048edfa  MOV dword ptr [EBP + -0x8],ECX
+0048edfd  MOV ECX,EDX
+0048edff  SHR EAX,CL
+0048ee01  OR EAX,dword ptr [EBP + 0xc]
+0048ee04  MOV dword ptr [EDI],EAX
+0048ee06  MOV EAX,dword ptr [EBP + -0x8]
+0048ee09  MOV ECX,EBX
+0048ee0b  ADD EDI,0x4
+0048ee0e  SHL EAX,CL
+0048ee10  DEC dword ptr [EBP + -0x4]
+0048ee13  MOV dword ptr [EBP + 0xc],EAX
+0048ee16  JNZ 0x0048edf4
+0048ee18  MOV EDI,dword ptr [EBP + -0xc]
+0048ee1b  PUSH 0x2
+0048ee1d  POP EBX
+0048ee1e  MOV ESI,EDI
+0048ee20  PUSH 0x8
+0048ee22  POP ECX
+0048ee23  SHL ESI,0x2
+0048ee26  CMP EBX,EDI
+0048ee28  JL 0x0048ee39
+0048ee2a  MOV EDX,dword ptr [EBP + 0x8]
+0048ee2d  MOV EAX,ECX
+0048ee2f  SUB EAX,ESI
+0048ee31  MOV EAX,dword ptr [EAX + EDX*0x1]
+0048ee34  MOV dword ptr [ECX + EDX*0x1],EAX
+0048ee37  JMP 0x0048ee40
+0048ee39  MOV EAX,dword ptr [EBP + 0x8]
+0048ee3c  AND dword ptr [ECX + EAX*0x1],0x0
+0048ee40  DEC EBX
+0048ee41  SUB ECX,0x4
+0048ee44  JNS 0x0048ee26
+0048ee46  POP EDI
+0048ee47  POP ESI
+0048ee48  POP EBX
+0048ee49  LEAVE
+0048ee4a  RET

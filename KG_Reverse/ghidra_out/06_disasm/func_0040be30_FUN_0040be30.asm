@@ -1,0 +1,31 @@
+; Function: FUN_0040be30
+; Entry:    0040be30
+; Size:     62 bytes
+
+0040be30  PUSH EBX
+0040be31  PUSH ESI
+0040be32  MOV ESI,ECX
+0040be34  PUSH EDI
+0040be35  MOV EDI,dword ptr [ESP + 0x10]
+0040be39  MOV ECX,dword ptr [ESI + 0x50]
+0040be3c  MOV EAX,dword ptr [EDI]
+0040be3e  PUSH ECX
+0040be3f  MOV ECX,EDI
+0040be41  CALL dword ptr [EAX + 0x30]
+0040be44  MOV EDX,dword ptr [ESI + 0x54]
+0040be47  MOV EBX,dword ptr [EDI]
+0040be49  PUSH EDX
+0040be4a  CALL 0x00406fe0
+0040be4f  ADD ESP,0x4
+0040be52  MOV ECX,EDI
+0040be54  PUSH EAX
+0040be55  CALL dword ptr [EBX + 0x2c]
+0040be58  LEA EAX,[ESI + 0xb0]
+0040be5e  POP EDI
+0040be5f  POP ESI
+0040be60  POP EBX
+0040be61  TEST EAX,EAX
+0040be63  JNZ 0x0040be68
+0040be65  RET 0x8
+0040be68  MOV EAX,dword ptr [EAX + 0x4]
+0040be6b  RET 0x8

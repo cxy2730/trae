@@ -1,0 +1,20 @@
+; Function: RemoveAll
+; Entry:    00492a79
+; Size:     43 bytes
+
+00492a79  PUSH ESI
+00492a7a  MOV ESI,ECX
+00492a7c  MOV EAX,dword ptr [ESI + 0x4]
+00492a7f  TEST EAX,EAX
+00492a81  JZ 0x00492a8e
+00492a83  PUSH EAX
+00492a84  CALL 0x00492f40
+00492a89  AND dword ptr [ESI + 0x4],0x0
+00492a8d  POP ECX
+00492a8e  MOV ECX,dword ptr [ESI + 0x14]
+00492a91  AND dword ptr [ESI + 0xc],0x0
+00492a95  AND dword ptr [ESI + 0x10],0x0
+00492a99  CALL 0x00492a20
+00492a9e  AND dword ptr [ESI + 0x14],0x0
+00492aa2  POP ESI
+00492aa3  RET

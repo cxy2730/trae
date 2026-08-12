@@ -1,0 +1,9 @@
+; Function: FUN_004013df
+; Entry:    004013df
+; Size:     8 bytes
+
+004013df  POP ESI
+004013e0  PUSH 0x0
+004013e2  DEC EBX
+004013e3  JNZ 0x004013e0
+004013e5  JMP ESI

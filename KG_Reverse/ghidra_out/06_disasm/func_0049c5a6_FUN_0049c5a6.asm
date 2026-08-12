@@ -1,0 +1,42 @@
+; Function: FUN_0049c5a6
+; Entry:    0049c5a6
+; Size:     117 bytes
+
+0049c5a6  MOV EAX,0x4a18a2
+0049c5ab  CALL 0x004858b8
+0049c5b0  PUSH ECX
+0049c5b1  PUSH ESI
+0049c5b2  MOV ESI,ECX
+0049c5b4  PUSH EDI
+0049c5b5  MOV dword ptr [EBP + -0x10],ESI
+0049c5b8  MOV dword ptr [ESI],0x2f9bee8
+0049c5be  MOV ECX,dword ptr [ESI + 0x1044]
+0049c5c4  MOV dword ptr [EBP + -0x4],0x1
+0049c5cb  TEST ECX,ECX
+0049c5cd  JZ 0x0049c5d5
+0049c5cf  MOV EAX,dword ptr [ECX]
+0049c5d1  PUSH 0x1
+0049c5d3  CALL dword ptr [EAX]
+0049c5d5  MOV ECX,dword ptr [ESI + 0x106c]
+0049c5db  LEA EDI,[ESI + 0x106c]
+0049c5e1  TEST ECX,ECX
+0049c5e3  JZ 0x0049c5fe
+0049c5e5  MOV EAX,dword ptr [ECX]
+0049c5e7  LEA EDX,[ESI + 0x1048]
+0049c5ed  PUSH EDX
+0049c5ee  CALL dword ptr [EAX + 0xc]
+0049c5f1  MOV ECX,dword ptr [EDI]
+0049c5f3  TEST ECX,ECX
+0049c5f5  JZ 0x0049c5fe
+0049c5f7  MOV EAX,dword ptr [ECX]
+0049c5f9  PUSH 0x1
+0049c5fb  CALL dword ptr [EAX + 0x4]
+0049c5fe  AND byte ptr [EBP + -0x4],0x0
+0049c602  LEA ECX,[ESI + 0x1070]
+0049c608  CALL 0x0049cd23
+0049c60d  MOV ECX,dword ptr [EBP + -0xc]
+0049c610  POP EDI
+0049c611  POP ESI
+0049c612  MOV dword ptr FS:[0x0],ECX
+0049c619  LEAVE
+0049c61a  RET

@@ -1,0 +1,12 @@
+; Function: FUN_0041ce70
+; Entry:    0041ce70
+; Size:     25 bytes
+
+0041ce70  CALL dword ptr [0x004a2354]
+0041ce76  XOR EDX,EDX
+0041ce78  MOV ECX,0x14
+0041ce7d  DIV ECX
+0041ce7f  ADD EDX,ECX
+0041ce81  PUSH EDX
+0041ce82  CALL dword ptr [0x004a2318]
+0041ce88  RET

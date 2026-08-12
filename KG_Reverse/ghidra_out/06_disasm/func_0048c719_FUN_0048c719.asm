@@ -1,0 +1,29 @@
+; Function: FUN_0048c719
+; Entry:    0048c719
+; Size:     53 bytes
+
+0048c719  PUSH EBP
+0048c71a  MOV EBP,ESP
+0048c71c  MOV ECX,dword ptr [EBP + 0xc]
+0048c71f  DEC dword ptr [ECX + 0x4]
+0048c722  JS 0x0048c732
+0048c724  MOV EDX,dword ptr [ECX]
+0048c726  MOV AL,byte ptr [EBP + 0x8]
+0048c729  MOV byte ptr [EDX],AL
+0048c72b  INC dword ptr [ECX]
+0048c72d  MOVZX EAX,AL
+0048c730  JMP 0x0048c73d
+0048c732  PUSH ECX
+0048c733  PUSH dword ptr [EBP + 0x8]
+0048c736  CALL 0x0048df1a
+0048c73b  POP ECX
+0048c73c  POP ECX
+0048c73d  CMP EAX,-0x1
+0048c740  MOV EAX,dword ptr [EBP + 0x10]
+0048c743  JNZ 0x0048c74a
+0048c745  OR dword ptr [EAX],0xffffffff
+0048c748  POP EBP
+0048c749  RET
+0048c74a  INC dword ptr [EAX]
+0048c74c  POP EBP
+0048c74d  RET

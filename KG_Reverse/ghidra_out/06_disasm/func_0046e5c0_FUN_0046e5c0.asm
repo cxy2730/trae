@@ -1,0 +1,26 @@
+; Function: FUN_0046e5c0
+; Entry:    0046e5c0
+; Size:     52 bytes
+
+0046e5c0  PUSH ESI
+0046e5c1  MOV ESI,ECX
+0046e5c3  PUSH 0x8
+0046e5c5  CALL 0x00492f17
+0046e5ca  ADD ESP,0x4
+0046e5cd  TEST EAX,EAX
+0046e5cf  JZ 0x0046e5e8
+0046e5d1  MOV dword ptr [EAX],0x2f99ff4
+0046e5d7  MOV dword ptr [EAX + 0x4],0x4d
+0046e5de  MOV ECX,dword ptr [ESI + 0x10]
+0046e5e1  PUSH EAX
+0046e5e2  MOV EDX,dword ptr [ECX]
+0046e5e4  CALL dword ptr [EDX]
+0046e5e6  POP ESI
+0046e5e7  RET
+0046e5e8  MOV ECX,dword ptr [ESI + 0x10]
+0046e5eb  XOR EAX,EAX
+0046e5ed  PUSH EAX
+0046e5ee  MOV EDX,dword ptr [ECX]
+0046e5f0  CALL dword ptr [EDX]
+0046e5f2  POP ESI
+0046e5f3  RET

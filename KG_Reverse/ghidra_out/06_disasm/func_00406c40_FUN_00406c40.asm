@@ -1,0 +1,36 @@
+; Function: FUN_00406c40
+; Entry:    00406c40
+; Size:     84 bytes
+
+00406c40  MOV EAX,dword ptr [ESP + 0xc]
+00406c44  TEST EAX,EAX
+00406c46  JZ 0x00406c93
+00406c48  CMP EAX,0x1
+00406c4b  JNZ 0x00406c5a
+00406c4d  MOV EAX,dword ptr [ESP + 0x8]
+00406c51  MOV EDX,dword ptr [ESP + 0x4]
+00406c55  MOV CL,byte ptr [EAX]
+00406c57  MOV byte ptr [EDX],CL
+00406c59  RET
+00406c5a  CMP EAX,0x2
+00406c5d  JNZ 0x00406c6e
+00406c5f  MOV EAX,dword ptr [ESP + 0x8]
+00406c63  MOV EDX,dword ptr [ESP + 0x4]
+00406c67  MOV CX,word ptr [EAX]
+00406c6a  MOV word ptr [EDX],CX
+00406c6d  RET
+00406c6e  CMP EAX,0x4
+00406c71  JNZ 0x00406c80
+00406c73  MOV EAX,dword ptr [ESP + 0x8]
+00406c77  MOV EDX,dword ptr [ESP + 0x4]
+00406c7b  MOV ECX,dword ptr [EAX]
+00406c7d  MOV dword ptr [EDX],ECX
+00406c7f  RET
+00406c80  MOV ECX,dword ptr [ESP + 0x4]
+00406c84  PUSH EAX
+00406c85  MOV EAX,dword ptr [ESP + 0xc]
+00406c89  PUSH EAX
+00406c8a  PUSH ECX
+00406c8b  CALL 0x00483180
+00406c90  ADD ESP,0xc
+00406c93  RET

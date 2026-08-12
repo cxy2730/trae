@@ -1,0 +1,30 @@
+; Function: FUN_004828a5
+; Entry:    004828a5
+; Size:     84 bytes
+
+004828a5  PUSH EBP
+004828a6  MOV EBP,ESP
+004828a8  SUB ESP,0x14
+004828ab  MOV EAX,dword ptr [EBP + 0xc]
+004828ae  AND dword ptr [EBP + -0x14],0x0
+004828b2  MOV ECX,dword ptr [EBP + 0x8]
+004828b5  MOV dword ptr [EBP + -0xc],EAX
+004828b8  MOV EAX,dword ptr [EBP + 0x14]
+004828bb  MOV dword ptr [EBP + -0x10],0x4828f9
+004828c2  INC EAX
+004828c3  MOV dword ptr [EBP + -0x8],ECX
+004828c6  MOV dword ptr [EBP + -0x4],EAX
+004828c9  MOV EAX,FS:[0x0]
+004828cf  MOV dword ptr [EBP + -0x14],EAX
+004828d2  LEA EAX,[EBP + 0xffffffec]
+004828d8  MOV FS:[0x0],EAX
+004828de  PUSH dword ptr [EBP + 0x18]
+004828e1  PUSH ECX
+004828e2  PUSH dword ptr [EBP + 0x10]
+004828e5  CALL 0x0048a6d0
+004828ea  MOV ECX,EAX
+004828ec  MOV EAX,dword ptr [EBP + -0x14]
+004828ef  MOV FS:[0x0],EAX
+004828f5  MOV EAX,ECX
+004828f7  LEAVE
+004828f8  RET

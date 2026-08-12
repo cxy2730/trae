@@ -1,0 +1,16 @@
+; Function: FUN_0046ce80
+; Entry:    0046ce80
+; Size:     33 bytes
+
+0046ce80  PUSH ESI
+0046ce81  MOV ESI,ECX
+0046ce83  MOV EAX,dword ptr [ESI + 0x8]
+0046ce86  MOV dword ptr [ESI],0x2f99ec0
+0046ce8c  TEST EAX,EAX
+0046ce8e  JZ 0x0046ce99
+0046ce90  PUSH EAX
+0046ce91  CALL 0x00492f40
+0046ce96  ADD ESP,0x4
+0046ce99  MOV dword ptr [ESI],0x2f99f08
+0046ce9f  POP ESI
+0046cea0  RET

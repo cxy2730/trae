@@ -1,0 +1,28 @@
+; Function: FUN_00434da0
+; Entry:    00434da0
+; Size:     95 bytes
+
+00434da0  PUSH -0x1
+00434da2  PUSH 0x4a0653
+00434da7  MOV EAX,FS:[0x0]
+00434dad  PUSH EAX
+00434dae  MOV dword ptr FS:[0x0],ESP
+00434db5  PUSH ECX
+00434db6  PUSH ESI
+00434db7  MOV ESI,ECX
+00434db9  MOV dword ptr [ESP + 0x4],ESI
+00434dbd  MOV dword ptr [ESI],0x2f96600
+00434dc3  LEA ECX,[ESI + 0x64]
+00434dc6  MOV dword ptr [ESP + 0x10],0x1
+00434dce  CALL 0x004931d6
+00434dd3  LEA ECX,[ESI + 0x60]
+00434dd6  MOV byte ptr [ESP + 0x10],0x0
+00434ddb  CALL 0x004931d6
+00434de0  MOV ECX,ESI
+00434de2  MOV dword ptr [ESP + 0x10],0xffffffff
+00434dea  CALL 0x0049b1e9
+00434def  MOV ECX,dword ptr [ESP + 0x8]
+00434df3  POP ESI
+00434df4  MOV dword ptr FS:[0x0],ECX
+00434dfb  ADD ESP,0x10
+00434dfe  RET

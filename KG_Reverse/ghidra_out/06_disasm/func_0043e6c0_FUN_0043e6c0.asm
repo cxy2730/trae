@@ -1,0 +1,22 @@
+; Function: FUN_0043e6c0
+; Entry:    0043e6c0
+; Size:     55 bytes
+
+0043e6c0  MOV EAX,dword ptr [ESP + 0x4]
+0043e6c4  CMP byte ptr [EAX + 0x158],0x8
+0043e6cb  JNZ 0x0043e6e4
+0043e6cd  MOV ECX,dword ptr [ESP + 0xc]
+0043e6d1  MOV EDX,dword ptr [ESP + 0x8]
+0043e6d5  PUSH ECX
+0043e6d6  PUSH EDX
+0043e6d7  CALL 0x0043e600
+0043e6dc  ADD ESP,0x8
+0043e6df  MOVZX AX,AL
+0043e6e3  RET
+0043e6e4  MOV EAX,dword ptr [ESP + 0xc]
+0043e6e8  MOV ECX,dword ptr [ESP + 0x8]
+0043e6ec  PUSH EAX
+0043e6ed  PUSH ECX
+0043e6ee  CALL 0x0043e660
+0043e6f3  ADD ESP,0x8
+0043e6f6  RET

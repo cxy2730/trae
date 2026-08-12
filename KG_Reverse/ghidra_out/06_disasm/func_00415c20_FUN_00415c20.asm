@@ -1,0 +1,13 @@
+; Function: FUN_00415c20
+; Entry:    00415c20
+; Size:     29 bytes
+
+00415c20  MOV EDX,dword ptr [ESP + 0x4]
+00415c24  MOV EAX,dword ptr [ECX + 0x198]
+00415c2a  CMP EDX,EAX
+00415c2c  JC 0x00415c38
+00415c2e  MOV EAX,dword ptr [ECX + 0x19c]
+00415c34  CMP EDX,EAX
+00415c36  JC 0x00415c3a
+00415c38  XOR EAX,EAX
+00415c3a  RET 0x4

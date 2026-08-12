@@ -1,0 +1,43 @@
+; Function: FUN_0049baab
+; Entry:    0049baab
+; Size:     104 bytes
+
+0049baab  PUSH ESI
+0049baac  PUSH EDI
+0049baad  MOV ESI,ECX
+0049baaf  XOR EDI,EDI
+0049bab1  CALL 0x00497418
+0049bab6  TEST AL,0x40
+0049bab8  JNZ 0x0049bae3
+0049baba  PUSH 0xc
+0049babc  CALL 0x00492f17
+0049bac1  TEST EAX,EAX
+0049bac3  POP ECX
+0049bac4  JZ 0x0049bad4
+0049bac6  AND dword ptr [EAX],EDI
+0049bac8  AND dword ptr [EAX + 0x8],EDI
+0049bacb  MOV dword ptr [EAX + 0x4],0x1
+0049bad2  JMP 0x0049bad6
+0049bad4  XOR EAX,EAX
+0049bad6  MOV ECX,dword ptr [ESP + 0x10]
+0049bada  MOV EDI,EAX
+0049badc  MOV dword ptr [EAX + 0x8],ECX
+0049badf  MOV dword ptr [ESP + 0x10],EAX
+0049bae3  PUSH dword ptr [ESP + 0x10]
+0049bae7  MOV EAX,dword ptr [ESI]
+0049bae9  MOV ECX,ESI
+0049baeb  PUSH dword ptr [ESP + 0x10]
+0049baef  PUSH 0x180
+0049baf4  CALL dword ptr [EAX + 0xa0]
+0049bafa  MOV ESI,EAX
+0049bafc  CMP ESI,-0x1
+0049baff  JNZ 0x0049bb0c
+0049bb01  TEST EDI,EDI
+0049bb03  JZ 0x0049bb0c
+0049bb05  PUSH EDI
+0049bb06  CALL 0x00492f40
+0049bb0b  POP ECX
+0049bb0c  MOV EAX,ESI
+0049bb0e  POP EDI
+0049bb0f  POP ESI
+0049bb10  RET 0x8

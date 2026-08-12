@@ -1,0 +1,21 @@
+; Function: FUN_0049a6b4
+; Entry:    0049a6b4
+; Size:     43 bytes
+
+0049a6b4  PUSH EBP
+0049a6b5  MOV EBP,ESP
+0049a6b7  SUB ESP,0x20
+0049a6ba  LEA EAX,[EBP + -0x20]
+0049a6bd  PUSH 0x20
+0049a6bf  PUSH EAX
+0049a6c0  PUSH dword ptr [EBP + 0x8]
+0049a6c3  CALL dword ptr [0x004a25b8]
+0049a6c9  PUSH dword ptr [EBP + 0xc]
+0049a6cc  LEA EAX,[EBP + -0x20]
+0049a6cf  PUSH EAX
+0049a6d0  CALL dword ptr [0x004a2224]
+0049a6d6  NEG EAX
+0049a6d8  SBB EAX,EAX
+0049a6da  INC EAX
+0049a6db  LEAVE
+0049a6dc  RET 0x8

@@ -1,0 +1,23 @@
+; Function: ~CDialog
+; Entry:    00493f68
+; Size:     62 bytes
+
+00493f68  MOV EAX,0x4a1658
+00493f6d  CALL 0x004858b8
+00493f72  PUSH ECX
+00493f73  PUSH ESI
+00493f74  MOV ESI,ECX
+00493f76  MOV dword ptr [EBP + -0x10],ESI
+00493f79  MOV dword ptr [ESI],0x2f9b19c
+00493f7f  AND dword ptr [EBP + -0x4],0x0
+00493f83  CMP dword ptr [ESI + 0x1c],0x0
+00493f87  JZ 0x00493f8e
+00493f89  CALL 0x004953fe
+00493f8e  OR dword ptr [EBP + -0x4],0xffffffff
+00493f92  MOV ECX,ESI
+00493f94  CALL 0x00495240
+00493f99  MOV ECX,dword ptr [EBP + -0xc]
+00493f9c  POP ESI
+00493f9d  MOV dword ptr FS:[0x0],ECX
+00493fa4  LEAVE
+00493fa5  RET

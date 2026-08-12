@@ -1,0 +1,27 @@
+; Function: FUN_0040e6c0
+; Entry:    0040e6c0
+; Size:     61 bytes
+
+0040e6c0  PUSH ESI
+0040e6c1  MOV ESI,ECX
+0040e6c3  MOV EAX,dword ptr [ESI]
+0040e6c5  CALL dword ptr [EAX + 0x8]
+0040e6c8  MOV EAX,dword ptr [ESP + 0x8]
+0040e6cc  MOV ECX,dword ptr [EAX + 0x4]
+0040e6cf  MOV dword ptr [ESI + 0x4],ECX
+0040e6d2  LEA ECX,[ESI + 0x8]
+0040e6d5  POP ESI
+0040e6d6  MOV dword ptr [ECX + 0x10],0x0
+0040e6dd  MOV EDX,dword ptr [EAX + 0x18]
+0040e6e0  TEST EDX,EDX
+0040e6e2  JNZ 0x0040e6f0
+0040e6e4  XOR EAX,EAX
+0040e6e6  PUSH EDX
+0040e6e7  PUSH EAX
+0040e6e8  CALL 0x004069d0
+0040e6ed  RET 0x4
+0040e6f0  MOV EAX,dword ptr [EAX + 0x10]
+0040e6f3  PUSH EDX
+0040e6f4  PUSH EAX
+0040e6f5  CALL 0x004069d0
+0040e6fa  RET 0x4

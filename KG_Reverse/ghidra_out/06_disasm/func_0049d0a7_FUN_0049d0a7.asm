@@ -1,0 +1,21 @@
+; Function: FUN_0049d0a7
+; Entry:    0049d0a7
+; Size:     48 bytes
+
+0049d0a7  PUSH ESI
+0049d0a8  MOV ESI,ECX
+0049d0aa  MOV ECX,dword ptr [ESI + 0xa8]
+0049d0b0  TEST ECX,ECX
+0049d0b2  JZ 0x0049d0b9
+0049d0b4  MOV EAX,dword ptr [ECX]
+0049d0b6  CALL dword ptr [EAX + 0x10]
+0049d0b9  MOV EAX,dword ptr [ESI + 0xb4]
+0049d0bf  TEST EAX,EAX
+0049d0c1  JZ 0x0049d0d5
+0049d0c3  PUSH EAX
+0049d0c4  PUSH 0x2f9bfb0
+0049d0c9  PUSH 0x2f9bfc0
+0049d0ce  MOV ECX,ESI
+0049d0d0  CALL 0x0049afec
+0049d0d5  POP ESI
+0049d0d6  RET

@@ -1,0 +1,32 @@
+; Function: FUN_0045dc30
+; Entry:    0045dc30
+; Size:     102 bytes
+
+0045dc30  MOV EDX,dword ptr [ESP + 0x4]
+0045dc34  PUSH ESI
+0045dc35  MOV ECX,0x11e
+0045dc3a  XOR ESI,ESI
+0045dc3c  LEA EAX,[EDX + 0x8c]
+0045dc42  MOV word ptr [EAX],SI
+0045dc45  ADD EAX,0x4
+0045dc48  DEC ECX
+0045dc49  JNZ 0x0045dc42
+0045dc4b  LEA EAX,[EDX + 0x980]
+0045dc51  MOV ECX,0x1e
+0045dc56  MOV word ptr [EAX],SI
+0045dc59  ADD EAX,0x4
+0045dc5c  DEC ECX
+0045dc5d  JNZ 0x0045dc56
+0045dc5f  LEA EAX,[EDX + 0xa74]
+0045dc65  MOV ECX,0x13
+0045dc6a  MOV word ptr [EAX],SI
+0045dc6d  ADD EAX,0x4
+0045dc70  DEC ECX
+0045dc71  JNZ 0x0045dc6a
+0045dc73  MOV dword ptr [EDX + 0x16a4],ESI
+0045dc79  MOV dword ptr [EDX + 0x16a0],ESI
+0045dc7f  MOV dword ptr [EDX + 0x16a8],ESI
+0045dc85  MOV dword ptr [EDX + 0x1698],ESI
+0045dc8b  MOV word ptr [EDX + 0x48c],0x1
+0045dc94  POP ESI
+0045dc95  RET

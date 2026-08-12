@@ -1,0 +1,10 @@
+; Function: AfxGetModuleThreadState
+; Entry:    0049c74a
+; Size:     23 bytes
+
+0049c74a  CALL 0x0049c724
+0049c74f  ADD EAX,0x1070
+0049c754  PUSH 0x49c796
+0049c759  MOV ECX,EAX
+0049c75b  CALL 0x0049ccac
+0049c760  RET

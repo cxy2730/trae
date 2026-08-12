@@ -1,0 +1,18 @@
+; Function: FUN_00423a50
+; Entry:    00423a50
+; Size:     60 bytes
+
+00423a50  PUSH -0x1
+00423a52  PUSH 0x49f4f8
+00423a57  MOV EAX,FS:[0x0]
+00423a5d  PUSH EAX
+00423a5e  MOV dword ptr FS:[0x0],ESP
+00423a65  PUSH ECX
+00423a66  MOV dword ptr [ESP],ECX
+00423a6a  MOV dword ptr [ECX],0x2f9605c
+00423a70  MOV dword ptr [ESP + 0xc],0x0
+00423a78  CALL 0x00499e74
+00423a7d  MOV ECX,dword ptr [ESP + 0x4]
+00423a81  MOV dword ptr FS:[0x0],ECX
+00423a88  ADD ESP,0x10
+00423a8b  RET

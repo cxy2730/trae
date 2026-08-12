@@ -1,0 +1,21 @@
+; Function: FUN_00490de8
+; Entry:    00490de8
+; Size:     52 bytes
+
+00490de8  MOV EAX,[0x02fd8088]
+00490ded  CMP dword ptr [ESP + 0x8],0x1
+00490df2  PUSH ESI
+00490df3  MOV ESI,ECX
+00490df5  MOV dword ptr [ESI],EAX
+00490df7  JL 0x00490e16
+00490df9  PUSH dword ptr [ESP + 0xc]
+00490dfd  CALL 0x00493043
+00490e02  MOVSX EAX,byte ptr [ESP + 0x8]
+00490e07  PUSH dword ptr [ESP + 0xc]
+00490e0b  PUSH EAX
+00490e0c  PUSH dword ptr [ESI]
+00490e0e  CALL 0x00485970
+00490e13  ADD ESP,0xc
+00490e16  MOV EAX,ESI
+00490e18  POP ESI
+00490e19  RET 0x8

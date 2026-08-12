@@ -1,0 +1,14 @@
+; Function: Catch@00431105
+; Entry:    00431105
+; Size:     26 bytes
+
+00431105  MOV EAX,dword ptr [EBP + 0x10]
+00431108  MOV EDX,dword ptr [EBP + -0x20]
+0043110b  DEC EAX
+0043110c  MOV dword ptr [EBP + -0x24],EDX
+0043110f  NEG EAX
+00431111  SBB EAX,EAX
+00431113  ADD EAX,-0x1c
+00431116  MOV dword ptr [EBP + 0x8],EAX
+00431119  MOV EAX,0x43111f
+0043111e  RET

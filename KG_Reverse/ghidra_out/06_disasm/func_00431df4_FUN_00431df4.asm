@@ -1,0 +1,15 @@
+; Function: FUN_00431df4
+; Entry:    00431df4
+; Size:     33 bytes
+
+00431df4  MOV dword ptr [EBP + -0x4],0xffffffff
+00431dfb  CALL 0x004937a6
+00431e00  MOV ECX,dword ptr [EBP + -0xc]
+00431e03  POP EDI
+00431e04  MOV EAX,EBX
+00431e06  POP ESI
+00431e07  MOV dword ptr FS:[0x0],ECX
+00431e0e  POP EBX
+00431e0f  MOV ESP,EBP
+00431e11  POP EBP
+00431e12  RET 0x8

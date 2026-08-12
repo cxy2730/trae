@@ -1,0 +1,48 @@
+; Function: __aullrem
+; Entry:    0048ac20
+; Size:     117 bytes
+
+0048ac20  PUSH EBX
+0048ac21  MOV EAX,dword ptr [ESP + 0x14]
+0048ac25  OR EAX,EAX
+0048ac27  JNZ 0x0048ac41
+0048ac29  MOV ECX,dword ptr [ESP + 0x10]
+0048ac2d  MOV EAX,dword ptr [ESP + 0xc]
+0048ac31  XOR EDX,EDX
+0048ac33  DIV ECX
+0048ac35  MOV EAX,dword ptr [ESP + 0x8]
+0048ac39  DIV ECX
+0048ac3b  MOV EAX,EDX
+0048ac3d  XOR EDX,EDX
+0048ac3f  JMP 0x0048ac91
+0048ac41  MOV ECX,EAX
+0048ac43  MOV EBX,dword ptr [ESP + 0x10]
+0048ac47  MOV EDX,dword ptr [ESP + 0xc]
+0048ac4b  MOV EAX,dword ptr [ESP + 0x8]
+0048ac4f  SHR ECX,0x1
+0048ac51  RCR EBX,0x1
+0048ac53  SHR EDX,0x1
+0048ac55  RCR EAX,0x1
+0048ac57  OR ECX,ECX
+0048ac59  JNZ 0x0048ac4f
+0048ac5b  DIV EBX
+0048ac5d  MOV ECX,EAX
+0048ac5f  MUL dword ptr [ESP + 0x14]
+0048ac63  XCHG EAX,ECX
+0048ac64  MUL dword ptr [ESP + 0x10]
+0048ac68  ADD EDX,ECX
+0048ac6a  JC 0x0048ac7a
+0048ac6c  CMP EDX,dword ptr [ESP + 0xc]
+0048ac70  JA 0x0048ac7a
+0048ac72  JC 0x0048ac82
+0048ac74  CMP EAX,dword ptr [ESP + 0x8]
+0048ac78  JBE 0x0048ac82
+0048ac7a  SUB EAX,dword ptr [ESP + 0x10]
+0048ac7e  SBB EDX,dword ptr [ESP + 0x14]
+0048ac82  SUB EAX,dword ptr [ESP + 0x8]
+0048ac86  SBB EDX,dword ptr [ESP + 0xc]
+0048ac8a  NEG EDX
+0048ac8c  NEG EAX
+0048ac8e  SBB EDX,0x0
+0048ac91  POP EBX
+0048ac92  RET 0x10

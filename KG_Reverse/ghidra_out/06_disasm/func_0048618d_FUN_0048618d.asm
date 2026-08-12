@@ -1,0 +1,11 @@
+; Function: FUN_0048618d
+; Entry:    0048618d
+; Size:     23 bytes
+
+0048618d  PUSH 0x0
+0048618f  PUSH dword ptr [ESP + 0x10]
+00486193  PUSH dword ptr [ESP + 0x10]
+00486197  PUSH dword ptr [ESP + 0x10]
+0048619b  CALL 0x004861a4
+004861a0  ADD ESP,0x10
+004861a3  RET

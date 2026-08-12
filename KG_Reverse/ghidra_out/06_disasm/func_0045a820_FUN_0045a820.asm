@@ -1,0 +1,30 @@
+; Function: FUN_0045a820
+; Entry:    0045a820
+; Size:     58 bytes
+
+0045a820  PUSH ESI
+0045a821  MOV ESI,dword ptr [ESP + 0x1c]
+0045a825  PUSH EDI
+0045a826  MOV EDI,dword ptr [ESP + 0x1c]
+0045a82a  MOV EDX,dword ptr [ESI]
+0045a82c  MOV EAX,dword ptr [ESP + 0xc]
+0045a830  LEA EDX,[EDI + EDX*0x4]
+0045a833  MOV EDI,dword ptr [ESP + 0x14]
+0045a837  MOV ECX,dword ptr [EAX + 0x1c0]
+0045a83d  PUSH EDX
+0045a83e  MOV EDX,dword ptr [EDI]
+0045a840  PUSH EDX
+0045a841  MOV EDX,dword ptr [ESP + 0x18]
+0045a845  PUSH EDX
+0045a846  PUSH EAX
+0045a847  CALL dword ptr [ECX + 0xc]
+0045a84a  MOV ECX,dword ptr [ESI]
+0045a84c  ADD ESP,0x10
+0045a84f  INC ECX
+0045a850  MOV dword ptr [ESI],ECX
+0045a852  MOV EAX,dword ptr [EDI]
+0045a854  INC EAX
+0045a855  MOV dword ptr [EDI],EAX
+0045a857  POP EDI
+0045a858  POP ESI
+0045a859  RET

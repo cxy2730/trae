@@ -1,0 +1,39 @@
+; Function: FUN_0043dca0
+; Entry:    0043dca0
+; Size:     82 bytes
+
+0043dca0  MOV EAX,dword ptr [ESP + 0x10]
+0043dca4  PUSH ESI
+0043dca5  MOV ESI,dword ptr [ESP + 0x10]
+0043dca9  PUSH EDI
+0043dcaa  MOV EDI,dword ptr [ESP + 0xc]
+0043dcae  PUSH EAX
+0043dcaf  PUSH ESI
+0043dcb0  PUSH EDI
+0043dcb1  CALL 0x0043dd00
+0043dcb6  ADD ESP,0xc
+0043dcb9  TEST EAX,EAX
+0043dcbb  JZ 0x0043dcef
+0043dcbd  XOR ECX,ECX
+0043dcbf  XOR EDX,EDX
+0043dcc1  MOV CL,byte ptr [ESI + 0x40]
+0043dcc4  MOV DL,byte ptr [ESI + 0x41]
+0043dcc7  SHL ECX,0x8
+0043dcca  ADD ECX,EDX
+0043dccc  XOR EAX,EAX
+0043dcce  MOV AL,byte ptr [ESI + 0x42]
+0043dcd1  XOR EDX,EDX
+0043dcd3  MOV DL,byte ptr [ESI + 0x43]
+0043dcd6  SHL ECX,0x8
+0043dcd9  ADD ECX,EAX
+0043dcdb  MOV EAX,dword ptr [ESP + 0x10]
+0043dcdf  SHL ECX,0x8
+0043dce2  ADD ECX,EDX
+0043dce4  PUSH ECX
+0043dce5  PUSH EAX
+0043dce6  PUSH EDI
+0043dce7  CALL 0x0043d4f0
+0043dcec  ADD ESP,0xc
+0043dcef  POP EDI
+0043dcf0  POP ESI
+0043dcf1  RET

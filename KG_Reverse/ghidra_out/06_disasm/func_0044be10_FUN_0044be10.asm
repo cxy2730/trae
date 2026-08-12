@@ -1,0 +1,15 @@
+; Function: FUN_0044be10
+; Entry:    0044be10
+; Size:     29 bytes
+
+0044be10  PUSH ESI
+0044be11  MOV ESI,dword ptr [ESP + 0x8]
+0044be15  PUSH 0x0
+0044be17  PUSH ESI
+0044be18  CALL 0x0044bb60
+0044be1d  ADD ESP,0x8
+0044be20  TEST EAX,EAX
+0044be22  JZ 0x0044be2b
+0044be24  OR dword ptr [ESI + 0x7c],0x2001200
+0044be2b  POP ESI
+0044be2c  RET

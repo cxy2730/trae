@@ -1,0 +1,9 @@
+; Function: FUN_00402e57
+; Entry:    00402e57
+; Size:     7 bytes
+
+00402e57  PUSH EBP
+00402e58  MOV EBP,ESP
+00402e5a  MOV ESP,EBP
+00402e5c  POP EBP
+00402e5d  RET

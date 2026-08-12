@@ -1,0 +1,21 @@
+; Function: FUN_0040a930
+; Entry:    0040a930
+; Size:     65 bytes
+
+0040a930  SUB ESP,0x2c
+0040a933  MOV EAX,dword ptr [ECX + 0xa8]
+0040a939  MOV ECX,dword ptr [ECX + 0xac]
+0040a93f  MOV dword ptr [ESP],EAX
+0040a943  XOR EAX,EAX
+0040a945  LEA EDX,[ESP]
+0040a949  PUSH EAX
+0040a94a  PUSH EDX
+0040a94b  PUSH 0x7d8
+0040a950  MOV dword ptr [ESP + 0x10],ECX
+0040a954  MOV dword ptr [ESP + 0x14],0xfffffff8
+0040a95c  MOV dword ptr [ESP + 0x18],EAX
+0040a960  MOV dword ptr [ESP + 0x30],EAX
+0040a964  MOV dword ptr [ESP + 0x34],EAX
+0040a968  CALL 0x00413d70
+0040a96d  ADD ESP,0x2c
+0040a970  RET

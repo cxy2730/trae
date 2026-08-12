@@ -1,0 +1,28 @@
+; Function: FUN_0040f3a0
+; Entry:    0040f3a0
+; Size:     89 bytes
+
+0040f3a0  PUSH -0x1
+0040f3a2  PUSH 0x49e37b
+0040f3a7  MOV EAX,FS:[0x0]
+0040f3ad  PUSH EAX
+0040f3ae  MOV dword ptr FS:[0x0],ESP
+0040f3b5  PUSH ECX
+0040f3b6  PUSH ESI
+0040f3b7  MOV dword ptr [ESP + 0x4],ECX
+0040f3bb  MOV dword ptr [ECX],0x2f954c0
+0040f3c1  XOR EAX,EAX
+0040f3c3  LEA ESI,[ECX + 0x8]
+0040f3c6  MOV dword ptr [ECX + 0x4],EAX
+0040f3c9  MOV ECX,ESI
+0040f3cb  MOV dword ptr [ESP + 0x10],EAX
+0040f3cf  CALL 0x004064a0
+0040f3d4  MOV ECX,ESI
+0040f3d6  MOV dword ptr [ESP + 0x10],0xffffffff
+0040f3de  MOV dword ptr [ESI],0x2f95460
+0040f3e4  CALL 0x004064a0
+0040f3e9  MOV ECX,dword ptr [ESP + 0x8]
+0040f3ed  POP ESI
+0040f3ee  MOV dword ptr FS:[0x0],ECX
+0040f3f5  ADD ESP,0x10
+0040f3f8  RET

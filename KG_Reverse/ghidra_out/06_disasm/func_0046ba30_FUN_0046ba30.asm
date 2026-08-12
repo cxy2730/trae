@@ -1,0 +1,14 @@
+; Function: FUN_0046ba30
+; Entry:    0046ba30
+; Size:     23 bytes
+
+0046ba30  MOV EAX,dword ptr [ECX + 0x8]
+0046ba33  CMP EAX,0x1
+0046ba36  JNZ 0x0046ba3c
+0046ba38  OR EAX,0xffffffff
+0046ba3b  RET
+0046ba3c  XOR ECX,ECX
+0046ba3e  CMP EAX,0x2
+0046ba41  SETZ CL
+0046ba44  MOV EAX,ECX
+0046ba46  RET

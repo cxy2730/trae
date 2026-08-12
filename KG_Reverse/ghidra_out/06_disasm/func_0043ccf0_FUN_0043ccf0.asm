@@ -1,0 +1,21 @@
+; Function: FUN_0043ccf0
+; Entry:    0043ccf0
+; Size:     43 bytes
+
+0043ccf0  MOV EAX,dword ptr [ESP + 0x8]
+0043ccf4  TEST EAX,EAX
+0043ccf6  JZ 0x0043cd1a
+0043ccf8  MOV EDX,dword ptr [ESP + 0x4]
+0043ccfc  PUSH ESI
+0043ccfd  PUSH EDI
+0043ccfe  LEA EDI,[EAX + 0x28]
+0043cd01  LEA ESI,[EDX + 0x2dc]
+0043cd07  MOV ECX,0x13
+0043cd0c  PUSH EAX
+0043cd0d  PUSH EDX
+0043cd0e  MOVSD.REP ES:EDI,ESI
+0043cd10  CALL 0x0043cc80
+0043cd15  ADD ESP,0x8
+0043cd18  POP EDI
+0043cd19  POP ESI
+0043cd1a  RET

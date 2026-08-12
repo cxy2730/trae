@@ -1,0 +1,17 @@
+; Function: AfxInternalProcessWndProcException
+; Entry:    0049825f
+; Size:     37 bytes
+
+0049825f  MOV ECX,dword ptr [ESP + 0x8]
+00498263  MOV EAX,dword ptr [ECX + 0x4]
+00498266  CMP EAX,0x1
+00498269  JNZ 0x00498270
+0049826b  OR EAX,0xffffffff
+0049826e  JMP 0x00498281
+00498270  CMP EAX,0xf
+00498273  JNZ 0x0049827f
+00498275  PUSH 0x0
+00498277  PUSH dword ptr [ECX]
+00498279  CALL dword ptr [0x004a253c]
+0049827f  XOR EAX,EAX
+00498281  RET 0x8

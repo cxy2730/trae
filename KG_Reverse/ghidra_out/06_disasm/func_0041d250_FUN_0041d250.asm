@@ -1,0 +1,25 @@
+; Function: FUN_0041d250
+; Entry:    0041d250
+; Size:     74 bytes
+
+0041d250  MOV EAX,dword ptr [ESP + 0x4]
+0041d254  MOV ECX,dword ptr [EAX + 0x28]
+0041d257  TEST CL,0x2
+0041d25a  JZ 0x0041d299
+0041d25c  MOVSX EDX,word ptr [EAX + 0x2e]
+0041d260  SUB EDX,0x77
+0041d263  JZ 0x0041d281
+0041d265  DEC EDX
+0041d266  JNZ 0x0041d299
+0041d268  OR ECX,0xe
+0041d26b  MOV word ptr [EAX + 0x32],0x96a
+0041d271  MOV word ptr [EAX + 0x30],0x3a2
+0041d277  MOV word ptr [EAX + 0x2e],0x100
+0041d27d  MOV dword ptr [EAX + 0x28],ECX
+0041d280  RET
+0041d281  OR ECX,0xe
+0041d284  MOV word ptr [EAX + 0x32],0x96a
+0041d28a  MOV word ptr [EAX + 0x30],0x578
+0041d290  MOV word ptr [EAX + 0x2e],0x100
+0041d296  MOV dword ptr [EAX + 0x28],ECX
+0041d299  RET

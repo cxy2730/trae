@@ -1,0 +1,32 @@
+; Function: FUN_0048ca41
+; Entry:    0048ca41
+; Size:     76 bytes
+
+0048ca41  PUSH EBP
+0048ca42  MOV EBP,ESP
+0048ca44  PUSH -0x1
+0048ca46  PUSH 0x2f9d190
+0048ca4b  PUSH 0x485274
+0048ca50  MOV EAX,FS:[0x0]
+0048ca56  PUSH EAX
+0048ca57  MOV dword ptr FS:[0x0],ESP
+0048ca5e  SUB ESP,0x10
+0048ca61  PUSH EBX
+0048ca62  PUSH ESI
+0048ca63  PUSH EDI
+0048ca64  MOV dword ptr [EBP + -0x18],ESP
+0048ca67  AND dword ptr [EBP + -0x4],0x0
+0048ca6b  MOV EAX,dword ptr [EBP + 0x8]
+0048ca6e  MOV EAX,dword ptr [EAX]
+0048ca70  PUSH 0x1
+0048ca72  POP EAX
+0048ca73  MOV dword ptr [EBP + -0x1c],EAX
+0048ca76  JMP 0x0048ca91
+0048ca91  OR dword ptr [EBP + -0x4],0xffffffff
+0048ca95  MOV ECX,dword ptr [EBP + -0x10]
+0048ca98  MOV dword ptr FS:[0x0],ECX
+0048ca9f  POP EDI
+0048caa0  POP ESI
+0048caa1  POP EBX
+0048caa2  LEAVE
+0048caa3  RET 0x4

@@ -1,0 +1,17 @@
+; Function: FUN_00483fb7
+; Entry:    00483fb7
+; Size:     29 bytes
+
+00483fb7  MOV ECX,dword ptr [ESP + 0x4]
+00483fbb  CMP word ptr [ECX],0x0
+00483fbf  LEA EAX,[ECX + 0x2]
+00483fc2  JZ 0x00483fce
+00483fc4  MOV DX,word ptr [EAX]
+00483fc7  INC EAX
+00483fc8  INC EAX
+00483fc9  TEST DX,DX
+00483fcc  JNZ 0x00483fc4
+00483fce  SUB EAX,ECX
+00483fd0  SAR EAX,0x1
+00483fd2  DEC EAX
+00483fd3  RET

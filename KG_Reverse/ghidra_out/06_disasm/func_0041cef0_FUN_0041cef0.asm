@@ -1,0 +1,27 @@
+; Function: FUN_0041cef0
+; Entry:    0041cef0
+; Size:     67 bytes
+
+0041cef0  SUB ESP,0x14
+0041cef3  LEA ECX,[ESP]
+0041cef7  PUSH 0x0
+0041cef9  CALL 0x00499b75
+0041cefe  MOV EAX,dword ptr [ESP + 0x8]
+0041cf02  PUSH 0x5a
+0041cf04  PUSH EAX
+0041cf05  CALL dword ptr [0x004a205c]
+0041cf0b  PUSH 0x48
+0041cf0d  PUSH EAX
+0041cf0e  MOV EAX,dword ptr [ESP + 0x24]
+0041cf12  CDQ
+0041cf13  XOR EAX,EDX
+0041cf15  SUB EAX,EDX
+0041cf17  PUSH EAX
+0041cf18  CALL dword ptr [0x004a234c]
+0041cf1e  MOV ECX,dword ptr [ESP + 0x18]
+0041cf22  NEG EAX
+0041cf24  MOV dword ptr [ECX],EAX
+0041cf26  LEA ECX,[ESP]
+0041cf2a  CALL 0x00499be7
+0041cf2f  ADD ESP,0x14
+0041cf32  RET

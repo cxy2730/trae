@@ -1,0 +1,19 @@
+; Function: FUN_0049d8c4
+; Entry:    0049d8c4
+; Size:     35 bytes
+
+0049d8c4  PUSH EBP
+0049d8c5  MOV EBP,ESP
+0049d8c7  SUB ESP,0x14
+0049d8ca  LEA EAX,[EBP + -0x14]
+0049d8cd  PUSH EAX
+0049d8ce  CALL dword ptr [0x004a21d8]
+0049d8d4  PUSH EAX
+0049d8d5  CALL dword ptr [0x004a21dc]
+0049d8db  PUSH 0x1
+0049d8dd  POP EAX
+0049d8de  CMP EAX,dword ptr [EBP + -0x14]
+0049d8e1  SBB EAX,EAX
+0049d8e3  NEG EAX
+0049d8e5  LEAVE
+0049d8e6  RET

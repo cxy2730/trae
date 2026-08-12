@@ -1,0 +1,14 @@
+; Function: FUN_0049ce0c
+; Entry:    0049ce0c
+; Size:     27 bytes
+
+0049ce0c  PUSH ESI
+0049ce0d  MOV ESI,ECX
+0049ce0f  CALL 0x0049dafb
+0049ce14  TEST byte ptr [ESP + 0x8],0x1
+0049ce19  JZ 0x0049ce21
+0049ce1b  PUSH ESI
+0049ce1c  CALL 0x0049c898
+0049ce21  MOV EAX,ESI
+0049ce23  POP ESI
+0049ce24  RET 0x4

@@ -1,0 +1,16 @@
+; Function: FUN_00493b32
+; Entry:    00493b32
+; Size:     32 bytes
+
+00493b32  PUSH ESI
+00493b33  MOV ESI,ECX
+00493b35  MOV EAX,dword ptr [ESI + 0x4]
+00493b38  CMP EAX,-0x1
+00493b3b  JZ 0x00493b48
+00493b3d  PUSH EAX
+00493b3e  CALL dword ptr [0x004a235c]
+00493b44  OR dword ptr [ESI + 0x4],0xffffffff
+00493b48  LEA ECX,[ESI + 0xc]
+00493b4b  CALL 0x00493161
+00493b50  POP ESI
+00493b51  RET

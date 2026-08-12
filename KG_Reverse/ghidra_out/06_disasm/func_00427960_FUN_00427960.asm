@@ -1,0 +1,11 @@
+; Function: FUN_00427960
+; Entry:    00427960
+; Size:     15 bytes
+
+00427960  MOV ECX,dword ptr [ECX + 0xc]
+00427963  TEST ECX,ECX
+00427965  JZ 0x0042796c
+00427967  MOV EAX,dword ptr [ECX]
+00427969  JMP dword ptr [EAX + 0x10]
+0042796c  XOR EAX,EAX
+0042796e  RET

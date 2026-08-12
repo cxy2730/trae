@@ -1,0 +1,35 @@
+; Function: FUN_00499fb6
+; Entry:    00499fb6
+; Size:     87 bytes
+
+00499fb6  PUSH EBP
+00499fb7  MOV EBP,ESP
+00499fb9  PUSH ECX
+00499fba  PUSH ECX
+00499fbb  MOV ECX,dword ptr [EBP + 0x8]
+00499fbe  LEA EAX,[EBP + -0x1]
+00499fc1  PUSH EAX
+00499fc2  CALL 0x0048138e
+00499fc7  CMP byte ptr [EBP + -0x1],0xff
+00499fcb  JNC 0x00499fd3
+00499fcd  MOVZX EAX,byte ptr [EBP + -0x1]
+00499fd1  JMP 0x0049a009
+00499fd3  MOV ECX,dword ptr [EBP + 0x8]
+00499fd6  LEA EAX,[EBP + -0x4]
+00499fd9  PUSH EAX
+00499fda  CALL 0x004813bd
+00499fdf  CMP word ptr [EBP + -0x4],0xfffe
+00499fe5  JNZ 0x00499fec
+00499fe7  OR EAX,0xffffffff
+00499fea  JMP 0x0049a009
+00499fec  CMP word ptr [EBP + -0x4],0xffff
+00499ff2  JNZ 0x0049a005
+00499ff4  MOV ECX,dword ptr [EBP + 0x8]
+00499ff7  LEA EAX,[EBP + -0x8]
+00499ffa  PUSH EAX
+00499ffb  CALL 0x0048147c
+0049a000  MOV EAX,dword ptr [EBP + -0x8]
+0049a003  JMP 0x0049a009
+0049a005  MOVZX EAX,word ptr [EBP + -0x4]
+0049a009  LEAVE
+0049a00a  RET 0x4

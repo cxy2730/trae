@@ -1,0 +1,51 @@
+; Function: FUN_0048fc92
+; Entry:    0048fc92
+; Size:     124 bytes
+
+0048fc92  MOV ECX,dword ptr [ESP + 0x4]
+0048fc96  PUSH ESI
+0048fc97  CMP ECX,dword ptr [0x03014fc0]
+0048fc9d  PUSH EDI
+0048fc9e  JNC 0x0048fcf5
+0048fca0  MOV EAX,ECX
+0048fca2  SAR EAX,0x5
+0048fca5  LEA EDI,[EAX*0x4 + 0x3014ec0]
+0048fcac  MOV EAX,ECX
+0048fcae  AND EAX,0x1f
+0048fcb1  LEA ESI,[EAX + EAX*0x8]
+0048fcb4  MOV EAX,dword ptr [EDI]
+0048fcb6  SHL ESI,0x2
+0048fcb9  CMP dword ptr [EAX + ESI*0x1],-0x1
+0048fcbd  JNZ 0x0048fcf5
+0048fcbf  CMP dword ptr [0x02fd8974],0x1
+0048fcc6  PUSH EBX
+0048fcc7  MOV EBX,dword ptr [ESP + 0x14]
+0048fccb  JNZ 0x0048fceb
+0048fccd  SUB ECX,0x0
+0048fcd0  JZ 0x0048fce2
+0048fcd2  DEC ECX
+0048fcd3  JZ 0x0048fcdd
+0048fcd5  DEC ECX
+0048fcd6  JNZ 0x0048fceb
+0048fcd8  PUSH EBX
+0048fcd9  PUSH -0xc
+0048fcdb  JMP 0x0048fce5
+0048fcdd  PUSH EBX
+0048fcde  PUSH -0xb
+0048fce0  JMP 0x0048fce5
+0048fce2  PUSH EBX
+0048fce3  PUSH -0xa
+0048fce5  CALL dword ptr [0x004a23bc]
+0048fceb  MOV EAX,dword ptr [EDI]
+0048fced  MOV dword ptr [EAX + ESI*0x1],EBX
+0048fcf0  XOR EAX,EAX
+0048fcf2  POP EBX
+0048fcf3  JMP 0x0048fd0b
+0048fcf5  CALL 0x004843ad
+0048fcfa  MOV dword ptr [EAX],0x9
+0048fd00  CALL 0x004843b6
+0048fd05  AND dword ptr [EAX],0x0
+0048fd08  OR EAX,0xffffffff
+0048fd0b  POP EDI
+0048fd0c  POP ESI
+0048fd0d  RET

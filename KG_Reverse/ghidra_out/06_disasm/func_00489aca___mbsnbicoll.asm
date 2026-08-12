@@ -1,0 +1,28 @@
+; Function: __mbsnbicoll
+; Entry:    00489aca
+; Size:     63 bytes
+
+00489aca  PUSH EBP
+00489acb  MOV EBP,ESP
+00489acd  CMP dword ptr [EBP + 0x10],0x0
+00489ad1  JNZ 0x00489ad7
+00489ad3  XOR EAX,EAX
+00489ad5  POP EBP
+00489ad6  RET
+00489ad7  PUSH dword ptr [0x03014fc4]
+00489add  PUSH dword ptr [EBP + 0x10]
+00489ae0  PUSH dword ptr [EBP + 0xc]
+00489ae3  PUSH dword ptr [EBP + 0x10]
+00489ae6  PUSH dword ptr [EBP + 0x8]
+00489ae9  PUSH 0x1
+00489aeb  PUSH dword ptr [0x030151e4]
+00489af1  CALL 0x0048f2a2
+00489af6  ADD ESP,0x1c
+00489af9  TEST EAX,EAX
+00489afb  JNZ 0x00489b04
+00489afd  MOV EAX,0x7fffffff
+00489b02  POP EBP
+00489b03  RET
+00489b04  ADD EAX,-0x2
+00489b07  POP EBP
+00489b08  RET

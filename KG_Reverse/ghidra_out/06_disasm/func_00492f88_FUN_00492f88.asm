@@ -1,0 +1,9 @@
+; Function: FUN_00492f88
+; Entry:    00492f88
+; Size:     15 bytes
+
+00492f88  PUSH 0x40
+00492f8a  PUSH 0x50
+00492f8c  MOV ECX,0x300ef90
+00492f91  CALL 0x00481ce2
+00492f96  RET

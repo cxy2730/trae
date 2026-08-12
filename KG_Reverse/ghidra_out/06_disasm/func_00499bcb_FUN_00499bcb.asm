@@ -1,0 +1,15 @@
+; Function: FUN_00499bcb
+; Entry:    00499bcb
+; Size:     28 bytes
+
+00499bcb  PUSH ESI
+00499bcc  MOV ESI,ECX
+00499bce  CALL 0x00499be7
+00499bd3  TEST byte ptr [ESP + 0x8],0x1
+00499bd8  JZ 0x00499be1
+00499bda  PUSH ESI
+00499bdb  CALL 0x00492f40
+00499be0  POP ECX
+00499be1  MOV EAX,ESI
+00499be3  POP ESI
+00499be4  RET 0x4

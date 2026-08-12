@@ -1,0 +1,18 @@
+; Function: FUN_004075e0
+; Entry:    004075e0
+; Size:     60 bytes
+
+004075e0  PUSH -0x1
+004075e2  PUSH 0x49dd48
+004075e7  MOV EAX,FS:[0x0]
+004075ed  PUSH EAX
+004075ee  MOV dword ptr FS:[0x0],ESP
+004075f5  PUSH ECX
+004075f6  MOV dword ptr [ESP],ECX
+004075fa  MOV dword ptr [ECX],0x2f9547c
+00407600  MOV dword ptr [ESP + 0xc],0x0
+00407608  CALL 0x00499e74
+0040760d  MOV ECX,dword ptr [ESP + 0x4]
+00407611  MOV dword ptr FS:[0x0],ECX
+00407618  ADD ESP,0x10
+0040761b  RET

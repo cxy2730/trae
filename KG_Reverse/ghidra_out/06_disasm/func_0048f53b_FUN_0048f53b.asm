@@ -1,0 +1,16 @@
+; Function: FUN_0048f53b
+; Entry:    0048f53b
+; Size:     28 bytes
+
+0048f53b  PUSH ESI
+0048f53c  PUSH 0x1
+0048f53e  POP ESI
+0048f53f  PUSH dword ptr [ESP + 0xc]
+0048f543  PUSH dword ptr [ESP + 0xc]
+0048f547  CALL dword ptr [0x004a23a0]
+0048f54d  TEST EAX,EAX
+0048f54f  JZ 0x0048f553
+0048f551  XOR ESI,ESI
+0048f553  MOV EAX,ESI
+0048f555  POP ESI
+0048f556  RET

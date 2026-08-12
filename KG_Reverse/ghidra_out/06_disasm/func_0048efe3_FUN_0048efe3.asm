@@ -1,0 +1,25 @@
+; Function: FUN_0048efe3
+; Entry:    0048efe3
+; Size:     45 bytes
+
+0048efe3  PUSH EBP
+0048efe4  MOV EBP,ESP
+0048efe6  SUB ESP,0xc
+0048efe9  XOR EAX,EAX
+0048efeb  PUSH EAX
+0048efec  PUSH EAX
+0048efed  PUSH EAX
+0048efee  PUSH EAX
+0048efef  PUSH dword ptr [EBP + 0xc]
+0048eff2  LEA EAX,[EBP + 0xc]
+0048eff5  PUSH EAX
+0048eff6  LEA EAX,[EBP + -0xc]
+0048eff9  PUSH EAX
+0048effa  CALL 0x0048f56f
+0048efff  PUSH dword ptr [EBP + 0x8]
+0048f002  LEA EAX,[EBP + -0xc]
+0048f005  PUSH EAX
+0048f006  CALL 0x0048efb7
+0048f00b  ADD ESP,0x24
+0048f00e  LEAVE
+0048f00f  RET

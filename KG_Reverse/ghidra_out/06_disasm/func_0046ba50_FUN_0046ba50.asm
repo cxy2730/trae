@@ -1,0 +1,28 @@
+; Function: FUN_0046ba50
+; Entry:    0046ba50
+; Size:     87 bytes
+
+0046ba50  PUSH -0x1
+0046ba52  PUSH 0x4a124b
+0046ba57  MOV EAX,FS:[0x0]
+0046ba5d  PUSH EAX
+0046ba5e  MOV dword ptr FS:[0x0],ESP
+0046ba65  PUSH ECX
+0046ba66  PUSH 0x14
+0046ba68  CALL 0x00492f17
+0046ba6d  ADD ESP,0x4
+0046ba70  MOV dword ptr [ESP],EAX
+0046ba74  TEST EAX,EAX
+0046ba76  MOV dword ptr [ESP + 0xc],0x0
+0046ba7e  JZ 0x0046ba96
+0046ba80  MOV ECX,EAX
+0046ba82  CALL 0x0046e2f0
+0046ba87  MOV ECX,dword ptr [ESP + 0x4]
+0046ba8b  MOV dword ptr FS:[0x0],ECX
+0046ba92  ADD ESP,0x10
+0046ba95  RET
+0046ba96  MOV ECX,dword ptr [ESP + 0x4]
+0046ba9a  XOR EAX,EAX
+0046ba9c  MOV dword ptr FS:[0x0],ECX
+0046baa3  ADD ESP,0x10
+0046baa6  RET

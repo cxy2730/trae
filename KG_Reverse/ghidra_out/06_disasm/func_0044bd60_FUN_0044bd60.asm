@@ -1,0 +1,29 @@
+; Function: FUN_0044bd60
+; Entry:    0044bd60
+; Size:     79 bytes
+
+0044bd60  MOV EAX,dword ptr [ESP + 0x8]
+0044bd64  CMP EAX,-0x1
+0044bd67  JZ 0x0044bd8f
+0044bd69  CMP EAX,0xfffe7960
+0044bd6e  JZ 0x0044bd8f
+0044bd70  CMP EAX,-0x2
+0044bd73  JZ 0x0044bd7c
+0044bd75  CMP EAX,0xffff3cb0
+0044bd7a  JNZ 0x0044bdae
+0044bd7c  MOV EAX,dword ptr [ESP + 0xc]
+0044bd80  NEG EAX
+0044bd82  SBB EAX,EAX
+0044bd84  AND EAX,0x14f37
+0044bd89  ADD EAX,0x10175
+0044bd8e  RET
+0044bd8f  MOV EAX,dword ptr [ESP + 0x4]
+0044bd93  MOV ECX,dword ptr [EAX + 0x78]
+0044bd96  OR CH,0x10
+0044bd99  MOV dword ptr [EAX + 0x78],ECX
+0044bd9c  MOV EAX,dword ptr [ESP + 0xc]
+0044bda0  NEG EAX
+0044bda2  SBB EAX,EAX
+0044bda4  AND EAX,0x2a9d1
+0044bda9  ADD EAX,0xb18f
+0044bdae  RET

@@ -1,0 +1,21 @@
+; Function: Catch@0043c0d7
+; Entry:    0043c0d7
+; Size:     49 bytes
+
+0043c0d7  MOV ECX,dword ptr [EBP + -0x1c]
+0043c0da  MOV EAX,dword ptr [EBP + -0x40]
+0043c0dd  PUSH ECX
+0043c0de  MOV dword ptr [EBP + -0x48],EAX
+0043c0e1  CALL 0x00492f40
+0043c0e6  MOV EDX,dword ptr [EBP + 0x10]
+0043c0e9  PUSH EDX
+0043c0ea  CALL 0x00492f40
+0043c0ef  MOV EAX,dword ptr [EBP + -0x18]
+0043c0f2  ADD ESP,0x8
+0043c0f5  TEST EAX,EAX
+0043c0f7  JZ 0x0043c102
+0043c0f9  PUSH EAX
+0043c0fa  CALL 0x00492f40
+0043c0ff  ADD ESP,0x4
+0043c102  MOV EAX,0x43bf57
+0043c107  RET

@@ -1,0 +1,24 @@
+; Function: FUN_0043e5b0
+; Entry:    0043e5b0
+; Size:     70 bytes
+
+0043e5b0  FILD dword ptr [ESP + 0x4]
+0043e5b4  SUB ESP,0x8
+0043e5b7  FDIVR double ptr [0x02f97a78]
+0043e5bd  FIDIV dword ptr [ESP + 0x10]
+0043e5c1  FADD double ptr [0x02f97a58]
+0043e5c7  FSTP double ptr [ESP]
+0043e5ca  CALL 0x004823c8
+0043e5cf  FCOM double ptr [0x02f97a68]
+0043e5d5  ADD ESP,0x8
+0043e5d8  FNSTSW AX
+0043e5da  TEST AH,0x41
+0043e5dd  JZ 0x0043e5f1
+0043e5df  FCOM double ptr [0x02f97a60]
+0043e5e5  FNSTSW AX
+0043e5e7  TEST AH,0x1
+0043e5ea  JNZ 0x0043e5f1
+0043e5ec  JMP 0x00482498
+0043e5f1  FSTP ST0
+0043e5f3  XOR EAX,EAX
+0043e5f5  RET

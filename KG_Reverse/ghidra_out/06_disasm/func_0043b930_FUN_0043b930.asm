@@ -1,0 +1,15 @@
+; Function: FUN_0043b930
+; Entry:    0043b930
+; Size:     29 bytes
+
+0043b930  MOV EAX,dword ptr [ESP + 0x10]
+0043b934  MOV ECX,dword ptr [ESP + 0xc]
+0043b938  MOV EDX,dword ptr [ESP + 0x8]
+0043b93c  PUSH EAX
+0043b93d  MOV EAX,dword ptr [ESP + 0x8]
+0043b941  PUSH ECX
+0043b942  PUSH EDX
+0043b943  PUSH EAX
+0043b944  CALL 0x0043b950
+0043b949  ADD ESP,0x10
+0043b94c  RET

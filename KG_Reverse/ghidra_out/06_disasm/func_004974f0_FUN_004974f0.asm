@@ -1,0 +1,27 @@
+; Function: FUN_004974f0
+; Entry:    004974f0
+; Size:     65 bytes
+
+004974f0  PUSH EBP
+004974f1  MOV EBP,ESP
+004974f3  MOV EAX,dword ptr [ECX + 0x38]
+004974f6  TEST EAX,EAX
+004974f8  JNZ 0x00497514
+004974fa  PUSH dword ptr [EBP + 0x18]
+004974fd  PUSH dword ptr [EBP + 0x14]
+00497500  PUSH dword ptr [EBP + 0x10]
+00497503  PUSH dword ptr [EBP + 0xc]
+00497506  PUSH dword ptr [EBP + 0x8]
+00497509  PUSH dword ptr [ECX + 0x1c]
+0049750c  CALL dword ptr [0x004a2664]
+00497512  JMP 0x0049752d
+00497514  PUSH dword ptr [EBP + 0x18]
+00497517  MOV EDX,dword ptr [EAX]
+00497519  MOV ECX,EAX
+0049751b  PUSH dword ptr [EBP + 0x14]
+0049751e  PUSH dword ptr [EBP + 0x10]
+00497521  PUSH dword ptr [EBP + 0xc]
+00497524  PUSH dword ptr [EBP + 0x8]
+00497527  CALL dword ptr [EDX + 0x98]
+0049752d  POP EBP
+0049752e  RET 0x14

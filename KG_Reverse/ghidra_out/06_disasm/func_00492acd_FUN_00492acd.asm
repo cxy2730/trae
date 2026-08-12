@@ -1,0 +1,35 @@
+; Function: FUN_00492acd
+; Entry:    00492acd
+; Size:     77 bytes
+
+00492acd  PUSH ESI
+00492ace  MOV ESI,ECX
+00492ad0  CMP dword ptr [ESI + 0x10],0x0
+00492ad4  JNZ 0x00492b05
+00492ad6  PUSH 0xc
+00492ad8  LEA EAX,[ESI + 0x14]
+00492adb  PUSH dword ptr [ESI + 0x18]
+00492ade  PUSH EAX
+00492adf  CALL 0x00492a00
+00492ae4  MOV ECX,dword ptr [ESI + 0x18]
+00492ae7  ADD EAX,0x4
+00492aea  LEA EDX,[ECX + ECX*0x2]
+00492aed  DEC ECX
+00492aee  TEST ECX,ECX
+00492af0  LEA EAX,[EAX + EDX*0x4 + -0xc]
+00492af4  JL 0x00492b05
+00492af6  INC ECX
+00492af7  MOV EDX,dword ptr [ESI + 0x10]
+00492afa  MOV dword ptr [EAX],EDX
+00492afc  MOV dword ptr [ESI + 0x10],EAX
+00492aff  SUB EAX,0xc
+00492b02  DEC ECX
+00492b03  JNZ 0x00492af7
+00492b05  MOV EAX,dword ptr [ESI + 0x10]
+00492b08  MOV ECX,dword ptr [EAX]
+00492b0a  INC dword ptr [ESI + 0xc]
+00492b0d  MOV dword ptr [ESI + 0x10],ECX
+00492b10  AND dword ptr [EAX + 0x4],0x0
+00492b14  AND dword ptr [EAX + 0x8],0x0
+00492b18  POP ESI
+00492b19  RET

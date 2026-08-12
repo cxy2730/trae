@@ -1,0 +1,8 @@
+; Function: FUN_00497318
+; Entry:    00497318
+; Size:     15 bytes
+
+00497318  PUSH dword ptr [ESP + 0x4]
+0049731c  MOV ECX,0x3010a80
+00497321  CALL 0x00481dd5
+00497326  RET

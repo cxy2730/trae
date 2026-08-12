@@ -1,0 +1,15 @@
+; Function: FUN_004951d4
+; Entry:    004951d4
+; Size:     32 bytes
+
+004951d4  PUSH ESI
+004951d5  MOV ESI,dword ptr [ESP + 0x8]
+004951d9  CMP dword ptr [ESI + 0x28],0x0
+004951dd  JNZ 0x004951ed
+004951df  PUSH 0x1
+004951e1  CALL 0x00496fff
+004951e6  MOV dword ptr [ESI + 0x28],0x2f9b59c
+004951ed  PUSH 0x1
+004951ef  POP EAX
+004951f0  POP ESI
+004951f1  RET 0x4

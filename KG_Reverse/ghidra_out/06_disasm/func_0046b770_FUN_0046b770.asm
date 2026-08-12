@@ -1,0 +1,13 @@
+; Function: FUN_0046b770
+; Entry:    0046b770
+; Size:     24 bytes
+
+0046b770  MOV EAX,dword ptr [ESP + 0x4]
+0046b774  MOV EDX,dword ptr [ECX + 0x8]
+0046b777  CMP EAX,EDX
+0046b779  JNZ 0x0046b780
+0046b77b  XOR AL,AL
+0046b77d  RET 0x4
+0046b780  MOV dword ptr [ECX + 0x8],EAX
+0046b783  MOV AL,0x1
+0046b785  RET 0x4

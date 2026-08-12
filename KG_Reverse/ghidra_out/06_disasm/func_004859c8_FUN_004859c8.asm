@@ -1,0 +1,13 @@
+; Function: FUN_004859c8
+; Entry:    004859c8
+; Size:     23 bytes
+
+004859c8  MOV EAX,dword ptr [ESP + 0x4]
+004859cc  MOVZX ECX,byte ptr [EAX]
+004859cf  MOV CL,byte ptr [ECX + 0x30150e1]
+004859d5  AND CL,0x4
+004859d8  INC EAX
+004859d9  TEST CL,CL
+004859db  JZ 0x004859de
+004859dd  INC EAX
+004859de  RET

@@ -1,0 +1,33 @@
+; Function: __cfltcvt
+; Entry:    004879a8
+; Size:     81 bytes
+
+004879a8  PUSH EBP
+004879a9  MOV EBP,ESP
+004879ab  CMP dword ptr [EBP + 0x10],0x65
+004879af  JZ 0x004879e3
+004879b1  CMP dword ptr [EBP + 0x10],0x45
+004879b5  JZ 0x004879e3
+004879b7  CMP dword ptr [EBP + 0x10],0x66
+004879bb  JNZ 0x004879d0
+004879bd  PUSH dword ptr [EBP + 0x14]
+004879c0  PUSH dword ptr [EBP + 0xc]
+004879c3  PUSH dword ptr [EBP + 0x8]
+004879c6  CALL 0x00487819
+004879cb  ADD ESP,0xc
+004879ce  POP EBP
+004879cf  RET
+004879d0  PUSH dword ptr [EBP + 0x18]
+004879d3  PUSH dword ptr [EBP + 0x14]
+004879d6  PUSH dword ptr [EBP + 0xc]
+004879d9  PUSH dword ptr [EBP + 0x8]
+004879dc  CALL 0x00487915
+004879e1  JMP 0x004879f4
+004879e3  PUSH dword ptr [EBP + 0x18]
+004879e6  PUSH dword ptr [EBP + 0x14]
+004879e9  PUSH dword ptr [EBP + 0xc]
+004879ec  PUSH dword ptr [EBP + 0x8]
+004879ef  CALL 0x004876f6
+004879f4  ADD ESP,0x10
+004879f7  POP EBP
+004879f8  RET

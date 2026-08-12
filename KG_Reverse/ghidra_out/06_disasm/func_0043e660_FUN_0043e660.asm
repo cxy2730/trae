@@ -1,0 +1,26 @@
+; Function: FUN_0043e660
+; Entry:    0043e660
+; Size:     90 bytes
+
+0043e660  MOV EAX,dword ptr [ESP + 0x4]
+0043e664  SUB ESP,0x8
+0043e667  TEST EAX,EAX
+0043e669  JBE 0x0043e6b6
+0043e66b  CMP EAX,0xffff
+0043e670  JNC 0x0043e6b6
+0043e672  MOV dword ptr [ESP],EAX
+0043e676  MOV dword ptr [ESP + 0x4],0x0
+0043e67e  FILD qword ptr [ESP]
+0043e682  FMUL double ptr [0x02f97aa0]
+0043e688  FILD dword ptr [ESP + 0x10]
+0043e68c  FMUL double ptr [0x02f97a88]
+0043e692  CALL 0x00482010
+0043e697  FMUL double ptr [0x02f97a98]
+0043e69d  SUB ESP,0x8
+0043e6a0  FADD double ptr [0x02f97a58]
+0043e6a6  FSTP double ptr [ESP]
+0043e6a9  CALL 0x004823c8
+0043e6ae  ADD ESP,0x8
+0043e6b1  CALL 0x00482498
+0043e6b6  ADD ESP,0x8
+0043e6b9  RET

@@ -1,0 +1,15 @@
+; Function: FUN_00434c70
+; Entry:    00434c70
+; Size:     32 bytes
+
+00434c70  PUSH ESI
+00434c71  MOV ESI,ECX
+00434c73  CALL 0x00494b19
+00434c78  MOV EAX,dword ptr [ESI]
+00434c7a  MOV ECX,ESI
+00434c7c  CALL dword ptr [EAX + 0xbc]
+00434c82  MOV ECX,dword ptr [ESI + 0x1c]
+00434c85  PUSH ECX
+00434c86  CALL dword ptr [0x004a2538]
+00434c8c  POP ESI
+00434c8d  RET 0x4

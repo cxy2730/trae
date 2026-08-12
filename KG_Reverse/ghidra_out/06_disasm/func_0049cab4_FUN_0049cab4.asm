@@ -1,0 +1,89 @@
+; Function: FUN_0049cab4
+; Entry:    0049cab4
+; Size:     234 bytes
+
+0049cab4  PUSH EBP
+0049cab5  MOV EBP,ESP
+0049cab7  PUSH ECX
+0049cab8  PUSH EBX
+0049cab9  PUSH ESI
+0049caba  MOV ESI,ECX
+0049cabc  PUSH EDI
+0049cabd  PUSH dword ptr [ESI]
+0049cabf  CALL dword ptr [0x004a21f4]
+0049cac5  MOV EDI,EAX
+0049cac7  TEST EDI,EDI
+0049cac9  JZ 0x0049cae5
+0049cacb  MOV EAX,dword ptr [EBP + 0x8]
+0049cace  LEA EBX,[EDI + 0x8]
+0049cad1  CMP EAX,dword ptr [EBX]
+0049cad3  JL 0x0049cb8b
+0049cad9  CMP dword ptr [EBP + 0xc],0x0
+0049cadd  JZ 0x0049cb8b
+0049cae3  JMP 0x0049cb27
+0049cae5  PUSH 0x10
+0049cae7  CALL 0x0049c87a
+0049caec  TEST EAX,EAX
+0049caee  JZ 0x0049cafa
+0049caf0  MOV dword ptr [EAX],0x2f9bf20
+0049caf6  MOV EDI,EAX
+0049caf8  JMP 0x0049cafc
+0049cafa  XOR EDI,EDI
+0049cafc  AND dword ptr [EDI + 0x8],0x0
+0049cb00  AND dword ptr [EDI + 0xc],0x0
+0049cb04  LEA EBX,[EDI + 0x8]
+0049cb07  LEA EAX,[ESI + 0x1c]
+0049cb0a  PUSH EAX
+0049cb0b  MOV dword ptr [EBP + -0x4],EDI
+0049cb0e  CALL dword ptr [0x004a2278]
+0049cb14  PUSH EDI
+0049cb15  LEA ECX,[ESI + 0x14]
+0049cb18  CALL 0x0049c821
+0049cb1d  LEA EAX,[ESI + 0x1c]
+0049cb20  PUSH EAX
+0049cb21  CALL dword ptr [0x004a227c]
+0049cb27  MOV EAX,dword ptr [EDI + 0xc]
+0049cb2a  TEST EAX,EAX
+0049cb2c  JNZ 0x0049cb3f
+0049cb2e  MOV EAX,dword ptr [ESI + 0xc]
+0049cb31  SHL EAX,0x2
+0049cb34  PUSH EAX
+0049cb35  PUSH 0x0
+0049cb37  CALL dword ptr [0x004a220c]
+0049cb3d  JMP 0x0049cb4f
+0049cb3f  MOV ECX,dword ptr [ESI + 0xc]
+0049cb42  PUSH 0x2
+0049cb44  SHL ECX,0x2
+0049cb47  PUSH ECX
+0049cb48  PUSH EAX
+0049cb49  CALL dword ptr [0x004a21f8]
+0049cb4f  TEST EAX,EAX
+0049cb51  MOV dword ptr [EDI + 0xc],EAX
+0049cb54  JNZ 0x0049cb5b
+0049cb56  CALL 0x0049132a
+0049cb5b  MOV EAX,dword ptr [EBX]
+0049cb5d  MOV ECX,EAX
+0049cb5f  IMUL ECX,ECX,0x3fffffff
+0049cb65  ADD ECX,dword ptr [ESI + 0xc]
+0049cb68  SHL ECX,0x2
+0049cb6b  PUSH ECX
+0049cb6c  MOV ECX,dword ptr [EDI + 0xc]
+0049cb6f  PUSH 0x0
+0049cb71  LEA EAX,[ECX + EAX*0x4]
+0049cb74  PUSH EAX
+0049cb75  CALL 0x00485970
+0049cb7a  MOV EAX,dword ptr [ESI + 0xc]
+0049cb7d  ADD ESP,0xc
+0049cb80  MOV dword ptr [EBX],EAX
+0049cb82  PUSH EDI
+0049cb83  PUSH dword ptr [ESI]
+0049cb85  CALL dword ptr [0x004a21fc]
+0049cb8b  MOV EAX,dword ptr [EDI + 0xc]
+0049cb8e  MOV EDX,dword ptr [EBP + 0x8]
+0049cb91  MOV ECX,dword ptr [EBP + 0xc]
+0049cb94  POP EDI
+0049cb95  POP ESI
+0049cb96  MOV dword ptr [EAX + EDX*0x4],ECX
+0049cb99  POP EBX
+0049cb9a  LEAVE
+0049cb9b  RET 0x8

@@ -1,0 +1,10 @@
+; Function: FUN_00485e48
+; Entry:    00485e48
+; Size:     17 bytes
+
+00485e48  PUSH 0x0
+00485e4a  PUSH 0x0
+00485e4c  PUSH dword ptr [ESP + 0xc]
+00485e50  CALL 0x00485e6a
+00485e55  ADD ESP,0xc
+00485e58  RET

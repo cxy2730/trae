@@ -1,0 +1,30 @@
+; Function: FUN_0049439d
+; Entry:    0049439d
+; Size:     77 bytes
+
+0049439d  OR dword ptr [EBP + -0x4],0xffffffff
+004943a1  CMP dword ptr [EBP + -0x20],EDI
+004943a4  JZ 0x004943b1
+004943a6  PUSH 0x1
+004943a8  PUSH dword ptr [EBP + -0x14]
+004943ab  CALL dword ptr [0x004a24f0]
+004943b1  CMP dword ptr [EBP + -0x14],EDI
+004943b4  JZ 0x004943ca
+004943b6  CALL dword ptr [0x004a2404]
+004943bc  CMP EAX,dword ptr [ESI + 0x1c]
+004943bf  JNZ 0x004943ca
+004943c1  PUSH dword ptr [EBP + -0x14]
+004943c4  CALL dword ptr [0x004a2504]
+004943ca  MOV EAX,dword ptr [ESI]
+004943cc  MOV ECX,ESI
+004943ce  CALL dword ptr [EAX + 0x58]
+004943d1  MOV ECX,ESI
+004943d3  CALL 0x00494248
+004943d8  MOV EAX,dword ptr [ESI + 0x2c]
+004943db  MOV ECX,dword ptr [EBP + -0xc]
+004943de  POP EDI
+004943df  POP ESI
+004943e0  MOV dword ptr FS:[0x0],ECX
+004943e7  POP EBX
+004943e8  LEAVE
+004943e9  RET

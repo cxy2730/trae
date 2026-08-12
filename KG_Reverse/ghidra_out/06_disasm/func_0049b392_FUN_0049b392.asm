@@ -1,0 +1,51 @@
+; Function: FUN_0049b392
+; Entry:    0049b392
+; Size:     162 bytes
+
+0049b392  MOV EAX,0x4a17e8
+0049b397  CALL 0x004858b8
+0049b39c  SUB ESP,0x24
+0049b39f  PUSH ESI
+0049b3a0  MOV ESI,ECX
+0049b3a2  MOV dword ptr [EBP + -0x10],ESI
+0049b3a5  AND dword ptr [EBP + -0x4],0x0
+0049b3a9  AND dword ptr [EBP + -0x14],0x0
+0049b3ad  MOV dword ptr [ESI],0x2f9bdc4
+0049b3b3  MOV dword ptr [EBP + -0x18],0x2f9bdb4
+0049b3ba  CMP dword ptr [0x03010cfc],0x0
+0049b3c1  MOV byte ptr [EBP + -0x4],0x1
+0049b3c5  JNZ 0x0049b3d9
+0049b3c7  CALL 0x0049d756
+0049b3cc  CMP dword ptr [EAX + 0x20],0x0
+0049b3d0  JNZ 0x0049b3d9
+0049b3d2  PUSH 0x7913
+0049b3d7  JMP 0x0049b3de
+0049b3d9  PUSH 0x7914
+0049b3de  LEA ECX,[EBP + -0x18]
+0049b3e1  CALL 0x00481bd8
+0049b3e6  LEA EAX,[EBP + -0x30]
+0049b3e9  PUSH EAX
+0049b3ea  PUSH 0x18
+0049b3ec  PUSH dword ptr [EBP + -0x14]
+0049b3ef  CALL dword ptr [0x004a211c]
+0049b3f5  MOV EAX,dword ptr [EBP + -0x2c]
+0049b3f8  PUSH 0x3
+0049b3fa  CDQ
+0049b3fb  POP ECX
+0049b3fc  IDIV ECX
+0049b3fe  LEA ECX,[EBP + -0x18]
+0049b401  MOV dword ptr [ESI + 0x8],EAX
+0049b404  MOV EAX,dword ptr [EBP + -0x28]
+0049b407  MOV dword ptr [ESI + 0xc],EAX
+0049b40a  CALL 0x00499e4a
+0049b40f  MOV dword ptr [ESI + 0x4],EAX
+0049b412  MOV dword ptr [EBP + -0x18],0x2f9afc8
+0049b419  LEA ECX,[EBP + -0x18]
+0049b41c  MOV byte ptr [EBP + -0x4],0x2
+0049b420  CALL 0x00499e74
+0049b425  MOV ECX,dword ptr [EBP + -0xc]
+0049b428  MOV EAX,ESI
+0049b42a  POP ESI
+0049b42b  MOV dword ptr FS:[0x0],ECX
+0049b432  LEAVE
+0049b433  RET

@@ -1,0 +1,22 @@
+; Function: FUN_0044ff00
+; Entry:    0044ff00
+; Size:     46 bytes
+
+0044ff00  PUSH ESI
+0044ff01  MOV ESI,dword ptr [ESP + 0x8]
+0044ff05  TEST ESI,ESI
+0044ff07  JZ 0x0044ff2c
+0044ff09  MOV EAX,dword ptr [ESP + 0x10]
+0044ff0d  MOV ECX,dword ptr [ESP + 0xc]
+0044ff11  PUSH EAX
+0044ff12  PUSH ECX
+0044ff13  PUSH ESI
+0044ff14  CALL 0x0044fe60
+0044ff19  MOV EAX,dword ptr [ESI + 0x7c]
+0044ff1c  ADD ESP,0xc
+0044ff1f  TEST AH,0x80
+0044ff22  JZ 0x0044ff2c
+0044ff24  OR EAX,0x1000000
+0044ff29  MOV dword ptr [ESI + 0x7c],EAX
+0044ff2c  POP ESI
+0044ff2d  RET

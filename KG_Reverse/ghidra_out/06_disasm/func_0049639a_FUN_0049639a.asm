@@ -1,0 +1,24 @@
+; Function: FUN_0049639a
+; Entry:    0049639a
+; Size:     48 bytes
+
+0049639a  PUSH EBP
+0049639b  MOV EBP,ESP
+0049639d  PUSH ESI
+0049639e  MOV ESI,ECX
+004963a0  PUSH dword ptr [EBP + 0x8]
+004963a3  MOV EAX,dword ptr [ESI]
+004963a5  CALL dword ptr [EAX + 0x68]
+004963a8  PUSH dword ptr [EBP + 0x10]
+004963ab  TEST EAX,EAX
+004963ad  PUSH dword ptr [EBP + 0xc]
+004963b0  JZ 0x004963b9
+004963b2  PUSH 0x2
+004963b4  PUSH dword ptr [EAX + 0x1c]
+004963b7  JMP 0x004963bf
+004963b9  PUSH dword ptr [EBP + 0x8]
+004963bc  PUSH dword ptr [ESI + 0x1c]
+004963bf  CALL dword ptr [0x004a24b4]
+004963c5  POP ESI
+004963c6  POP EBP
+004963c7  RET 0xc

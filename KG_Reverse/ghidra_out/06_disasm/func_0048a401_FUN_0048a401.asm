@@ -1,0 +1,29 @@
+; Function: FUN_0048a401
+; Entry:    0048a401
+; Size:     78 bytes
+
+0048a401  MOV EAX,dword ptr [EBP + -0x28]
+0048a404  MOV dword ptr [ESI + -0x4],EAX
+0048a407  CALL 0x004871ba
+0048a40c  MOV ECX,dword ptr [EBP + -0x1c]
+0048a40f  MOV dword ptr [EAX + 0x6c],ECX
+0048a412  CALL 0x004871ba
+0048a417  MOV ECX,dword ptr [EBP + -0x20]
+0048a41a  MOV dword ptr [EAX + 0x70],ECX
+0048a41d  CMP dword ptr [EDI],0xe06d7363
+0048a423  JNZ 0x0048a44e
+0048a425  CMP dword ptr [EDI + 0x10],0x3
+0048a429  JNZ 0x0048a44e
+0048a42b  CMP dword ptr [EDI + 0x14],0x19930520
+0048a432  JNZ 0x0048a44e
+0048a434  CMP dword ptr [EBP + -0x24],0x0
+0048a438  JNZ 0x0048a44e
+0048a43a  CMP dword ptr [EBP + -0x2c],0x0
+0048a43e  JZ 0x0048a44e
+0048a440  CALL 0x00482b6e
+0048a445  PUSH EAX
+0048a446  PUSH EDI
+0048a447  CALL 0x0048a63d
+0048a44c  POP ECX
+0048a44d  POP ECX
+0048a44e  RET

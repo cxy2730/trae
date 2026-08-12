@@ -1,0 +1,12 @@
+; Function: FUN_00491f31
+; Entry:    00491f31
+; Size:     22 bytes
+
+00491f31  CMP dword ptr [ECX + 0x4],0x0
+00491f35  JNZ 0x00491f3a
+00491f37  XOR EAX,EAX
+00491f39  RET
+00491f3a  CALL 0x00491f07
+00491f3f  PUSH EAX
+00491f40  CALL dword ptr [0x004a201c]
+00491f46  RET

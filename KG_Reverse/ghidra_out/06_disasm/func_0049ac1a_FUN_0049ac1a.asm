@@ -1,0 +1,22 @@
+; Function: FUN_0049ac1a
+; Entry:    0049ac1a
+; Size:     46 bytes
+
+0049ac1a  PUSH ESI
+0049ac1b  CALL 0x00481913
+0049ac20  MOV ESI,EAX
+0049ac22  TEST ESI,ESI
+0049ac24  JZ 0x0049ac44
+0049ac26  MOV EAX,dword ptr [ESI]
+0049ac28  MOV ECX,ESI
+0049ac2a  CALL dword ptr [EAX + 0xb0]
+0049ac30  TEST EAX,EAX
+0049ac32  JZ 0x0049ac44
+0049ac34  MOV ECX,dword ptr [ESI + 0x68]
+0049ac37  TEST ECX,ECX
+0049ac39  JZ 0x0049ac44
+0049ac3b  MOV EAX,dword ptr [ECX]
+0049ac3d  PUSH dword ptr [ESP + 0x8]
+0049ac41  CALL dword ptr [EAX + 0x64]
+0049ac44  POP ESI
+0049ac45  RET 0x4

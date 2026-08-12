@@ -1,0 +1,14 @@
+; Function: FUN_004758d0
+; Entry:    004758d0
+; Size:     32 bytes
+
+004758d0  MOV EAX,dword ptr [ESP + 0x4]
+004758d4  PUSH ESI
+004758d5  MOV ESI,ECX
+004758d7  PUSH EAX
+004758d8  CALL 0x0046e400
+004758dd  MOV dword ptr [ESI],0x2f9a078
+004758e3  MOV dword ptr [ESI + 0x20],0x0
+004758ea  MOV EAX,ESI
+004758ec  POP ESI
+004758ed  RET 0x4

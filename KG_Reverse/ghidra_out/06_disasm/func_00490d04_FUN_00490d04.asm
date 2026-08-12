@@ -1,0 +1,8 @@
+; Function: FUN_00490d04
+; Entry:    00490d04
+; Size:     12 bytes
+
+00490d04  PUSH 0x48173b
+00490d09  CALL 0x00483c3b
+00490d0e  POP ECX
+00490d0f  RET

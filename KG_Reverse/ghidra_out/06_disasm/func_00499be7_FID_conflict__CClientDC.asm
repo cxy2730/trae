@@ -1,0 +1,24 @@
+; Function: FID_conflict:~CClientDC
+; Entry:    00499be7
+; Size:     66 bytes
+
+00499be7  MOV EAX,0x4a1590
+00499bec  CALL 0x004858b8
+00499bf1  PUSH ECX
+00499bf2  PUSH ESI
+00499bf3  MOV ESI,ECX
+00499bf5  MOV dword ptr [EBP + -0x10],ESI
+00499bf8  MOV dword ptr [ESI],0x2f9ae40
+00499bfe  AND dword ptr [EBP + -0x4],0x0
+00499c02  CALL 0x00499314
+00499c07  PUSH EAX
+00499c08  PUSH dword ptr [ESI + 0x10]
+00499c0b  CALL dword ptr [0x004a2520]
+00499c11  OR dword ptr [EBP + -0x4],0xffffffff
+00499c15  MOV ECX,ESI
+00499c17  CALL 0x0049935b
+00499c1c  MOV ECX,dword ptr [EBP + -0xc]
+00499c1f  POP ESI
+00499c20  MOV dword ptr FS:[0x0],ECX
+00499c27  LEAVE
+00499c28  RET

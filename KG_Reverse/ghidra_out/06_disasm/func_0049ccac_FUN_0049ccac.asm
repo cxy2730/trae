@@ -1,0 +1,47 @@
+; Function: FUN_0049ccac
+; Entry:    0049ccac
+; Size:     119 bytes
+
+0049ccac  PUSH ESI
+0049ccad  PUSH EDI
+0049ccae  MOV EDI,ECX
+0049ccb0  CMP dword ptr [EDI],0x0
+0049ccb3  JNZ 0x0049cce2
+0049ccb5  MOV ECX,dword ptr [0x03010be0]
+0049ccbb  TEST ECX,ECX
+0049ccbd  JNZ 0x0049ccdb
+0049ccbf  MOV ECX,0x3010be4
+0049ccc4  MOV EAX,ECX
+0049ccc6  TEST EAX,EAX
+0049ccc8  JZ 0x0049ccd3
+0049ccca  CALL 0x0049c8ac
+0049cccf  MOV ECX,EAX
+0049ccd1  JMP 0x0049ccd5
+0049ccd3  XOR ECX,ECX
+0049ccd5  MOV dword ptr [0x03010be0],ECX
+0049ccdb  CALL 0x0049c945
+0049cce0  MOV dword ptr [EDI],EAX
+0049cce2  MOV EAX,[0x03010be0]
+0049cce7  MOV ESI,dword ptr [EDI]
+0049cce9  PUSH dword ptr [EAX]
+0049cceb  CALL dword ptr [0x004a21f4]
+0049ccf1  TEST EAX,EAX
+0049ccf3  JZ 0x0049cd02
+0049ccf5  CMP ESI,dword ptr [EAX + 0x8]
+0049ccf8  JGE 0x0049cd02
+0049ccfa  MOV EAX,dword ptr [EAX + 0xc]
+0049ccfd  MOV ESI,dword ptr [EAX + ESI*0x4]
+0049cd00  JMP 0x0049cd04
+0049cd02  XOR ESI,ESI
+0049cd04  TEST ESI,ESI
+0049cd06  JNZ 0x0049cd1c
+0049cd08  CALL dword ptr [ESP + 0xc]
+0049cd0c  MOV ECX,dword ptr [0x03010be0]
+0049cd12  MOV ESI,EAX
+0049cd14  PUSH ESI
+0049cd15  PUSH dword ptr [EDI]
+0049cd17  CALL 0x0049cab4
+0049cd1c  MOV EAX,ESI
+0049cd1e  POP EDI
+0049cd1f  POP ESI
+0049cd20  RET 0x4

@@ -1,0 +1,14 @@
+; Function: FUN_00497418
+; Entry:    00497418
+; Size:     26 bytes
+
+00497418  MOV EAX,dword ptr [ECX + 0x38]
+0049741b  TEST EAX,EAX
+0049741d  JNZ 0x0049742b
+0049741f  PUSH -0x10
+00497421  PUSH dword ptr [ECX + 0x1c]
+00497424  CALL dword ptr [0x004a24f8]
+0049742a  RET
+0049742b  MOV EDX,dword ptr [EAX]
+0049742d  MOV ECX,EAX
+0049742f  JMP dword ptr [EDX + 0x70]

@@ -1,0 +1,20 @@
+; Function: FUN_00494ae4
+; Entry:    00494ae4
+; Size:     53 bytes
+
+00494ae4  PUSH ESI
+00494ae5  PUSH 0x49c02d
+00494aea  MOV ECX,0x3010bd4
+00494aef  CALL 0x0049ccac
+00494af4  MOV ESI,EAX
+00494af6  CALL dword ptr [0x004a2624]
+00494afc  MOV dword ptr [ESI + 0x44],EAX
+00494aff  CALL dword ptr [0x004a23fc]
+00494b05  MOVSX ECX,AX
+00494b08  SHR EAX,0x10
+00494b0b  MOVSX EAX,AX
+00494b0e  MOV dword ptr [ESI + 0x48],ECX
+00494b11  MOV dword ptr [ESI + 0x4c],EAX
+00494b14  LEA EAX,[ESI + 0x34]
+00494b17  POP ESI
+00494b18  RET

@@ -1,0 +1,25 @@
+; Function: FUN_0045bdc0
+; Entry:    0045bdc0
+; Size:     43 bytes
+
+0045bdc0  MOV EDX,dword ptr [ESP + 0x8]
+0045bdc4  PUSH ESI
+0045bdc5  XOR ESI,ESI
+0045bdc7  XOR EAX,EAX
+0045bdc9  TEST EDX,EDX
+0045bdcb  JLE 0x0045bde9
+0045bdcd  MOV ECX,dword ptr [ESP + 0x8]
+0045bdd1  PUSH EDI
+0045bdd2  ADD ECX,0x18
+0045bdd5  MOV EDI,EDX
+0045bdd7  MOV EDX,dword ptr [ECX]
+0045bdd9  CMP EDX,ESI
+0045bddb  JLE 0x0045bde2
+0045bddd  LEA EAX,[ECX + -0x18]
+0045bde0  MOV ESI,EDX
+0045bde2  ADD ECX,0x20
+0045bde5  DEC EDI
+0045bde6  JNZ 0x0045bdd7
+0045bde8  POP EDI
+0045bde9  POP ESI
+0045bdea  RET

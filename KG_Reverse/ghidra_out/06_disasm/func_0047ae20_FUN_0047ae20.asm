@@ -1,0 +1,158 @@
+; Function: FUN_0047ae20
+; Entry:    0047ae20
+; Size:     523 bytes
+
+0047ae20  SUB ESP,0x8
+0047ae23  PUSH EBX
+0047ae24  MOV BL,byte ptr [ESP + 0x14]
+0047ae28  ADD BL,0x68
+0047ae2b  PUSH EBP
+0047ae2c  MOV DL,BL
+0047ae2e  PUSH ESI
+0047ae2f  MOV ESI,dword ptr [ESP + 0x18]
+0047ae33  SUB DL,0x10
+0047ae36  PUSH EDI
+0047ae37  MOV byte ptr [ESP + 0x10],BL
+0047ae3b  MOV byte ptr [ESP + 0x20],DL
+0047ae3f  MOV EAX,0x300cfbc
+0047ae44  MOV dword ptr [ESP + 0x14],0x8
+0047ae4c  MOV ECX,dword ptr [ESP + 0x20]
+0047ae50  MOV EDI,0x3
+0047ae55  AND ECX,0xff
+0047ae5b  MOV ECX,dword ptr [ESI + ECX*0x4]
+0047ae5e  IMUL ECX,dword ptr [EAX]
+0047ae61  NEG ECX
+0047ae63  ADD EAX,0x4
+0047ae66  MOV EBP,dword ptr [ESP + 0x10]
+0047ae6a  ADD DL,0x20
+0047ae6d  AND EBP,0xff
+0047ae73  MOV byte ptr [ESP + 0x20],DL
+0047ae77  ADD EAX,0x4
+0047ae7a  ADD BL,0x20
+0047ae7d  MOV EBP,dword ptr [ESI + EBP*0x4]
+0047ae80  MOV byte ptr [ESP + 0x10],BL
+0047ae84  IMUL EBP,dword ptr [EAX + -0x4]
+0047ae88  ADD ECX,EBP
+0047ae8a  MOV EBP,dword ptr [ESP + 0x20]
+0047ae8e  AND EBP,0xff
+0047ae94  ADD EAX,0x4
+0047ae97  MOV EBP,dword ptr [ESI + EBP*0x4]
+0047ae9a  IMUL EBP,dword ptr [EAX + -0x4]
+0047ae9e  SUB ECX,EBP
+0047aea0  DEC EDI
+0047aea1  JNZ 0x0047ae66
+0047aea3  SAR ECX,0xa
+0047aea6  ADD BL,0xa1
+0047aea9  ADD DL,0x9f
+0047aeac  ADD EAX,0x1c
+0047aeaf  CMP ECX,0x7fff
+0047aeb5  MOV byte ptr [ESP + 0x10],BL
+0047aeb9  MOV byte ptr [ESP + 0x20],DL
+0047aebd  JLE 0x0047aec6
+0047aebf  MOV ECX,0x7fff
+0047aec4  JMP 0x0047aed3
+0047aec6  CMP ECX,0xffff8000
+0047aecc  JGE 0x0047aed3
+0047aece  MOV ECX,0xffff8000
+0047aed3  MOV EDI,dword ptr [ESP + 0x24]
+0047aed7  SAR ECX,0x8
+0047aeda  XOR CL,0x80
+0047aedd  MOV byte ptr [EDI],CL
+0047aedf  MOV ECX,dword ptr [ESP + 0x14]
+0047aee3  INC EDI
+0047aee4  DEC ECX
+0047aee5  MOV dword ptr [ESP + 0x24],EDI
+0047aee9  MOV dword ptr [ESP + 0x14],ECX
+0047aeed  JNZ 0x0047ae4c
+0047aef3  ADD DL,0xe0
+0047aef6  MOV byte ptr [ESP + 0x20],DL
+0047aefa  MOV ECX,dword ptr [ESP + 0x20]
+0047aefe  AND ECX,0xff
+0047af04  MOV EDI,dword ptr [ESI + ECX*0x4]
+0047af07  MOV ECX,0x3
+0047af0c  IMUL EDI,dword ptr [EAX]
+0047af0f  ADD EAX,0x4
+0047af12  ADD DL,0x20
+0047af15  ADD EAX,0x4
+0047af18  MOV byte ptr [ESP + 0x20],DL
+0047af1c  MOV EBP,dword ptr [ESP + 0x20]
+0047af20  AND EBP,0xff
+0047af26  MOV EBP,dword ptr [ESI + EBP*0x4]
+0047af29  IMUL EBP,dword ptr [EAX + -0x4]
+0047af2d  ADD EDI,EBP
+0047af2f  DEC ECX
+0047af30  JNZ 0x0047af12
+0047af32  SAR EDI,0xa
+0047af35  CMP EDI,0x7fff
+0047af3b  JLE 0x0047af44
+0047af3d  MOV EDI,0x7fff
+0047af42  JMP 0x0047af51
+0047af44  CMP EDI,0xffff8000
+0047af4a  JGE 0x0047af51
+0047af4c  MOV EDI,0xffff8000
+0047af51  MOV EAX,EDI
+0047af53  MOV EDI,dword ptr [ESP + 0x24]
+0047af57  SAR EAX,0x8
+0047af5a  XOR AL,0x80
+0047af5c  ADD BL,0xdf
+0047af5f  MOV byte ptr [EDI],AL
+0047af61  INC EDI
+0047af62  ADD DL,0xc1
+0047af65  MOV dword ptr [ESP + 0x24],EDI
+0047af69  MOV EAX,0x300d15c
+0047af6e  MOV byte ptr [ESP + 0x10],BL
+0047af72  MOV byte ptr [ESP + 0x20],DL
+0047af76  MOV dword ptr [ESP + 0x1c],0x7
+0047af7e  MOV ECX,dword ptr [ESP + 0x10]
+0047af82  MOV EDI,0x3
+0047af87  AND ECX,0xff
+0047af8d  MOV ECX,dword ptr [ESI + ECX*0x4]
+0047af90  IMUL ECX,dword ptr [EAX]
+0047af93  SUB EAX,0x4
+0047af96  MOV EBP,dword ptr [ESP + 0x20]
+0047af9a  ADD BL,0x20
+0047af9d  AND EBP,0xff
+0047afa3  MOV byte ptr [ESP + 0x10],BL
+0047afa7  SUB EAX,0x4
+0047afaa  ADD DL,0x20
+0047afad  MOV EBP,dword ptr [ESI + EBP*0x4]
+0047afb0  MOV byte ptr [ESP + 0x20],DL
+0047afb4  IMUL EBP,dword ptr [EAX + 0x4]
+0047afb8  ADD ECX,EBP
+0047afba  MOV EBP,dword ptr [ESP + 0x10]
+0047afbe  AND EBP,0xff
+0047afc4  SUB EAX,0x4
+0047afc7  MOV EBP,dword ptr [ESI + EBP*0x4]
+0047afca  IMUL EBP,dword ptr [EAX + 0x4]
+0047afce  ADD ECX,EBP
+0047afd0  DEC EDI
+0047afd1  JNZ 0x0047af96
+0047afd3  SAR ECX,0xa
+0047afd6  ADD BL,0x9f
+0047afd9  ADD DL,0xa1
+0047afdc  SUB EAX,0x1c
+0047afdf  CMP ECX,0x7fff
+0047afe5  MOV byte ptr [ESP + 0x10],BL
+0047afe9  MOV byte ptr [ESP + 0x20],DL
+0047afed  JLE 0x0047aff6
+0047afef  MOV ECX,0x7fff
+0047aff4  JMP 0x0047b003
+0047aff6  CMP ECX,0xffff8000
+0047affc  JGE 0x0047b003
+0047affe  MOV ECX,0xffff8000
+0047b003  MOV EDI,dword ptr [ESP + 0x24]
+0047b007  SAR ECX,0x8
+0047b00a  XOR CL,0x80
+0047b00d  MOV byte ptr [EDI],CL
+0047b00f  MOV ECX,dword ptr [ESP + 0x1c]
+0047b013  INC EDI
+0047b014  DEC ECX
+0047b015  MOV dword ptr [ESP + 0x24],EDI
+0047b019  MOV dword ptr [ESP + 0x1c],ECX
+0047b01d  JNZ 0x0047af7e
+0047b023  POP EDI
+0047b024  POP ESI
+0047b025  POP EBP
+0047b026  POP EBX
+0047b027  ADD ESP,0x8
+0047b02a  RET

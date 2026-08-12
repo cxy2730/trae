@@ -1,0 +1,20 @@
+; Function: FUN_00450640
+; Entry:    00450640
+; Size:     56 bytes
+
+00450640  MOV EAX,dword ptr [ESP + 0x4]
+00450644  TEST EAX,EAX
+00450646  JZ 0x00450677
+00450648  MOV EAX,dword ptr [ESP + 0x8]
+0045064c  TEST EAX,EAX
+0045064e  JZ 0x00450677
+00450650  MOV ECX,dword ptr [ESP + 0xc]
+00450654  MOV EDX,dword ptr [ESP + 0x10]
+00450658  MOV dword ptr [EAX + 0xb4],ECX
+0045065e  MOV CL,byte ptr [ESP + 0x14]
+00450662  MOV byte ptr [EAX + 0xbc],CL
+00450668  MOV ECX,dword ptr [EAX + 0x8]
+0045066b  OR CH,0x1
+0045066e  MOV dword ptr [EAX + 0xb8],EDX
+00450674  MOV dword ptr [EAX + 0x8],ECX
+00450677  RET

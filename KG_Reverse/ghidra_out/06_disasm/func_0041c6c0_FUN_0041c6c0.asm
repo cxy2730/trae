@@ -1,0 +1,40 @@
+; Function: FUN_0041c6c0
+; Entry:    0041c6c0
+; Size:     114 bytes
+
+0041c6c0  SUB ESP,0x28
+0041c6c3  PUSH ESI
+0041c6c4  PUSH EDI
+0041c6c5  CALL 0x0049c724
+0041c6ca  MOV EDI,dword ptr [EAX + 0x8]
+0041c6cd  MOV ESI,dword ptr [ESP + 0x34]
+0041c6d1  LEA EAX,[ESP + 0x8]
+0041c6d5  PUSH EAX
+0041c6d6  PUSH ESI
+0041c6d7  PUSH EDI
+0041c6d8  CALL dword ptr [0x004a2428]
+0041c6de  TEST EAX,EAX
+0041c6e0  JNZ 0x0041c72a
+0041c6e2  MOV EDX,dword ptr [0x004a2424]
+0041c6e8  MOV ECX,dword ptr [ESP + 0x38]
+0041c6ec  MOV dword ptr [ESP + 0xc],EDX
+0041c6f0  MOV EDX,dword ptr [ESP + 0x3c]
+0041c6f4  MOV dword ptr [ESP + 0x8],ECX
+0041c6f8  MOV ECX,dword ptr [ESP + 0x44]
+0041c6fc  MOV dword ptr [ESP + 0x20],EDX
+0041c700  MOV dword ptr [ESP + 0x1c],ECX
+0041c704  MOV ECX,dword ptr [ESP + 0x40]
+0041c708  LEA EDX,[ESP + 0x8]
+0041c70c  PUSH EDX
+0041c70d  MOV dword ptr [ESP + 0x18],EAX
+0041c711  MOV dword ptr [ESP + 0x14],EAX
+0041c715  MOV dword ptr [ESP + 0x1c],EDI
+0041c719  MOV dword ptr [ESP + 0x28],ECX
+0041c71d  MOV dword ptr [ESP + 0x2c],EAX
+0041c721  MOV dword ptr [ESP + 0x30],ESI
+0041c725  CALL 0x00495752
+0041c72a  MOV EAX,ESI
+0041c72c  POP EDI
+0041c72d  POP ESI
+0041c72e  ADD ESP,0x28
+0041c731  RET

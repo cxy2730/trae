@@ -1,0 +1,18 @@
+; Function: FUN_00442d70
+; Entry:    00442d70
+; Size:     60 bytes
+
+00442d70  PUSH -0x1
+00442d72  PUSH 0x4a0cf8
+00442d77  MOV EAX,FS:[0x0]
+00442d7d  PUSH EAX
+00442d7e  MOV dword ptr FS:[0x0],ESP
+00442d85  PUSH ECX
+00442d86  MOV dword ptr [ESP],ECX
+00442d8a  MOV dword ptr [ECX],0x2f97c98
+00442d90  MOV dword ptr [ESP + 0xc],0x0
+00442d98  CALL 0x00499e74
+00442d9d  MOV ECX,dword ptr [ESP + 0x4]
+00442da1  MOV dword ptr FS:[0x0],ECX
+00442da8  ADD ESP,0x10
+00442dab  RET

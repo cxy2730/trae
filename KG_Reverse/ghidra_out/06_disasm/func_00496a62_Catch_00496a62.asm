@@ -1,0 +1,14 @@
+; Function: Catch@00496a62
+; Entry:    00496a62
+; Size:     30 bytes
+
+00496a62  MOV ESI,dword ptr [EBP + -0x1c]
+00496a65  PUSH 0xf108
+00496a6a  PUSH 0x30
+00496a6c  MOV ECX,ESI
+00496a6e  MOV EAX,dword ptr [ESI]
+00496a70  CALL dword ptr [EAX + 0x10]
+00496a73  MOV ECX,ESI
+00496a75  CALL 0x00493701
+00496a7a  MOV EAX,0x496a80
+00496a7f  RET

@@ -1,0 +1,13 @@
+; Function: FUN_00402233
+; Entry:    00402233
+; Size:     22 bytes
+
+00402233  PUSH EBP
+00402234  MOV EBP,ESP
+00402236  MOV EBX,dword ptr [EBP + 0x8]
+00402239  MOV ECX,dword ptr [EBP + 0xc]
+0040223c  MOV EAX,dword ptr [EBX + ECX*0x1]
+0040223f  MOV DL,byte ptr [EBP + 0x10]
+00402242  MOV byte ptr [EBX + ECX*0x1],DL
+00402245  LEAVE
+00402246  RET 0xc

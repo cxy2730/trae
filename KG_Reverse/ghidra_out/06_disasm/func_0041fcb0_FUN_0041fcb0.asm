@@ -1,0 +1,36 @@
+; Function: FUN_0041fcb0
+; Entry:    0041fcb0
+; Size:     101 bytes
+
+0041fcb0  MOV EAX,FS:[0x0]
+0041fcb6  PUSH -0x1
+0041fcb8  PUSH 0x49f248
+0041fcbd  PUSH EAX
+0041fcbe  MOV dword ptr FS:[0x0],ESP
+0041fcc5  SUB ESP,0x18
+0041fcc8  PUSH EDI
+0041fcc9  MOV EDI,dword ptr [ESP + 0x3c]
+0041fccd  TEST EDI,EDI
+0041fccf  JZ 0x0041fcd7
+0041fcd1  MOV dword ptr [EDI],0x0
+0041fcd7  MOV EAX,dword ptr [ESP + 0x34]
+0041fcdb  CMP EAX,-0x1
+0041fcde  JZ 0x0041fd15
+0041fce0  MOV ECX,dword ptr [ESP + 0x38]
+0041fce4  MOV [0x02fe8830],EAX
+0041fce9  MOV EAX,dword ptr [ESP + 0x40]
+0041fced  LEA EDX,[ESP + 0x30]
+0041fcf1  PUSH EAX
+0041fcf2  PUSH 0x0
+0041fcf4  PUSH ECX
+0041fcf5  LEA EAX,[ESP + 0x38]
+0041fcf9  PUSH EDX
+0041fcfa  PUSH EAX
+0041fcfb  PUSH 0x0
+0041fcfd  CALL 0x0041fe80
+0041fd02  ADD ESP,0x18
+0041fd05  POP EDI
+0041fd06  MOV ECX,dword ptr [ESP + 0x18]
+0041fd0a  MOV dword ptr FS:[0x0],ECX
+0041fd11  ADD ESP,0x24
+0041fd14  RET

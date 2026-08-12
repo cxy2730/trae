@@ -1,0 +1,62 @@
+; Function: FUN_0044ff40
+; Entry:    0044ff40
+; Size:     132 bytes
+
+0044ff40  MOV ECX,dword ptr [ESP + 0x4]
+0044ff44  PUSH ESI
+0044ff45  MOV AL,byte ptr [ECX + 0x8]
+0044ff48  TEST AL,AL
+0044ff4a  JNZ 0x0044ff64
+0044ff4c  MOV ECX,dword ptr [ECX + 0x4]
+0044ff4f  MOV EAX,dword ptr [ESP + 0xc]
+0044ff53  TEST ECX,ECX
+0044ff55  JBE 0x0044ffc2
+0044ff57  MOV DL,byte ptr [EAX]
+0044ff59  INC EAX
+0044ff5a  NOT DL
+0044ff5c  MOV byte ptr [EAX + -0x1],DL
+0044ff5f  DEC ECX
+0044ff60  JNZ 0x0044ff57
+0044ff62  POP ESI
+0044ff63  RET
+0044ff64  CMP AL,0x4
+0044ff66  JNZ 0x0044ffc2
+0044ff68  CMP byte ptr [ECX + 0x9],0x8
+0044ff6c  JNZ 0x0044ff8b
+0044ff6e  MOV ECX,dword ptr [ECX + 0x4]
+0044ff71  MOV EAX,dword ptr [ESP + 0xc]
+0044ff75  TEST ECX,ECX
+0044ff77  JBE 0x0044ffc2
+0044ff79  INC ECX
+0044ff7a  SHR ECX,0x1
+0044ff7c  MOV DL,byte ptr [EAX]
+0044ff7e  ADD EAX,0x2
+0044ff81  NOT DL
+0044ff83  MOV byte ptr [EAX + -0x2],DL
+0044ff86  DEC ECX
+0044ff87  JNZ 0x0044ff7c
+0044ff89  POP ESI
+0044ff8a  RET
+0044ff8b  CMP AL,0x4
+0044ff8d  JNZ 0x0044ffc2
+0044ff8f  CMP byte ptr [ECX + 0x9],0x10
+0044ff93  JNZ 0x0044ffc2
+0044ff95  MOV ESI,dword ptr [ECX + 0x4]
+0044ff98  TEST ESI,ESI
+0044ff9a  JBE 0x0044ffc2
+0044ff9c  MOV EDX,dword ptr [ESP + 0xc]
+0044ffa0  OR ECX,0xffffffff
+0044ffa3  SUB ECX,EDX
+0044ffa5  LEA EAX,[EDX + 0x1]
+0044ffa8  MOV DL,byte ptr [EAX + -0x1]
+0044ffab  ADD EAX,0x4
+0044ffae  NOT DL
+0044ffb0  MOV byte ptr [EAX + -0x5],DL
+0044ffb3  MOV DL,byte ptr [EAX + -0x4]
+0044ffb6  NOT DL
+0044ffb8  MOV byte ptr [EAX + -0x4],DL
+0044ffbb  LEA EDX,[ECX + EAX*0x1]
+0044ffbe  CMP EDX,ESI
+0044ffc0  JC 0x0044ffa8
+0044ffc2  POP ESI
+0044ffc3  RET

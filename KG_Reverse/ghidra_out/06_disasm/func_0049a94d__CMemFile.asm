@@ -1,0 +1,30 @@
+; Function: ~CMemFile
+; Entry:    0049a94d
+; Size:     76 bytes
+
+0049a94d  MOV EAX,0x4a1540
+0049a952  CALL 0x004858b8
+0049a957  PUSH ECX
+0049a958  PUSH ESI
+0049a959  MOV ESI,ECX
+0049a95b  PUSH EDI
+0049a95c  MOV dword ptr [EBP + -0x10],ESI
+0049a95f  MOV dword ptr [ESI],0x2f9ab38
+0049a965  XOR EDI,EDI
+0049a967  CMP dword ptr [ESI + 0x20],EDI
+0049a96a  MOV dword ptr [EBP + -0x4],EDI
+0049a96d  JZ 0x0049a974
+0049a96f  CALL 0x0049ab34
+0049a974  OR dword ptr [EBP + -0x4],0xffffffff
+0049a978  MOV ECX,ESI
+0049a97a  MOV dword ptr [ESI + 0x10],EDI
+0049a97d  MOV dword ptr [ESI + 0x14],EDI
+0049a980  MOV dword ptr [ESI + 0x18],EDI
+0049a983  MOV dword ptr [ESI + 0x1c],EDI
+0049a986  CALL 0x00493819
+0049a98b  MOV ECX,dword ptr [EBP + -0xc]
+0049a98e  POP EDI
+0049a98f  POP ESI
+0049a990  MOV dword ptr FS:[0x0],ECX
+0049a997  LEAVE
+0049a998  RET

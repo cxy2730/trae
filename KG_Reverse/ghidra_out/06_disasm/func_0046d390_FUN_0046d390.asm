@@ -1,0 +1,49 @@
+; Function: FUN_0046d390
+; Entry:    0046d390
+; Size:     108 bytes
+
+0046d390  PUSH ESI
+0046d391  MOV ESI,ECX
+0046d393  PUSH EDI
+0046d394  MOV EDI,dword ptr [ESP + 0xc]
+0046d398  MOV EAX,dword ptr [ESI + 0x54]
+0046d39b  MOV ECX,dword ptr [ESI + 0x7c]
+0046d39e  ADD EAX,ECX
+0046d3a0  MOV ECX,dword ptr [ESI + 0x18]
+0046d3a3  PUSH EAX
+0046d3a4  PUSH EDI
+0046d3a5  MOV EDX,dword ptr [ECX]
+0046d3a7  CALL dword ptr [EDX + 0xc]
+0046d3aa  TEST EAX,EAX
+0046d3ac  JNZ 0x0046d3f7
+0046d3ae  MOV ECX,dword ptr [ESI + 0x18]
+0046d3b1  PUSH 0x0
+0046d3b3  MOV EAX,dword ptr [ECX]
+0046d3b5  CALL dword ptr [EAX + 0x10]
+0046d3b8  TEST EAX,EAX
+0046d3ba  JNZ 0x0046d3f7
+0046d3bc  MOV EAX,[0x02fff098]
+0046d3c1  TEST EAX,EAX
+0046d3c3  JNZ 0x0046d3cd
+0046d3c5  MOV ECX,dword ptr [EDI]
+0046d3c7  MOV dword ptr [0x02fff098],ECX
+0046d3cd  MOV EDX,dword ptr [ESI + 0x7c]
+0046d3d0  MOV ECX,dword ptr [EDI]
+0046d3d2  ADD ECX,EDX
+0046d3d4  PUSH EDI
+0046d3d5  MOV dword ptr [EDI],ECX
+0046d3d7  MOV ECX,dword ptr [ESI + 0x18]
+0046d3da  CALL 0x004754d0
+0046d3df  MOV EAX,dword ptr [ESI + 0x54]
+0046d3e2  MOV EDI,dword ptr [ESI + 0x7c]
+0046d3e5  MOV ECX,dword ptr [ESI + 0x18]
+0046d3e8  ADD EDI,EAX
+0046d3ea  MOV dword ptr [ESI + 0x7c],EDI
+0046d3ed  MOV EAX,EDI
+0046d3ef  MOV EDX,dword ptr [ECX]
+0046d3f1  PUSH EAX
+0046d3f2  CALL dword ptr [EDX + 0x2c]
+0046d3f5  XOR EAX,EAX
+0046d3f7  POP EDI
+0046d3f8  POP ESI
+0046d3f9  RET 0x4

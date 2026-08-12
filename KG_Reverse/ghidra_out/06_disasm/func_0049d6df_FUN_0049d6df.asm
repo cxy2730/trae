@@ -1,0 +1,27 @@
+; Function: FUN_0049d6df
+; Entry:    0049d6df
+; Size:     65 bytes
+
+0049d6df  MOV EAX,0x4a1c38
+0049d6e4  CALL 0x004858b8
+0049d6e9  PUSH ECX
+0049d6ea  PUSH ESI
+0049d6eb  MOV ESI,ECX
+0049d6ed  MOV dword ptr [EBP + -0x10],ESI
+0049d6f0  MOV dword ptr [ESI],0x2f9b868
+0049d6f6  MOV EAX,dword ptr [ESI + 0x10]
+0049d6f9  AND dword ptr [EBP + -0x4],0x0
+0049d6fd  TEST EAX,EAX
+0049d6ff  JZ 0x0049d705
+0049d701  PUSH 0x0
+0049d703  CALL EAX
+0049d705  MOV ESI,dword ptr [ESI + 0x8]
+0049d708  TEST ESI,ESI
+0049d70a  JZ 0x0049d713
+0049d70c  PUSH ESI
+0049d70d  CALL dword ptr [0x004a22fc]
+0049d713  MOV ECX,dword ptr [EBP + -0xc]
+0049d716  POP ESI
+0049d717  MOV dword ptr FS:[0x0],ECX
+0049d71e  LEAVE
+0049d71f  RET

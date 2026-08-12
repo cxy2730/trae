@@ -1,0 +1,24 @@
+; Function: FUN_0041fa00
+; Entry:    0041fa00
+; Size:     79 bytes
+
+0041fa00  PUSH -0x1
+0041fa02  PUSH 0x49f208
+0041fa07  MOV EAX,FS:[0x0]
+0041fa0d  PUSH EAX
+0041fa0e  MOV dword ptr FS:[0x0],ESP
+0041fa15  PUSH ECX
+0041fa16  PUSH ESI
+0041fa17  MOV ESI,ECX
+0041fa19  MOV dword ptr [ESP + 0x4],ESI
+0041fa1d  LEA ECX,[ESI + 0xac]
+0041fa23  MOV dword ptr [ESP + 0x10],0x0
+0041fa2b  CALL 0x004931d6
+0041fa30  MOV ECX,ESI
+0041fa32  MOV dword ptr [ESP + 0x10],0xffffffff
+0041fa3a  CALL 0x00493f68
+0041fa3f  MOV ECX,dword ptr [ESP + 0x8]
+0041fa43  POP ESI
+0041fa44  MOV dword ptr FS:[0x0],ECX
+0041fa4b  ADD ESP,0x10
+0041fa4e  RET

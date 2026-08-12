@@ -1,0 +1,73 @@
+; Function: FUN_0048be00
+; Entry:    0048be00
+; Size:     169 bytes
+
+0048be00  PUSH EBP
+0048be01  MOV EBP,ESP
+0048be03  PUSH ECX
+0048be04  MOV EDX,dword ptr [EBP + 0x10]
+0048be07  PUSH EBX
+0048be08  MOV EBX,dword ptr [EBP + 0xc]
+0048be0b  PUSH ESI
+0048be0c  MOVZX ECX,byte ptr [EDX]
+0048be0f  PUSH EDI
+0048be10  MOV EDI,dword ptr [EBP + 0x8]
+0048be13  AND dword ptr [EBP + -0x4],0x0
+0048be17  MOV EAX,EBX
+0048be19  SUB EAX,dword ptr [EDI + 0x10]
+0048be1c  SAR EAX,0xc
+0048be1f  CMP ECX,dword ptr [EBP + 0x14]
+0048be22  LEA EDI,[EDI + EAX*0x8 + 0x18]
+0048be26  JBE 0x0048be3a
+0048be28  MOV EAX,dword ptr [EBP + 0x14]
+0048be2b  SUB ECX,EAX
+0048be2d  MOV byte ptr [EDX],AL
+0048be2f  ADD dword ptr [EDI],ECX
+0048be31  MOV dword ptr [EDI + 0x4],0xf1
+0048be38  JMP 0x0048be9a
+0048be3a  JNC 0x0048bea1
+0048be3c  MOV EAX,dword ptr [EBP + 0x14]
+0048be3f  LEA ESI,[EDX + EAX*0x1]
+0048be42  LEA EAX,[EBX + 0xf8]
+0048be48  CMP ESI,EAX
+0048be4a  JA 0x0048bea1
+0048be4c  LEA EAX,[ECX + EDX*0x1]
+0048be4f  CMP EAX,ESI
+0048be51  JNC 0x0048be5d
+0048be53  CMP byte ptr [EAX],0x0
+0048be56  JNZ 0x0048be5b
+0048be58  INC EAX
+0048be59  JMP 0x0048be4f
+0048be5b  CMP EAX,ESI
+0048be5d  JNZ 0x0048bea1
+0048be5f  MOV AL,byte ptr [EBP + 0x14]
+0048be62  MOV byte ptr [EDX],AL
+0048be64  MOV EAX,dword ptr [EBX]
+0048be66  CMP EDX,EAX
+0048be68  JA 0x0048be95
+0048be6a  CMP ESI,EAX
+0048be6c  JBE 0x0048be95
+0048be6e  LEA EAX,[EBX + 0xf8]
+0048be74  CMP ESI,EAX
+0048be76  JNC 0x0048be8c
+0048be78  XOR EAX,EAX
+0048be7a  MOV dword ptr [EBX],ESI
+0048be7c  CMP byte ptr [ESI],AL
+0048be7e  JNZ 0x0048be87
+0048be80  INC EAX
+0048be81  CMP byte ptr [ESI + EAX*0x1],0x0
+0048be85  JZ 0x0048be80
+0048be87  MOV dword ptr [EBX + 0x4],EAX
+0048be8a  JMP 0x0048be95
+0048be8c  AND dword ptr [EBX + 0x4],0x0
+0048be90  LEA EAX,[EBX + 0x8]
+0048be93  MOV dword ptr [EBX],EAX
+0048be95  SUB ECX,dword ptr [EBP + 0x14]
+0048be98  ADD dword ptr [EDI],ECX
+0048be9a  MOV dword ptr [EBP + -0x4],0x1
+0048bea1  MOV EAX,dword ptr [EBP + -0x4]
+0048bea4  POP EDI
+0048bea5  POP ESI
+0048bea6  POP EBX
+0048bea7  LEAVE
+0048bea8  RET

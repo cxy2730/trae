@@ -1,0 +1,12 @@
+; Function: FUN_0043c290
+; Entry:    0043c290
+; Size:     25 bytes
+
+0043c290  PUSH 0x0
+0043c292  PUSH 0x0
+0043c294  PUSH 0x0
+0043c296  CALL 0x00446da0
+0043c29b  MOV ECX,dword ptr [ESP + 0x10]
+0043c29f  ADD ESP,0xc
+0043c2a2  MOV dword ptr [ECX + 0x140],EAX
+0043c2a8  RET

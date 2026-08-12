@@ -1,0 +1,12 @@
+; Function: FUN_00422f50
+; Entry:    00422f50
+; Size:     26 bytes
+
+00422f50  MOV EAX,dword ptr [ESP + 0x8]
+00422f54  MOV ECX,dword ptr [ESP + 0x4]
+00422f58  PUSH 0xffffff
+00422f5d  PUSH EAX
+00422f5e  PUSH ECX
+00422f5f  CALL 0x00422f70
+00422f64  ADD ESP,0xc
+00422f67  RET 0x8

@@ -1,0 +1,12 @@
+; Function: FUN_004859df
+; Entry:    004859df
+; Size:     22 bytes
+
+004859df  MOV EAX,dword ptr [ESP + 0x4]
+004859e3  PUSH 0x0
+004859e5  MOVZX EAX,byte ptr [EAX]
+004859e8  TEST byte ptr [EAX + 0x30150e1],0x4
+004859ef  POP EAX
+004859f0  SETNZ AL
+004859f3  INC EAX
+004859f4  RET

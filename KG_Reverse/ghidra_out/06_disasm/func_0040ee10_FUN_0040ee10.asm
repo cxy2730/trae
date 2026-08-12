@@ -1,0 +1,11 @@
+; Function: FUN_0040ee10
+; Entry:    0040ee10
+; Size:     22 bytes
+
+0040ee10  MOV EAX,dword ptr [ESP + 0x4]
+0040ee14  PUSH EAX
+0040ee15  CALL 0x0040e780
+0040ee1a  PUSH EAX
+0040ee1b  CALL 0x0040ede0
+0040ee20  ADD ESP,0x4
+0040ee23  RET 0x4

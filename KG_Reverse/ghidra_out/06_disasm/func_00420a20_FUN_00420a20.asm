@@ -1,0 +1,18 @@
+; Function: FUN_00420a20
+; Entry:    00420a20
+; Size:     60 bytes
+
+00420a20  PUSH -0x1
+00420a22  PUSH 0x49f338
+00420a27  MOV EAX,FS:[0x0]
+00420a2d  PUSH EAX
+00420a2e  MOV dword ptr FS:[0x0],ESP
+00420a35  PUSH ECX
+00420a36  MOV dword ptr [ESP],ECX
+00420a3a  MOV dword ptr [ECX],0x2f95fb8
+00420a40  MOV dword ptr [ESP + 0xc],0x0
+00420a48  CALL 0x00499e74
+00420a4d  MOV ECX,dword ptr [ESP + 0x4]
+00420a51  MOV dword ptr FS:[0x0],ECX
+00420a58  ADD ESP,0x10
+00420a5b  RET

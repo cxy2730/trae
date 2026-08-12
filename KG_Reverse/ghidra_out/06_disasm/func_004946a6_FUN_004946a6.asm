@@ -1,0 +1,8 @@
+; Function: FUN_004946a6
+; Entry:    004946a6
+; Size:     12 bytes
+
+004946a6  PUSH 0x4946b2
+004946ab  CALL 0x00483c3b
+004946b0  POP ECX
+004946b1  RET

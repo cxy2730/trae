@@ -1,0 +1,8 @@
+[
+  {"name": "Headers", "start": "00400000", "end": "00400fff", "size": 4096, "perms": "R--", "type": "Default"},
+  {"name": ".text", "start": "00401000", "end": "004a1fff", "size": 659456, "perms": "R-X", "type": "Default"},
+  {"name": ".rdata", "start": "004a2000", "end": "02fa6fff", "size": 45109248, "perms": "R--", "type": "Default"},
+  {"name": ".data", "start": "02fa7000", "end": "03016209", "size": 455178, "perms": "RW-", "type": "Default"},
+  {"name": ".rsrc", "start": "03017000", "end": "0301ffff", "size": 36864, "perms": "R--", "type": "Default"},
+  {"name": "tdb", "start": "ffdff000", "end": "ffdfffff", "size": 4096, "perms": "RW-", "type": "Default"}
+]

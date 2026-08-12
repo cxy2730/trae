@@ -1,0 +1,13 @@
+; Function: FUN_00454090
+; Entry:    00454090
+; Size:     31 bytes
+
+00454090  MOV EAX,dword ptr [ESP + 0x4]
+00454094  PUSH 0x84
+00454099  PUSH 0x0
+0045409b  PUSH EAX
+0045409c  MOV ECX,dword ptr [EAX + 0x4]
+0045409f  CALL dword ptr [ECX]
+004540a1  ADD ESP,0xc
+004540a4  MOV dword ptr [EAX + 0x80],0x0
+004540ae  RET

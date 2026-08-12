@@ -1,0 +1,20 @@
+; Function: FUN_00493aa7
+; Entry:    00493aa7
+; Size:     41 bytes
+
+00493aa7  PUSH ESI
+00493aa8  PUSH 0x1
+00493aaa  PUSH 0x0
+00493aac  PUSH 0x0
+00493aae  PUSH dword ptr [ECX + 0x4]
+00493ab1  CALL dword ptr [0x004a2198]
+00493ab7  MOV ESI,EAX
+00493ab9  CMP ESI,-0x1
+00493abc  JNZ 0x00493acc
+00493abe  PUSH 0x0
+00493ac0  CALL dword ptr [0x004a2304]
+00493ac6  PUSH EAX
+00493ac7  CALL 0x004985b1
+00493acc  MOV EAX,ESI
+00493ace  POP ESI
+00493acf  RET

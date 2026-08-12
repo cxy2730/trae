@@ -1,0 +1,46 @@
+; Function: FUN_00490ead
+; Entry:    00490ead
+; Size:     120 bytes
+
+00490ead  MOV EAX,0x4a14e3
+00490eb2  CALL 0x004858b8
+00490eb7  PUSH ECX
+00490eb8  MOV EAX,dword ptr [EBP + 0xc]
+00490ebb  AND dword ptr [EBP + -0x10],0x0
+00490ebf  TEST EAX,EAX
+00490ec1  JGE 0x00490ec5
+00490ec3  XOR EAX,EAX
+00490ec5  MOV EDX,dword ptr [ECX]
+00490ec7  CMP EAX,dword ptr [EDX + -0x8]
+00490eca  JL 0x00490eda
+00490ecc  PUSH ECX
+00490ecd  MOV ECX,dword ptr [EBP + 0x8]
+00490ed0  CALL 0x00492f4b
+00490ed5  MOV EAX,dword ptr [EBP + 0x8]
+00490ed8  JMP 0x00490f17
+00490eda  MOV EDX,dword ptr [0x02fd8088]
+00490ee0  PUSH ESI
+00490ee1  MOV dword ptr [EBP + 0xc],EDX
+00490ee4  PUSH 0x1
+00490ee6  POP ESI
+00490ee7  PUSH 0x0
+00490ee9  PUSH 0x0
+00490eeb  PUSH EAX
+00490eec  LEA EAX,[EBP + 0xc]
+00490eef  PUSH EAX
+00490ef0  MOV dword ptr [EBP + -0x4],ESI
+00490ef3  CALL 0x00493200
+00490ef8  MOV ECX,dword ptr [EBP + 0x8]
+00490efb  LEA EAX,[EBP + 0xc]
+00490efe  PUSH EAX
+00490eff  CALL 0x00492f4b
+00490f04  AND byte ptr [EBP + -0x4],0x0
+00490f08  LEA ECX,[EBP + 0xc]
+00490f0b  MOV dword ptr [EBP + -0x10],ESI
+00490f0e  CALL 0x004931d6
+00490f13  MOV EAX,dword ptr [EBP + 0x8]
+00490f16  POP ESI
+00490f17  MOV ECX,dword ptr [EBP + -0xc]
+00490f1a  MOV dword ptr FS:[0x0],ECX
+00490f21  LEAVE
+00490f22  RET 0x8

@@ -1,0 +1,9 @@
+; Function: FUN_00485e10
+; Entry:    00485e10
+; Size:     11 bytes
+
+00485e10  MOV EAX,dword ptr [ESP + 0x4]
+00485e14  TEST EAX,EAX
+00485e16  JGE 0x00485e1a
+00485e18  NEG EAX
+00485e1a  RET

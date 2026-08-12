@@ -1,0 +1,15 @@
+; Function: `scalar_deleting_destructor'
+; Entry:    0049a8f4
+; Size:     28 bytes
+
+0049a8f4  PUSH ESI
+0049a8f5  MOV ESI,ECX
+0049a8f7  CALL 0x0049a94d
+0049a8fc  TEST byte ptr [ESP + 0x8],0x1
+0049a901  JZ 0x0049a90a
+0049a903  PUSH ESI
+0049a904  CALL 0x00492f40
+0049a909  POP ECX
+0049a90a  MOV EAX,ESI
+0049a90c  POP ESI
+0049a90d  RET 0x4

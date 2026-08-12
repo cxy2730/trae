@@ -1,0 +1,14 @@
+; Function: FUN_004858b8
+; Entry:    004858b8
+; Size:     31 bytes
+
+004858b8  PUSH -0x1
+004858ba  PUSH EAX
+004858bb  MOV EAX,FS:[0x0]
+004858c1  PUSH EAX
+004858c2  MOV EAX,dword ptr [ESP + 0xc]
+004858c6  MOV dword ptr FS:[0x0],ESP
+004858cd  MOV dword ptr [ESP + 0xc],EBP
+004858d1  LEA EBP,[ESP + 0xc]
+004858d5  PUSH EAX
+004858d6  RET

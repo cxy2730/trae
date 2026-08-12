@@ -1,0 +1,34 @@
+; Function: FUN_0041fb90
+; Entry:    0041fb90
+; Size:     89 bytes
+
+0041fb90  PUSH ESI
+0041fb91  MOV ESI,ECX
+0041fb93  CMP dword ptr [ESI + 0x78],0x1
+0041fb97  JZ 0x0041fbe7
+0041fb99  CMP dword ptr [ESI + 0x60],0xb
+0041fb9d  JNZ 0x0041fbd9
+0041fb9f  MOV EAX,dword ptr [ESI + 0x7c]
+0041fba2  CMP EAX,0x1
+0041fba5  JNZ 0x0041fbcd
+0041fba7  MOV ECX,dword ptr [ESI + 0xfc]
+0041fbad  TEST ECX,ECX
+0041fbaf  JZ 0x0041fbcd
+0041fbb1  MOV EDX,dword ptr [ECX + 0x1c]
+0041fbb4  TEST EDX,EDX
+0041fbb6  JZ 0x0041fbcd
+0041fbb8  CALL 0x00424180
+0041fbbd  MOV ECX,ESI
+0041fbbf  MOV dword ptr [ESI + 0x74],0x0
+0041fbc6  CALL 0x0041f180
+0041fbcb  POP ESI
+0041fbcc  RET
+0041fbcd  CMP EAX,0x2
+0041fbd0  JNZ 0x0041fbd9
+0041fbd2  MOV ECX,ESI
+0041fbd4  CALL 0x0041fb20
+0041fbd9  MOV ECX,ESI
+0041fbdb  MOV dword ptr [ESI + 0x74],0x0
+0041fbe2  CALL 0x0041f180
+0041fbe7  POP ESI
+0041fbe8  RET

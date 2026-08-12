@@ -1,0 +1,37 @@
+; Function: FUN_0043ef00
+; Entry:    0043ef00
+; Size:     96 bytes
+
+0043ef00  MOV EAX,dword ptr [ESP + 0x1c]
+0043ef04  MOV ECX,dword ptr [ESP + 0x18]
+0043ef08  MOV EDX,dword ptr [ESP + 0x14]
+0043ef0c  PUSH ESI
+0043ef0d  PUSH EAX
+0043ef0e  MOV EAX,dword ptr [ESP + 0x18]
+0043ef12  PUSH ECX
+0043ef13  MOV ECX,dword ptr [ESP + 0x18]
+0043ef17  PUSH EDX
+0043ef18  MOV EDX,dword ptr [ESP + 0x18]
+0043ef1c  PUSH EAX
+0043ef1d  MOV EAX,dword ptr [ESP + 0x18]
+0043ef21  PUSH ECX
+0043ef22  PUSH EDX
+0043ef23  PUSH EAX
+0043ef24  CALL 0x0043c460
+0043ef29  MOV ESI,EAX
+0043ef2b  ADD ESP,0x1c
+0043ef2e  TEST ESI,ESI
+0043ef30  JZ 0x0043ef5c
+0043ef32  MOV ECX,dword ptr [ESI + 0x78]
+0043ef35  PUSH 0x0
+0043ef37  OR ECX,0x300000
+0043ef3d  PUSH 0x0
+0043ef3f  PUSH ESI
+0043ef40  MOV dword ptr [ESI + 0x74],0x8000
+0043ef47  MOV dword ptr [ESI + 0x2c0],0x2000
+0043ef51  MOV dword ptr [ESI + 0x78],ECX
+0043ef54  CALL 0x004477e0
+0043ef59  ADD ESP,0xc
+0043ef5c  MOV EAX,ESI
+0043ef5e  POP ESI
+0043ef5f  RET

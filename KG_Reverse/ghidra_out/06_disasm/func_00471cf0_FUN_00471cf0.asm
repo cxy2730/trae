@@ -1,0 +1,10 @@
+; Function: FUN_00471cf0
+; Entry:    00471cf0
+; Size:     22 bytes
+
+00471cf0  MOV EAX,dword ptr [ESP + 0x4]
+00471cf4  MOV [0x03006cf0],EAX
+00471cf9  XOR EAX,EAX
+00471cfb  MOV [0x03008d74],EAX
+00471d00  MOV [0x03008b64],EAX
+00471d05  RET

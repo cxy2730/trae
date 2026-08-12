@@ -1,0 +1,17 @@
+; Function: FUN_00483b9a
+; Entry:    00483b9a
+; Size:     35 bytes
+
+00483b9a  MOV EAX,dword ptr [ESP + 0x4]
+00483b9e  CMP EAX,0x14
+00483ba1  JGE 0x00483bae
+00483ba3  ADD EAX,0x1c
+00483ba6  PUSH EAX
+00483ba7  CALL 0x00489ab5
+00483bac  POP ECX
+00483bad  RET
+00483bae  MOV EAX,dword ptr [ESP + 0x8]
+00483bb2  ADD EAX,0x20
+00483bb5  PUSH EAX
+00483bb6  CALL dword ptr [0x004a227c]
+00483bbc  RET

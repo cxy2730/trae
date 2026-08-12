@@ -1,0 +1,18 @@
+; Function: FUN_0048acdd
+; Entry:    0048acdd
+; Size:     43 bytes
+
+0048acdd  MOV EAX,[0x03014e98]
+0048ace2  LEA ECX,[EAX + EAX*0x4]
+0048ace5  MOV EAX,[0x03014e9c]
+0048acea  LEA ECX,[EAX + ECX*0x4]
+0048aced  CMP EAX,ECX
+0048acef  JNC 0x0048ad05
+0048acf1  MOV EDX,dword ptr [ESP + 0x4]
+0048acf5  SUB EDX,dword ptr [EAX + 0xc]
+0048acf8  CMP EDX,0x100000
+0048acfe  JC 0x0048ad07
+0048ad00  ADD EAX,0x14
+0048ad03  JMP 0x0048aced
+0048ad05  XOR EAX,EAX
+0048ad07  RET

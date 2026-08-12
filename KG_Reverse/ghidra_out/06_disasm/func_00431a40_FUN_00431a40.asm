@@ -1,0 +1,32 @@
+; Function: FUN_00431a40
+; Entry:    00431a40
+; Size:     98 bytes
+
+00431a40  PUSH ESI
+00431a41  MOV ESI,ECX
+00431a43  PUSH EDI
+00431a44  MOV ECX,0x584e4557
+00431a49  MOV EAX,0x10000
+00431a4e  XOR EDI,EDI
+00431a50  MOV dword ptr [ESI + 0x18],ECX
+00431a53  MOV dword ptr [ESI + 0x1c],EAX
+00431a56  MOV dword ptr [ESI + 0x28],EDI
+00431a59  MOV dword ptr [ESI + 0x2c],EDI
+00431a5c  MOV dword ptr [ESI + 0xf8],ECX
+00431a62  LEA ECX,[ESI + 0x238]
+00431a68  MOV dword ptr [ESI + 0xfc],EAX
+00431a6e  MOV dword ptr [ESI + 0x108],EDI
+00431a74  MOV dword ptr [ESI + 0x10c],EDI
+00431a7a  CALL 0x004062a0
+00431a7f  MOV EAX,dword ptr [ESP + 0xc]
+00431a83  MOV ECX,dword ptr [ESP + 0x10]
+00431a87  MOV dword ptr [ESI],EAX
+00431a89  MOV dword ptr [ESI + 0x8],EDI
+00431a8c  MOV dword ptr [ESI + 0xc],EDI
+00431a8f  MOV dword ptr [ESI + 0x10],EDI
+00431a92  MOV dword ptr [ESI + 0x1d8],EDI
+00431a98  MOV dword ptr [ESI + 0x4],ECX
+00431a9b  MOV EAX,ESI
+00431a9d  POP EDI
+00431a9e  POP ESI
+00431a9f  RET 0x8

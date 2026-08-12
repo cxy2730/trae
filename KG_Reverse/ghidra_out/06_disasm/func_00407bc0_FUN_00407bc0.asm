@@ -1,0 +1,31 @@
+; Function: FUN_00407bc0
+; Entry:    00407bc0
+; Size:     62 bytes
+
+00407bc0  PUSH EBX
+00407bc1  PUSH ESI
+00407bc2  MOV ESI,ECX
+00407bc4  PUSH EDI
+00407bc5  MOV EDI,dword ptr [ESP + 0x10]
+00407bc9  MOV ECX,dword ptr [ESI + 0x48]
+00407bcc  MOV EAX,dword ptr [EDI]
+00407bce  PUSH ECX
+00407bcf  MOV ECX,EDI
+00407bd1  CALL dword ptr [EAX + 0x30]
+00407bd4  MOV EDX,dword ptr [ESI + 0x4c]
+00407bd7  MOV EBX,dword ptr [EDI]
+00407bd9  PUSH EDX
+00407bda  CALL 0x00406fe0
+00407bdf  ADD ESP,0x4
+00407be2  MOV ECX,EDI
+00407be4  PUSH EAX
+00407be5  CALL dword ptr [EBX + 0x2c]
+00407be8  LEA EAX,[ESI + 0xa8]
+00407bee  POP EDI
+00407bef  POP ESI
+00407bf0  POP EBX
+00407bf1  TEST EAX,EAX
+00407bf3  JNZ 0x00407bf8
+00407bf5  RET 0x8
+00407bf8  MOV EAX,dword ptr [EAX + 0x4]
+00407bfb  RET 0x8

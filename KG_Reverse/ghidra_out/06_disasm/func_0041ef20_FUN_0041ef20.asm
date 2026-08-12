@@ -1,0 +1,13 @@
+; Function: FUN_0041ef20
+; Entry:    0041ef20
+; Size:     23 bytes
+
+0041ef20  PUSH ESI
+0041ef21  MOV ESI,ECX
+0041ef23  CALL 0x00494b19
+0041ef28  MOV ECX,dword ptr [ESI + 0x3c]
+0041ef2b  PUSH 0x0
+0041ef2d  PUSH ESI
+0041ef2e  CALL 0x0041dc90
+0041ef33  POP ESI
+0041ef34  RET 0x4

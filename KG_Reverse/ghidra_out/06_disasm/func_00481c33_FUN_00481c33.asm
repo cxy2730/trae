@@ -1,0 +1,16 @@
+; Function: FUN_00481c33
+; Entry:    00481c33
+; Size:     44 bytes
+
+00481c33  MOV EAX,0x4a1a58
+00481c38  CALL 0x004858b8
+00481c3d  PUSH ECX
+00481c3e  MOV dword ptr [EBP + -0x10],ECX
+00481c41  MOV dword ptr [ECX],0x2f9c270
+00481c47  AND dword ptr [EBP + -0x4],0x0
+00481c4b  ADD ECX,0xc
+00481c4e  CALL 0x004931d6
+00481c53  MOV ECX,dword ptr [EBP + -0xc]
+00481c56  MOV dword ptr FS:[0x0],ECX
+00481c5d  LEAVE
+00481c5e  RET

@@ -1,0 +1,19 @@
+; Function: FUN_004321b5
+; Entry:    004321b5
+; Size:     55 bytes
+
+004321b5  MOV dword ptr [EBP + -0x4],0x0
+004321bc  CALL 0x004937a6
+004321c1  LEA ECX,[EBP + -0x2c]
+004321c4  MOV dword ptr [EBP + -0x4],0xffffffff
+004321cb  MOV dword ptr [EBP + -0x2c],0x2f96460
+004321d2  CALL 0x004064a0
+004321d7  MOV ECX,dword ptr [EBP + -0xc]
+004321da  MOV EAX,EDI
+004321dc  POP EDI
+004321dd  POP ESI
+004321de  MOV dword ptr FS:[0x0],ECX
+004321e5  POP EBX
+004321e6  MOV ESP,EBP
+004321e8  POP EBP
+004321e9  RET 0x8

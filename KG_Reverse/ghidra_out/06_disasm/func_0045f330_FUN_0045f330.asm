@@ -1,0 +1,46 @@
+; Function: FUN_0045f330
+; Entry:    0045f330
+; Size:     124 bytes
+
+0045f330  MOV EAX,dword ptr [ESP + 0x4]
+0045f334  PUSH EBX
+0045f335  PUSH ESI
+0045f336  MOV EDX,dword ptr [EAX + 0x16b4]
+0045f33c  CMP EDX,0x8
+0045f33f  JLE 0x0045f380
+0045f341  MOV ECX,dword ptr [EAX + 0x8]
+0045f344  MOV EDX,dword ptr [EAX + 0x14]
+0045f347  MOV BL,byte ptr [EAX + 0x16b0]
+0045f34d  MOV byte ptr [ECX + EDX*0x1],BL
+0045f350  MOV EDX,dword ptr [EAX + 0x14]
+0045f353  MOV ESI,dword ptr [EAX + 0x8]
+0045f356  INC EDX
+0045f357  MOV dword ptr [EAX + 0x14],EDX
+0045f35a  MOV ECX,EDX
+0045f35c  XOR EDX,EDX
+0045f35e  MOV DL,byte ptr [EAX + 0x16b1]
+0045f364  MOV byte ptr [ESI + ECX*0x1],DL
+0045f367  MOV ECX,dword ptr [EAX + 0x14]
+0045f36a  INC ECX
+0045f36b  POP ESI
+0045f36c  MOV dword ptr [EAX + 0x14],ECX
+0045f36f  XOR ECX,ECX
+0045f371  MOV word ptr [EAX + 0x16b0],CX
+0045f378  MOV dword ptr [EAX + 0x16b4],ECX
+0045f37e  POP EBX
+0045f37f  RET
+0045f380  XOR ECX,ECX
+0045f382  CMP EDX,ECX
+0045f384  JLE 0x0045f39c
+0045f386  MOV EDX,dword ptr [EAX + 0x8]
+0045f389  MOV ESI,dword ptr [EAX + 0x14]
+0045f38c  MOV BL,byte ptr [EAX + 0x16b0]
+0045f392  MOV byte ptr [EDX + ESI*0x1],BL
+0045f395  MOV EDX,dword ptr [EAX + 0x14]
+0045f398  INC EDX
+0045f399  MOV dword ptr [EAX + 0x14],EDX
+0045f39c  POP ESI
+0045f39d  MOV word ptr [EAX + 0x16b0],CX
+0045f3a4  MOV dword ptr [EAX + 0x16b4],ECX
+0045f3aa  POP EBX
+0045f3ab  RET

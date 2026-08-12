@@ -1,0 +1,15 @@
+; Function: FUN_004515f0
+; Entry:    004515f0
+; Size:     35 bytes
+
+004515f0  MOV EAX,dword ptr [ESP + 0x8]
+004515f4  TEST EAX,EAX
+004515f6  MOV EAX,dword ptr [ESP + 0x4]
+004515fa  MOV ECX,dword ptr [EAX + 0x78]
+004515fd  JZ 0x00451609
+004515ff  OR ECX,0x700000
+00451605  MOV dword ptr [EAX + 0x78],ECX
+00451608  RET
+00451609  AND ECX,0xff8fffff
+0045160f  MOV dword ptr [EAX + 0x78],ECX
+00451612  RET

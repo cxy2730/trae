@@ -1,0 +1,9 @@
+; Function: FUN_0049c33f
+; Entry:    0049c33f
+; Size:     15 bytes
+
+0049c33f  PUSH 0x40
+0049c341  PUSH 0x3c
+0049c343  MOV ECX,0x3010a80
+0049c348  CALL 0x00481ce2
+0049c34d  RET

@@ -1,0 +1,17 @@
+; Function: FUN_0049cd23
+; Entry:    0049cd23
+; Size:     30 bytes
+
+0049cd23  PUSH ESI
+0049cd24  MOV ESI,ECX
+0049cd26  MOV EAX,dword ptr [ESI]
+0049cd28  TEST EAX,EAX
+0049cd2a  JZ 0x0049cd3c
+0049cd2c  MOV ECX,dword ptr [0x03010be0]
+0049cd32  TEST ECX,ECX
+0049cd34  JZ 0x0049cd3c
+0049cd36  PUSH EAX
+0049cd37  CALL 0x0049ca57
+0049cd3c  AND dword ptr [ESI],0x0
+0049cd3f  POP ESI
+0049cd40  RET

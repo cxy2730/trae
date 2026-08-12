@@ -1,0 +1,86 @@
+; Function: FUN_0049a0a5
+; Entry:    0049a0a5
+; Size:     220 bytes
+
+0049a0a5  MOV EAX,0x4a19e7
+0049a0aa  CALL 0x004858b8
+0049a0af  PUSH ECX
+0049a0b0  PUSH EBX
+0049a0b1  MOV EBX,dword ptr [EBP + 0x8]
+0049a0b4  PUSH ESI
+0049a0b5  MOV ESI,ECX
+0049a0b7  MOV EAX,dword ptr [EBX]
+0049a0b9  PUSH EDI
+0049a0ba  LEA ECX,[ESI + 0x10]
+0049a0bd  MOV dword ptr [EBP + -0x10],ESI
+0049a0c0  PUSH ECX
+0049a0c1  MOV ECX,EBX
+0049a0c3  CALL dword ptr [EAX + 0x18]
+0049a0c6  MOV ECX,dword ptr [EBP + 0xc]
+0049a0c9  OR dword ptr [ESI + 0xc],0xffffffff
+0049a0cd  PUSH 0x1
+0049a0cf  MOV dword ptr [ESI + 0x14],ECX
+0049a0d2  POP EAX
+0049a0d3  XOR EDI,EDI
+0049a0d5  NOT ECX
+0049a0d7  TEST AL,CL
+0049a0d9  MOV dword ptr [EBP + -0x4],EDI
+0049a0dc  MOV dword ptr [ESI + 0x20],EBX
+0049a0df  MOV dword ptr [ESI + 0x38],EDI
+0049a0e2  MOV dword ptr [ESI + 0x34],EDI
+0049a0e5  MOV dword ptr [ESI],EDI
+0049a0e7  MOV dword ptr [ESI + 0x4],EAX
+0049a0ea  JZ 0x0049a0f5
+0049a0ec  MOV dword ptr [ESI + 0x3c],0x10
+0049a0f3  JMP 0x0049a0fc
+0049a0f5  MOV dword ptr [ESI + 0x3c],0x40
+0049a0fc  MOV ECX,dword ptr [EBP + 0x14]
+0049a0ff  MOV dword ptr [ESI + 0x18],EAX
+0049a102  MOV dword ptr [ESI + 0x2c],ECX
+0049a105  MOV ECX,dword ptr [EBP + 0x10]
+0049a108  MOV EAX,0x80
+0049a10d  MOV dword ptr [ESI + 0x40],0x89
+0049a114  CMP ECX,EAX
+0049a116  MOV dword ptr [ESI + 0x8],EDI
+0049a119  JGE 0x0049a123
+0049a11b  MOV dword ptr [ESI + 0x1c],EAX
+0049a11e  MOV dword ptr [ESI + 0x2c],EDI
+0049a121  JMP 0x0049a126
+0049a123  MOV dword ptr [ESI + 0x1c],ECX
+0049a126  MOV EAX,dword ptr [ESI + 0x1c]
+0049a129  CMP dword ptr [ESI + 0x2c],EDI
+0049a12c  MOV dword ptr [EBP + 0x10],EAX
+0049a12f  JNZ 0x0049a158
+0049a131  MOV EAX,dword ptr [EBX]
+0049a133  PUSH EDI
+0049a134  PUSH EDI
+0049a135  PUSH EDI
+0049a136  PUSH 0x3
+0049a138  MOV ECX,EBX
+0049a13a  CALL dword ptr [EAX + 0x50]
+0049a13d  CMP EAX,EDI
+0049a13f  MOV dword ptr [ESI + 0x8],EAX
+0049a142  JNZ 0x0049a155
+0049a144  PUSH dword ptr [ESI + 0x1c]
+0049a147  CALL 0x00492f17
+0049a14c  POP ECX
+0049a14d  MOV dword ptr [ESI + 0x2c],EAX
+0049a150  MOV dword ptr [ESI + 0x18],EDI
+0049a153  JMP 0x0049a158
+0049a155  MOV dword ptr [EBP + 0x10],EDI
+0049a158  MOV EAX,dword ptr [ESI + 0x2c]
+0049a15b  MOV ECX,dword ptr [EBP + 0x10]
+0049a15e  ADD ECX,EAX
+0049a160  TEST byte ptr [ESI + 0x14],0x1
+0049a164  MOV dword ptr [ESI + 0x28],ECX
+0049a167  JZ 0x0049a16b
+0049a169  MOV EAX,ECX
+0049a16b  MOV ECX,dword ptr [EBP + -0xc]
+0049a16e  MOV dword ptr [ESI + 0x24],EAX
+0049a171  MOV EAX,ESI
+0049a173  POP EDI
+0049a174  POP ESI
+0049a175  POP EBX
+0049a176  MOV dword ptr FS:[0x0],ECX
+0049a17d  LEAVE
+0049a17e  RET 0x10

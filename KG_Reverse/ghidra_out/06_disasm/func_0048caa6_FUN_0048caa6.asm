@@ -1,0 +1,36 @@
+; Function: FUN_0048caa6
+; Entry:    0048caa6
+; Size:     93 bytes
+
+0048caa6  PUSH ESI
+0048caa7  MOV ESI,dword ptr [ESP + 0x8]
+0048caab  CMP ESI,dword ptr [0x03014fc0]
+0048cab1  JNC 0x0048caeb
+0048cab3  MOV ECX,ESI
+0048cab5  MOV EAX,ESI
+0048cab7  SAR ECX,0x5
+0048caba  AND EAX,0x1f
+0048cabd  MOV ECX,dword ptr [ECX*0x4 + 0x3014ec0]
+0048cac4  LEA EAX,[EAX + EAX*0x8]
+0048cac7  TEST byte ptr [ECX + EAX*0x4 + 0x4],0x1
+0048cacc  JZ 0x0048caeb
+0048cace  PUSH EDI
+0048cacf  PUSH ESI
+0048cad0  CALL 0x0048fdcf
+0048cad5  PUSH ESI
+0048cad6  CALL 0x0048cb03
+0048cadb  PUSH ESI
+0048cadc  MOV EDI,EAX
+0048cade  CALL 0x0048fe2e
+0048cae3  ADD ESP,0xc
+0048cae6  MOV EAX,EDI
+0048cae8  POP EDI
+0048cae9  POP ESI
+0048caea  RET
+0048caeb  CALL 0x004843ad
+0048caf0  MOV dword ptr [EAX],0x9
+0048caf6  CALL 0x004843b6
+0048cafb  AND dword ptr [EAX],0x0
+0048cafe  OR EAX,0xffffffff
+0048cb01  POP ESI
+0048cb02  RET

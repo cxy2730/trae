@@ -1,0 +1,29 @@
+; Function: FUN_00499e8a
+; Entry:    00499e8a
+; Size:     80 bytes
+
+00499e8a  MOV EAX,0x4a1608
+00499e8f  CALL 0x004858b8
+00499e94  PUSH ECX
+00499e95  PUSH ESI
+00499e96  MOV ESI,ECX
+00499e98  MOV dword ptr [EBP + -0x10],ESI
+00499e9b  AND dword ptr [ESI + 0x4],0x0
+00499e9f  PUSH dword ptr [EBP + 0x10]
+00499ea2  AND dword ptr [EBP + -0x4],0x0
+00499ea6  MOV dword ptr [ESI],0x2f9afa8
+00499eac  PUSH dword ptr [EBP + 0xc]
+00499eaf  PUSH dword ptr [EBP + 0x8]
+00499eb2  CALL dword ptr [0x004a2118]
+00499eb8  PUSH EAX
+00499eb9  MOV ECX,ESI
+00499ebb  CALL 0x00499e1d
+00499ec0  TEST EAX,EAX
+00499ec2  JNZ 0x00499ec9
+00499ec4  CALL 0x00499f24
+00499ec9  MOV ECX,dword ptr [EBP + -0xc]
+00499ecc  MOV EAX,ESI
+00499ece  POP ESI
+00499ecf  MOV dword ptr FS:[0x0],ECX
+00499ed6  LEAVE
+00499ed7  RET 0xc

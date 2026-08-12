@@ -1,0 +1,15 @@
+; Function: FUN_00444ba0
+; Entry:    00444ba0
+; Size:     23 bytes
+
+00444ba0  PUSH ESI
+00444ba1  MOV ESI,ECX
+00444ba3  CALL 0x004953ec
+00444ba8  TEST ESI,ESI
+00444baa  JZ 0x00444bb5
+00444bac  MOV EAX,dword ptr [ESI]
+00444bae  PUSH 0x1
+00444bb0  MOV ECX,ESI
+00444bb2  CALL dword ptr [EAX + 0x4]
+00444bb5  POP ESI
+00444bb6  RET

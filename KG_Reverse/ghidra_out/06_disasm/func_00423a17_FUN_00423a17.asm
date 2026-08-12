@@ -1,0 +1,13 @@
+; Function: FUN_00423a17
+; Entry:    00423a17
+; Size:     21 bytes
+
+00423a17  MOV ECX,dword ptr [EBP + -0xc]
+00423a1a  POP EDI
+00423a1b  POP ESI
+00423a1c  XOR EAX,EAX
+00423a1e  MOV dword ptr FS:[0x0],ECX
+00423a25  POP EBX
+00423a26  MOV ESP,EBP
+00423a28  POP EBP
+00423a29  RET 0x8

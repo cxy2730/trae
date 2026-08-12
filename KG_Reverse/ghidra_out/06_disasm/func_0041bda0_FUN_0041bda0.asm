@@ -1,0 +1,47 @@
+; Function: FUN_0041bda0
+; Entry:    0041bda0
+; Size:     138 bytes
+
+0041bda0  PUSH -0x1
+0041bda2  PUSH 0x49ede8
+0041bda7  MOV EAX,FS:[0x0]
+0041bdad  PUSH EAX
+0041bdae  MOV dword ptr FS:[0x0],ESP
+0041bdb5  PUSH ECX
+0041bdb6  MOV EAX,[0x02fd8088]
+0041bdbb  PUSH ESI
+0041bdbc  PUSH EDI
+0041bdbd  MOV dword ptr [ESP + 0x8],EAX
+0041bdc1  MOV ECX,dword ptr [ESP + 0x20]
+0041bdc5  MOV EDX,dword ptr [ESP + 0x1c]
+0041bdc9  PUSH ECX
+0041bdca  PUSH EDX
+0041bdcb  LEA EAX,[ESP + 0x10]
+0041bdcf  PUSH 0x2fab738
+0041bdd4  PUSH EAX
+0041bdd5  MOV dword ptr [ESP + 0x24],0x0
+0041bddd  CALL 0x004912ab
+0041bde2  MOV EDI,dword ptr [ESP + 0x18]
+0041bde6  OR ECX,0xffffffff
+0041bde9  XOR EAX,EAX
+0041bdeb  ADD ESP,0x10
+0041bdee  SCASB.REPNE ES:EDI
+0041bdf0  NOT ECX
+0041bdf2  SUB EDI,ECX
+0041bdf4  MOV dword ptr [ESP + 0x14],0xffffffff
+0041bdfc  MOV EDX,ECX
+0041bdfe  MOV ESI,EDI
+0041be00  MOV EDI,dword ptr [ESP + 0x24]
+0041be04  SHR ECX,0x2
+0041be07  MOVSD.REP ES:EDI,ESI
+0041be09  MOV ECX,EDX
+0041be0b  AND ECX,0x3
+0041be0e  MOVSB.REP ES:EDI,ESI
+0041be10  LEA ECX,[ESP + 0x8]
+0041be14  CALL 0x004931d6
+0041be19  MOV ECX,dword ptr [ESP + 0xc]
+0041be1d  POP EDI
+0041be1e  POP ESI
+0041be1f  MOV dword ptr FS:[0x0],ECX
+0041be26  ADD ESP,0x10
+0041be29  RET

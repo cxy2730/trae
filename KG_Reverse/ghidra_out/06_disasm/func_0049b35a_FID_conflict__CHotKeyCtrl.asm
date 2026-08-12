@@ -1,0 +1,21 @@
+; Function: FID_conflict:~CHotKeyCtrl
+; Entry:    0049b35a
+; Size:     56 bytes
+
+0049b35a  MOV EAX,0x4a17c4
+0049b35f  CALL 0x004858b8
+0049b364  PUSH ECX
+0049b365  PUSH ESI
+0049b366  MOV ESI,ECX
+0049b368  MOV dword ptr [EBP + -0x10],ESI
+0049b36b  MOV dword ptr [ESI],0x2f9bb84
+0049b371  AND dword ptr [EBP + -0x4],0x0
+0049b375  CALL 0x004953fe
+0049b37a  OR dword ptr [EBP + -0x4],0xffffffff
+0049b37e  MOV ECX,ESI
+0049b380  CALL 0x00495240
+0049b385  MOV ECX,dword ptr [EBP + -0xc]
+0049b388  POP ESI
+0049b389  MOV dword ptr FS:[0x0],ECX
+0049b390  LEAVE
+0049b391  RET

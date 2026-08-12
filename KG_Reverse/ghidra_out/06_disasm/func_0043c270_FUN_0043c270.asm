@@ -1,0 +1,11 @@
+; Function: FUN_0043c270
+; Entry:    0043c270
+; Size:     19 bytes
+
+0043c270  MOV EAX,dword ptr [ESP + 0x8]
+0043c274  MOV ECX,dword ptr [ESP + 0x4]
+0043c278  PUSH EAX
+0043c279  PUSH ECX
+0043c27a  CALL 0x00446d20
+0043c27f  ADD ESP,0x8
+0043c282  RET

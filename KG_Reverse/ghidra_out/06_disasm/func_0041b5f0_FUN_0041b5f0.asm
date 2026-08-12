@@ -1,0 +1,12 @@
+; Function: FUN_0041b5f0
+; Entry:    0041b5f0
+; Size:     19 bytes
+
+0041b5f0  PUSH EBP
+0041b5f1  MOV EBP,ESP
+0041b5f3  MOV EAX,dword ptr [EBP + 0x8]
+0041b5f6  PUSH EAX
+0041b5f7  MOV ECX,0x2fe8230
+0041b5fc  CALL 0x004123c0
+0041b601  POP EBP
+0041b602  RET

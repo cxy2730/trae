@@ -1,0 +1,12 @@
+{
+  "program": "KG.exe",
+  "language": "x86:LE:32:default",
+  "compiler": "windows",
+  "image_base": "00400000",
+  "functions": 4163,
+  "instructions": 196626,
+  "defined_data": 26001,
+  "memory_blocks": 6,
+  "export_tool": "Ghidra 12.1.2",
+  "export_time": "Wed Aug 12 15:25:37 UTC 2026"
+}

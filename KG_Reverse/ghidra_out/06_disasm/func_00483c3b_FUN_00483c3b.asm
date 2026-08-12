@@ -1,0 +1,12 @@
+; Function: FUN_00483c3b
+; Entry:    00483c3b
+; Size:     18 bytes
+
+00483c3b  PUSH dword ptr [ESP + 0x4]
+00483c3f  CALL 0x00483bbd
+00483c44  NEG EAX
+00483c46  SBB EAX,EAX
+00483c48  POP ECX
+00483c49  NEG EAX
+00483c4b  DEC EAX
+00483c4c  RET

@@ -1,0 +1,23 @@
+; Function: FUN_0042ff40
+; Entry:    0042ff40
+; Size:     43 bytes
+
+0042ff40  MOV EAX,dword ptr [ECX + 0x4c]
+0042ff43  MOV EDX,dword ptr [ECX + 0x54]
+0042ff46  PUSH ESI
+0042ff47  CMP EAX,EDX
+0042ff49  MOV ESI,EAX
+0042ff4b  JL 0x0042ff4f
+0042ff4d  MOV ESI,EDX
+0042ff4f  MOV EAX,dword ptr [ECX + 0x48]
+0042ff52  MOV EDX,dword ptr [ECX + 0x50]
+0042ff55  CMP EAX,EDX
+0042ff57  JL 0x0042ff5b
+0042ff59  MOV EAX,EDX
+0042ff5b  MOV EDX,dword ptr [ESP + 0x8]
+0042ff5f  PUSH EDX
+0042ff60  PUSH ESI
+0042ff61  PUSH EAX
+0042ff62  CALL 0x0042ff70
+0042ff67  POP ESI
+0042ff68  RET 0x4

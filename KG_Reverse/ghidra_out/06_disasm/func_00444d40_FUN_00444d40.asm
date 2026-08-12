@@ -1,0 +1,10 @@
+; Function: FUN_00444d40
+; Entry:    00444d40
+; Size:     22 bytes
+
+00444d40  PUSH ESI
+00444d41  MOV ESI,ECX
+00444d43  CALL 0x00494b19
+00444d48  MOV dword ptr [ESI + 0x104],0x1
+00444d52  POP ESI
+00444d53  RET 0xc

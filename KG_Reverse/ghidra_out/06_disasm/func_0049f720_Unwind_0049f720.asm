@@ -1,0 +1,6 @@
+; Function: Unwind@0049f720
+; Entry:    0049f720
+; Size:     8 bytes
+
+0049f720  LEA ECX,[EBP + -0x48]
+0049f723  JMP 0x00429730

@@ -1,0 +1,47 @@
+; Function: FUN_0046d7a0
+; Entry:    0046d7a0
+; Size:     158 bytes
+
+0046d7a0  PUSH -0x1
+0046d7a2  PUSH 0x4a1308
+0046d7a7  MOV EAX,FS:[0x0]
+0046d7ad  PUSH EAX
+0046d7ae  MOV dword ptr FS:[0x0],ESP
+0046d7b5  PUSH ECX
+0046d7b6  PUSH ESI
+0046d7b7  MOV ESI,ECX
+0046d7b9  MOV dword ptr [ESP + 0x4],ESI
+0046d7bd  MOV dword ptr [ESI],0x2f99f54
+0046d7c3  MOV ECX,dword ptr [ESI + 0x4]
+0046d7c6  MOV dword ptr [ESP + 0x10],0x0
+0046d7ce  MOV byte ptr [ESI + 0x1d],0x1
+0046d7d2  MOV byte ptr [ESI + 0x1c],0x0
+0046d7d6  CALL 0x0046bb50
+0046d7db  MOV ECX,dword ptr [ESI + 0x8]
+0046d7de  CALL 0x0046bb50
+0046d7e3  MOV ECX,dword ptr [ESI + 0x154]
+0046d7e9  TEST ECX,ECX
+0046d7eb  JZ 0x0046d802
+0046d7ed  MOV EAX,dword ptr [ECX]
+0046d7ef  CALL dword ptr [EAX + 0x14]
+0046d7f2  MOV ECX,dword ptr [ESI + 0x154]
+0046d7f8  TEST ECX,ECX
+0046d7fa  JZ 0x0046d802
+0046d7fc  MOV EDX,dword ptr [ECX]
+0046d7fe  PUSH 0x1
+0046d800  CALL dword ptr [EDX]
+0046d802  MOV EAX,dword ptr [ESI + 0x148]
+0046d808  TEST EAX,EAX
+0046d80a  JZ 0x0046d81f
+0046d80c  PUSH EAX
+0046d80d  CALL 0x004842bd
+0046d812  ADD ESP,0x4
+0046d815  MOV dword ptr [ESI + 0x148],0x0
+0046d81f  MOV ECX,ESI
+0046d821  MOV dword ptr [ESP + 0x10],0xffffffff
+0046d829  CALL 0x00475910
+0046d82e  MOV ECX,dword ptr [ESP + 0x8]
+0046d832  POP ESI
+0046d833  MOV dword ptr FS:[0x0],ECX
+0046d83a  ADD ESP,0x10
+0046d83d  RET

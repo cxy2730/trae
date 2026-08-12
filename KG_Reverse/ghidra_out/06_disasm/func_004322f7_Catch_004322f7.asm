@@ -1,0 +1,12 @@
+; Function: Catch@004322f7
+; Entry:    004322f7
+; Size:     24 bytes
+
+004322f7  MOV EAX,dword ptr [EBP + 0x8]
+004322fa  PUSH EAX
+004322fb  MOV dword ptr [EBP + -0x18],EAX
+004322fe  CALL 0x00430aa0
+00432303  MOV dword ptr [EBP + 0x8],EAX
+00432306  ADD ESP,0x4
+00432309  MOV EAX,0x43230f
+0043230e  RET

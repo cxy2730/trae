@@ -1,0 +1,13 @@
+; Function: FUN_00406c00
+; Entry:    00406c00
+; Size:     24 bytes
+
+00406c00  MOV EAX,dword ptr [ESP + 0xc]
+00406c04  MOV ECX,dword ptr [ESP + 0x8]
+00406c08  MOV EDX,dword ptr [ESP + 0x4]
+00406c0c  PUSH EAX
+00406c0d  PUSH ECX
+00406c0e  PUSH EDX
+00406c0f  CALL 0x00406d80
+00406c14  ADD ESP,0xc
+00406c17  RET

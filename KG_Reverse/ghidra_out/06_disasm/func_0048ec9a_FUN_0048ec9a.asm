@@ -1,0 +1,47 @@
+; Function: FUN_0048ec9a
+; Entry:    0048ec9a
+; Size:     86 bytes
+
+0048ec9a  MOV EAX,dword ptr [ESP + 0x8]
+0048ec9e  PUSH EBX
+0048ec9f  PUSH ESI
+0048eca0  PUSH EDI
+0048eca1  PUSH 0x20
+0048eca3  MOV EBX,dword ptr [ESP + 0x14]
+0048eca7  CDQ
+0048eca8  POP ECX
+0048eca9  IDIV ECX
+0048ecab  MOV ESI,EAX
+0048ecad  MOV EAX,dword ptr [ESP + 0x14]
+0048ecb1  CDQ
+0048ecb2  IDIV ECX
+0048ecb4  LEA EDI,[EBX + ESI*0x4]
+0048ecb7  PUSH EDI
+0048ecb8  PUSH 0x1f
+0048ecba  POP ECX
+0048ecbb  PUSH 0x1
+0048ecbd  POP EAX
+0048ecbe  SUB ECX,EDX
+0048ecc0  SHL EAX,CL
+0048ecc2  PUSH EAX
+0048ecc3  PUSH dword ptr [EDI]
+0048ecc5  CALL 0x004902dd
+0048ecca  ADD ESP,0xc
+0048eccd  DEC ESI
+0048ecce  JS 0x0048ecec
+0048ecd0  LEA EDI,[EBX + ESI*0x4]
+0048ecd3  TEST EAX,EAX
+0048ecd5  JZ 0x0048ecec
+0048ecd7  PUSH EDI
+0048ecd8  PUSH 0x1
+0048ecda  PUSH dword ptr [EDI]
+0048ecdc  CALL 0x004902dd
+0048ece1  ADD ESP,0xc
+0048ece4  DEC ESI
+0048ece5  SUB EDI,0x4
+0048ece8  TEST ESI,ESI
+0048ecea  JGE 0x0048ecd3
+0048ecec  POP EDI
+0048eced  POP ESI
+0048ecee  POP EBX
+0048ecef  RET

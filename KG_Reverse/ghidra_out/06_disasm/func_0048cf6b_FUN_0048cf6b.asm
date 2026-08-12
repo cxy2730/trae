@@ -1,0 +1,29 @@
+; Function: FUN_0048cf6b
+; Entry:    0048cf6b
+; Size:     61 bytes
+
+0048cf6b  MOV EDX,dword ptr [ESP + 0x8]
+0048cf6f  MOV ECX,dword ptr [0x02fd93f4]
+0048cf75  PUSH ESI
+0048cf76  MOV ESI,dword ptr [ESP + 0x8]
+0048cf7a  CMP dword ptr [EDX + 0x4],ESI
+0048cf7d  PUSH EDI
+0048cf7e  MOV EAX,EDX
+0048cf80  JZ 0x0048cf94
+0048cf82  LEA EDI,[ECX + ECX*0x2]
+0048cf85  LEA EDI,[EDX + EDI*0x4]
+0048cf88  ADD EAX,0xc
+0048cf8b  CMP EAX,EDI
+0048cf8d  JNC 0x0048cf94
+0048cf8f  CMP dword ptr [EAX + 0x4],ESI
+0048cf92  JNZ 0x0048cf88
+0048cf94  LEA ECX,[ECX + ECX*0x2]
+0048cf97  LEA ECX,[EDX + ECX*0x4]
+0048cf9a  CMP EAX,ECX
+0048cf9c  JNC 0x0048cfa3
+0048cf9e  CMP dword ptr [EAX + 0x4],ESI
+0048cfa1  JZ 0x0048cfa5
+0048cfa3  XOR EAX,EAX
+0048cfa5  POP EDI
+0048cfa6  POP ESI
+0048cfa7  RET

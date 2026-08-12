@@ -1,0 +1,30 @@
+; Function: FUN_0043afd0
+; Entry:    0043afd0
+; Size:     108 bytes
+
+0043afd0  PUSH -0x1
+0043afd2  PUSH 0x4a0c21
+0043afd7  MOV EAX,FS:[0x0]
+0043afdd  PUSH EAX
+0043afde  MOV dword ptr FS:[0x0],ESP
+0043afe5  PUSH ECX
+0043afe6  PUSH ESI
+0043afe7  MOV ESI,ECX
+0043afe9  MOV dword ptr [ESP + 0x4],ESI
+0043afed  LEA ECX,[ESI + 0xe0]
+0043aff3  MOV dword ptr [ESP + 0x10],0x2
+0043affb  CALL 0x004931d6
+0043b000  LEA ECX,[ESI + 0x98]
+0043b006  MOV byte ptr [ESP + 0x10],0x1
+0043b00b  CALL 0x00491dd1
+0043b010  LEA ECX,[ESI + 0x5c]
+0043b013  MOV byte ptr [ESP + 0x10],0x0
+0043b018  CALL 0x0049b1b1
+0043b01d  MOV ECX,ESI
+0043b01f  MOV dword ptr [ESP + 0x10],0xffffffff
+0043b027  CALL 0x00493f68
+0043b02c  MOV ECX,dword ptr [ESP + 0x8]
+0043b030  POP ESI
+0043b031  MOV dword ptr FS:[0x0],ECX
+0043b038  ADD ESP,0x10
+0043b03b  RET

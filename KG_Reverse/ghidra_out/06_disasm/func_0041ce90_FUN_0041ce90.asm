@@ -1,0 +1,26 @@
+; Function: FUN_0041ce90
+; Entry:    0041ce90
+; Size:     82 bytes
+
+0041ce90  SUB ESP,0x104
+0041ce96  MOV ECX,dword ptr [ESP + 0x108]
+0041ce9d  LEA EAX,[ESP]
+0041cea1  PUSH 0x104
+0041cea6  PUSH EAX
+0041cea7  PUSH ECX
+0041cea8  MOV byte ptr [ESP + 0xc],0x0
+0041cead  CALL dword ptr [0x004a22a8]
+0041ceb3  LEA EDX,[ESP]
+0041ceb7  PUSH 0x5c
+0041ceb9  PUSH EDX
+0041ceba  CALL 0x00483fd4
+0041cebf  ADD ESP,0x8
+0041cec2  TEST EAX,EAX
+0041cec4  JZ 0x0041ceca
+0041cec6  MOV byte ptr [EAX + 0x1],0x0
+0041ceca  MOV ECX,dword ptr [ESP + 0x10c]
+0041ced1  LEA EAX,[ESP]
+0041ced5  PUSH EAX
+0041ced6  CALL 0x00493313
+0041cedb  ADD ESP,0x104
+0041cee1  RET

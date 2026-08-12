@@ -1,0 +1,47 @@
+; Function: __trandisp2
+; Entry:    00487c97
+; Size:     140 bytes
+
+00487c97  CMP byte ptr [EDX + 0xe],0x5
+00487c9b  JNZ 0x00487cae
+00487c9d  MOV BX,word ptr [EBP + 0xffffff5c]
+00487ca4  OR BH,0x2
+00487ca7  AND BH,0xfe
+00487caa  MOV BL,0x3f
+00487cac  JMP 0x00487cb2
+00487cae  MOV BX,0x133f
+00487cb2  MOV word ptr [EBP + 0xffffff5e],BX
+00487cb9  FLDCW word ptr [EBP + 0xffffff5e]
+00487cbf  MOV EBX,0x2fd954c
+00487cc4  FXAM
+00487cc6  MOV dword ptr [EBP + 0xffffff6c],EDX
+00487ccc  FSTSW word ptr [EBP + 0xffffff60]
+00487cd3  MOV byte ptr [EBP + 0xffffff70],0x0
+00487cda  FXCH
+00487cdc  MOV CL,byte ptr [EBP + 0xffffff61]
+00487ce2  FXAM
+00487ce4  FSTSW word ptr [EBP + 0xffffff60]
+00487ceb  FXCH
+00487ced  MOV CH,byte ptr [EBP + 0xffffff61]
+00487cf3  SHL CH,0x1
+00487cf5  SAR CH,0x1
+00487cf7  ROL CH,0x1
+00487cf9  MOV AL,CH
+00487cfb  AND AL,0xf
+00487cfd  XLAT EBX
+00487cfe  MOV AH,AL
+00487d00  SHL CL,0x1
+00487d02  SAR CL,0x1
+00487d04  ROL CL,0x1
+00487d06  MOV AL,CL
+00487d08  AND AL,0xf
+00487d0a  XLAT EBX
+00487d0b  SHL AH,0x1
+00487d0d  SHL AH,0x1
+00487d0f  OR AL,AH
+00487d11  MOVSX EAX,AL
+00487d14  AND ECX,0x404
+00487d1a  MOV EBX,EDX
+00487d1c  ADD EBX,EAX
+00487d1e  ADD EBX,0x10
+00487d21  JMP dword ptr [EBX]

@@ -1,0 +1,34 @@
+; Function: FUN_00497e6a
+; Entry:    00497e6a
+; Size:     86 bytes
+
+00497e6a  PUSH ESI
+00497e6b  PUSH EDI
+00497e6c  MOV ESI,ECX
+00497e6e  XOR EDI,EDI
+00497e70  XOR ECX,ECX
+00497e72  CMP dword ptr [ESP + 0xc],EDI
+00497e76  MOV EAX,dword ptr [ESI]
+00497e78  SETNZ CL
+00497e7b  PUSH ECX
+00497e7c  MOV ECX,ESI
+00497e7e  CALL dword ptr [EAX + 0x4]
+00497e81  CMP dword ptr [ESI + 0xc],EDI
+00497e84  JZ 0x00497ebb
+00497e86  CMP dword ptr [ESI + 0x10],EDI
+00497e89  JNZ 0x00497ebb
+00497e8b  CMP dword ptr [0x03010cf0],EDI
+00497e91  JNZ 0x00497ea0
+00497e93  CALL 0x0049d1f4
+00497e98  CMP dword ptr [0x03010cf0],EDI
+00497e9e  JZ 0x00497ebb
+00497ea0  PUSH dword ptr [0x03010cf0]
+00497ea6  MOV EAX,dword ptr [ESI + 0xc]
+00497ea9  PUSH EDI
+00497eaa  PUSH 0x400
+00497eaf  PUSH dword ptr [ESI + 0x8]
+00497eb2  PUSH dword ptr [EAX + 0x4]
+00497eb5  CALL dword ptr [0x004a24d8]
+00497ebb  POP EDI
+00497ebc  POP ESI
+00497ebd  RET 0x4

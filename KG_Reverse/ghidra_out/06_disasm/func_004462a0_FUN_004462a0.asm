@@ -1,0 +1,41 @@
+; Function: FUN_004462a0
+; Entry:    004462a0
+; Size:     97 bytes
+
+004462a0  PUSH ESI
+004462a1  PUSH EDI
+004462a2  MOV EDI,dword ptr [ESP + 0xc]
+004462a6  PUSH 0x1000
+004462ab  MOV ESI,dword ptr [EDI + 0x14]
+004462ae  MOV ECX,dword ptr [ESI + 0x1c]
+004462b1  MOV EDX,dword ptr [ESI + 0x20]
+004462b4  PUSH EDX
+004462b5  MOV EAX,dword ptr [ECX]
+004462b7  CALL dword ptr [EAX + 0x4]
+004462ba  TEST EAX,EAX
+004462bc  JA 0x004462ea
+004462be  MOV EAX,dword ptr [ESI + 0x24]
+004462c1  TEST EAX,EAX
+004462c3  JZ 0x004462cd
+004462c5  MOV EAX,dword ptr [EDI]
+004462c7  PUSH EDI
+004462c8  CALL dword ptr [EAX]
+004462ca  ADD ESP,0x4
+004462cd  MOV ECX,dword ptr [EDI]
+004462cf  PUSH -0x1
+004462d1  PUSH EDI
+004462d2  CALL dword ptr [ECX + 0x4]
+004462d5  MOV EDX,dword ptr [ESI + 0x20]
+004462d8  ADD ESP,0x8
+004462db  MOV byte ptr [EDX],0xff
+004462de  MOV EAX,dword ptr [ESI + 0x20]
+004462e1  MOV byte ptr [EAX + 0x1],0xd9
+004462e5  MOV EAX,0x2
+004462ea  MOV ECX,dword ptr [ESI + 0x20]
+004462ed  MOV dword ptr [ESI + 0x4],EAX
+004462f0  MOV dword ptr [ESI],ECX
+004462f2  MOV dword ptr [ESI + 0x24],0x0
+004462f9  POP EDI
+004462fa  MOV EAX,0x1
+004462ff  POP ESI
+00446300  RET

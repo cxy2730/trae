@@ -1,0 +1,16 @@
+; Function: FUN_0048174b
+; Entry:    0048174b
+; Size:     42 bytes
+
+0048174b  PUSH ESI
+0048174c  MOV ESI,ECX
+0048174e  PUSH dword ptr [ESP + 0x8]
+00481752  CALL 0x004936f5
+00481757  MOV EAX,dword ptr [ESP + 0xc]
+0048175b  AND dword ptr [ESI + 0xc],0x0
+0048175f  AND dword ptr [ESI + 0x10],0x0
+00481763  MOV dword ptr [ESI + 0x94],EAX
+00481769  MOV dword ptr [ESI],0x2f9b060
+0048176f  MOV EAX,ESI
+00481771  POP ESI
+00481772  RET 0x8

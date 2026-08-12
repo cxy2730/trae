@@ -1,0 +1,17 @@
+// Function: Unwind@004a0f20
+// Entry:    004a0f20
+// Size:     8 bytes
+// Conv:     unknown
+// Signature: undefined Unwind@004a0f20(void)
+// Decompiled by Ghidra 12.1.2
+
+
+void Unwind_004a0f20(void)
+
+{
+  int unaff_EBP;
+  
+  CWnd::~CWnd(*(CWnd **)(unaff_EBP + -0x14));
+  return;
+}
+

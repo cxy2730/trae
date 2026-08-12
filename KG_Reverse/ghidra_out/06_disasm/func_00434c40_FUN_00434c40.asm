@@ -1,0 +1,18 @@
+; Function: FUN_00434c40
+; Entry:    00434c40
+; Size:     39 bytes
+
+00434c40  MOV EAX,dword ptr [ESP + 0x4]
+00434c44  PUSH ESI
+00434c45  MOV ESI,ECX
+00434c47  CMP dword ptr [ESI + 0x64],EAX
+00434c4a  JZ 0x00434c63
+00434c4c  MOV dword ptr [ESI + 0x64],EAX
+00434c4f  MOV EAX,dword ptr [ESI]
+00434c51  MOV ECX,ESI
+00434c53  CALL dword ptr [EAX + 0xbc]
+00434c59  MOV ECX,dword ptr [ESI + 0x1c]
+00434c5c  PUSH ECX
+00434c5d  CALL dword ptr [0x004a2538]
+00434c63  POP ESI
+00434c64  RET 0x4

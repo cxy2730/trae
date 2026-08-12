@@ -1,0 +1,17 @@
+; Function: FUN_0040ddd0
+; Entry:    0040ddd0
+; Size:     30 bytes
+
+0040ddd0  PUSH ESI
+0040ddd1  MOV ESI,ECX
+0040ddd3  MOV EAX,dword ptr [ESI + 0x40]
+0040ddd6  PUSH EAX
+0040ddd7  MOV EAX,dword ptr [ESI + 0x50]
+0040ddda  PUSH EAX
+0040dddb  CALL 0x004072c0
+0040dde0  ADD ESP,0x8
+0040dde3  LEA ECX,[ESI + 0x5c]
+0040dde6  PUSH EAX
+0040dde7  CALL 0x00427750
+0040ddec  POP ESI
+0040dded  RET

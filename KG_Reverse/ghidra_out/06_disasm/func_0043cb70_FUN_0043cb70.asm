@@ -1,0 +1,53 @@
+; Function: FUN_0043cb70
+; Entry:    0043cb70
+; Size:     123 bytes
+
+0043cb70  MOV ECX,dword ptr [ESP + 0x4]
+0043cb74  PUSH ESI
+0043cb75  MOV ESI,dword ptr [ESP + 0xc]
+0043cb79  PUSH EDI
+0043cb7a  MOV EDI,dword ptr [ESP + 0x14]
+0043cb7e  MOV EDX,0x8000
+0043cb83  CMP EDI,0x10
+0043cb86  JL 0x0043cbd3
+0043cb88  CMP EDI,0x2540be40
+0043cb8e  JG 0x0043cbd3
+0043cb90  TEST dword ptr [ECX + 0x74],EDX
+0043cb93  JZ 0x0043cbb3
+0043cb95  TEST byte ptr [ESI + 0x4a],0x8
+0043cb99  JZ 0x0043cbb3
+0043cb9b  OR word ptr [ESI + 0x4a],DX
+0043cb9f  MOV EAX,0x2fb1388
+0043cba4  PUSH 0x1
+0043cba6  PUSH EAX
+0043cba7  PUSH ECX
+0043cba8  CALL 0x00446810
+0043cbad  ADD ESP,0xc
+0043cbb0  POP EDI
+0043cbb1  POP ESI
+0043cbb2  RET
+0043cbb3  TEST word ptr [ESI + 0x4a],DX
+0043cbb7  JNZ 0x0043cbe8
+0043cbb9  PUSH 0x1
+0043cbbb  PUSH EDI
+0043cbbc  PUSH ESI
+0043cbbd  PUSH ECX
+0043cbbe  CALL 0x0043cbf0
+0043cbc3  ADD ESP,0x10
+0043cbc6  TEST EAX,EAX
+0043cbc8  JZ 0x0043cbe8
+0043cbca  OR byte ptr [ESI + 0x4a],0x9
+0043cbce  MOV dword ptr [ESI],EDI
+0043cbd0  POP EDI
+0043cbd1  POP ESI
+0043cbd2  RET
+0043cbd3  OR word ptr [ESI + 0x4a],DX
+0043cbd7  MOV EAX,0x2fb136c
+0043cbdc  PUSH 0x1
+0043cbde  PUSH EAX
+0043cbdf  PUSH ECX
+0043cbe0  CALL 0x00446810
+0043cbe5  ADD ESP,0xc
+0043cbe8  POP EDI
+0043cbe9  POP ESI
+0043cbea  RET

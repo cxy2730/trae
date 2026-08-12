@@ -1,0 +1,13 @@
+; Function: FUN_00423d4a
+; Entry:    00423d4a
+; Size:     21 bytes
+
+00423d4a  MOV ECX,dword ptr [EBP + -0xc]
+00423d4d  POP EDI
+00423d4e  POP ESI
+00423d4f  XOR EAX,EAX
+00423d51  MOV dword ptr FS:[0x0],ECX
+00423d58  POP EBX
+00423d59  MOV ESP,EBP
+00423d5b  POP EBP
+00423d5c  RET 0x4

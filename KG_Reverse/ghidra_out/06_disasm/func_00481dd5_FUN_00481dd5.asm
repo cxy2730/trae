@@ -1,0 +1,23 @@
+; Function: FUN_00481dd5
+; Entry:    00481dd5
+; Size:     44 bytes
+
+00481dd5  PUSH ESI
+00481dd6  PUSH EDI
+00481dd7  MOV EDI,dword ptr [ESP + 0xc]
+00481ddb  MOV ESI,ECX
+00481ddd  TEST EDI,EDI
+00481ddf  JZ 0x00481dfc
+00481de1  PUSH EBX
+00481de2  LEA EBX,[ESI + 0x10]
+00481de5  PUSH EBX
+00481de6  CALL dword ptr [0x004a2278]
+00481dec  MOV EAX,dword ptr [ESI + 0xc]
+00481def  PUSH EBX
+00481df0  MOV dword ptr [EDI],EAX
+00481df2  MOV dword ptr [ESI + 0xc],EDI
+00481df5  CALL dword ptr [0x004a227c]
+00481dfb  POP EBX
+00481dfc  POP EDI
+00481dfd  POP ESI
+00481dfe  RET 0x4

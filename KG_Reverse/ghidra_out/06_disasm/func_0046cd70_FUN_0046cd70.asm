@@ -1,0 +1,41 @@
+; Function: FUN_0046cd70
+; Entry:    0046cd70
+; Size:     114 bytes
+
+0046cd70  MOV EAX,dword ptr [ESP + 0xc]
+0046cd74  TEST EAX,EAX
+0046cd76  JGE 0x0046cd7c
+0046cd78  XOR EAX,EAX
+0046cd7a  JMP 0x0046cd86
+0046cd7c  CMP EAX,0x64
+0046cd7f  JLE 0x0046cd86
+0046cd81  MOV EAX,0x64
+0046cd86  CMP EAX,0x63
+0046cd89  MOV ECX,EAX
+0046cd8b  JLE 0x0046cd92
+0046cd8d  MOV ECX,0x63
+0046cd92  PUSH ESI
+0046cd93  MOV ESI,dword ptr [ESP + 0x8]
+0046cd97  XOR EDX,EDX
+0046cd99  CMP ECX,0x63
+0046cd9c  MOV DL,byte ptr [ECX + ESI*0x1]
+0046cd9f  MOV dword ptr [ESP + 0x10],EDX
+0046cda3  FILD dword ptr [ESP + 0x10]
+0046cda7  JGE 0x0046cdb9
+0046cda9  XOR EDX,EDX
+0046cdab  MOV DL,byte ptr [ECX + ESI*0x1 + 0x1]
+0046cdaf  MOV dword ptr [ESP + 0x10],EDX
+0046cdb3  FILD dword ptr [ESP + 0x10]
+0046cdb7  JMP 0x0046cdbf
+0046cdb9  FLD float ptr [0x02f99f04]
+0046cdbf  SUB EAX,ECX
+0046cdc1  MOV dword ptr [ESP + 0x10],EAX
+0046cdc5  FSUB ST0,ST1
+0046cdc7  FIMUL dword ptr [ESP + 0x10]
+0046cdcb  FADD ST0,ST1
+0046cdcd  FIMUL dword ptr [ESP + 0xc]
+0046cdd1  FMUL float ptr [0x02f99f00]
+0046cdd7  CALL 0x00482498
+0046cddc  FSTP ST0
+0046cdde  POP ESI
+0046cddf  RET 0xc

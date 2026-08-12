@@ -1,0 +1,18 @@
+; Function: FUN_00497a7a
+; Entry:    00497a7a
+; Size:     43 bytes
+
+00497a7a  MOV EAX,0x4a1a80
+00497a7f  CALL 0x004858b8
+00497a84  PUSH ECX
+00497a85  MOV dword ptr [EBP + -0x10],ECX
+00497a88  MOV EAX,dword ptr [ECX + 0x10]
+00497a8b  AND dword ptr [EBP + -0x4],0x0
+00497a8f  ADD ECX,0x10
+00497a92  TEST EAX,EAX
+00497a94  JZ 0x00497a99
+00497a96  CALL dword ptr [EAX + 0x1c]
+00497a99  MOV ECX,dword ptr [EBP + -0xc]
+00497a9c  MOV dword ptr FS:[0x0],ECX
+00497aa3  LEAVE
+00497aa4  RET

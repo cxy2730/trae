@@ -1,0 +1,15 @@
+; Function: FUN_0040cd80
+; Entry:    0040cd80
+; Size:     35 bytes
+
+0040cd80  PUSH ESI
+0040cd81  MOV ESI,ECX
+0040cd83  CALL 0x00494b19
+0040cd88  XOR EAX,EAX
+0040cd8a  PUSH 0x1
+0040cd8c  MOV ECX,ESI
+0040cd8e  MOV dword ptr [ESI + 0xb8],EAX
+0040cd94  MOV dword ptr [ESI + 0xb4],EAX
+0040cd9a  CALL 0x0040cec0
+0040cd9f  POP ESI
+0040cda0  RET 0xc

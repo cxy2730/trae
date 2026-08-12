@@ -1,0 +1,31 @@
+; Function: FUN_00495a15
+; Entry:    00495a15
+; Size:     68 bytes
+
+00495a15  PUSH EBP
+00495a16  MOV EBP,ESP
+00495a18  PUSH ECX
+00495a19  PUSH ESI
+00495a1a  MOV ESI,ECX
+00495a1c  LEA ECX,[EBP + -0x4]
+00495a1f  AND dword ptr [EBP + -0x4],0x0
+00495a23  MOV EAX,dword ptr [ESI]
+00495a25  PUSH ECX
+00495a26  PUSH dword ptr [EBP + 0x10]
+00495a29  MOV ECX,ESI
+00495a2b  PUSH dword ptr [EBP + 0xc]
+00495a2e  PUSH dword ptr [EBP + 0x8]
+00495a31  CALL dword ptr [EAX + 0x9c]
+00495a37  TEST EAX,EAX
+00495a39  JNZ 0x00495a51
+00495a3b  PUSH dword ptr [EBP + 0x10]
+00495a3e  MOV EAX,dword ptr [ESI]
+00495a40  MOV ECX,ESI
+00495a42  PUSH dword ptr [EBP + 0xc]
+00495a45  PUSH dword ptr [EBP + 0x8]
+00495a48  CALL dword ptr [EAX + 0xa0]
+00495a4e  MOV dword ptr [EBP + -0x4],EAX
+00495a51  MOV EAX,dword ptr [EBP + -0x4]
+00495a54  POP ESI
+00495a55  LEAVE
+00495a56  RET 0xc

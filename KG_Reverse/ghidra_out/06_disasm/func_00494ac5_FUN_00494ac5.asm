@@ -1,0 +1,17 @@
+; Function: FUN_00494ac5
+; Entry:    00494ac5
+; Size:     31 bytes
+
+00494ac5  PUSH 0x7
+00494ac7  MOV EAX,dword ptr [EBP + 0x8]
+00494aca  LEA EDI,[EBX + 0x34]
+00494acd  POP ECX
+00494ace  LEA ESI,[EBP + -0x40]
+00494ad1  MOVSD.REP ES:EDI,ESI
+00494ad3  MOV ECX,dword ptr [EBP + -0xc]
+00494ad6  POP EDI
+00494ad7  POP ESI
+00494ad8  MOV dword ptr FS:[0x0],ECX
+00494adf  POP EBX
+00494ae0  LEAVE
+00494ae1  RET 0x14

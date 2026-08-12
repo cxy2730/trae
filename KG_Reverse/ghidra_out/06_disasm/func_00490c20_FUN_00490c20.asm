@@ -1,0 +1,9 @@
+; Function: FUN_00490c20
+; Entry:    00490c20
+; Size:     21 bytes
+
+00490c20  CMP dword ptr [0x03011370],0x2
+00490c27  JNZ 0x00490c34
+00490c29  PUSH 0x3011358
+00490c2e  CALL dword ptr [0x004a227c]
+00490c34  RET

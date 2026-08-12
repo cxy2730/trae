@@ -1,0 +1,10 @@
+; Function: FUN_00481fb6
+; Entry:    00481fb6
+; Size:     23 bytes
+
+00481fb6  CALL 0x00481fce
+00481fbb  CALL 0x004875cf
+00481fc0  MOV [0x03010f48],EAX
+00481fc5  CALL 0x0048757f
+00481fca  FNCLEX
+00481fcc  RET

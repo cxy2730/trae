@@ -1,0 +1,28 @@
+; Function: FUN_00404c8d
+; Entry:    00404c8d
+; Size:     74 bytes
+
+00404c8d  PUSH EBP
+00404c8e  MOV EBP,ESP
+00404c90  SUB ESP,0xc
+00404c96  MOV dword ptr [EBP + -0x4],0x0
+00404c9d  PUSH 0x0
+00404c9f  PUSH dword ptr [EBP + -0x4]
+00404ca2  PUSH dword ptr [EBP + 0x8]
+00404ca5  CALL 0x00404cd7
+00404caa  MOV dword ptr [EBP + -0x8],EAX
+00404cad  LEA EAX,[EBP + -0x8]
+00404cb0  PUSH EAX
+00404cb1  CALL 0x00405175
+00404cb6  MOV dword ptr [EBP + -0xc],EAX
+00404cb9  MOV EBX,dword ptr [EBP + -0x8]
+00404cbc  TEST EBX,EBX
+00404cbe  JZ 0x00404cc9
+00404cc0  PUSH EBX
+00404cc1  CALL 0x00405242
+00404cc6  ADD ESP,0x4
+00404cc9  MOV EAX,dword ptr [EBP + -0xc]
+00404ccc  JMP 0x00404cd1
+00404cd1  MOV ESP,EBP
+00404cd3  POP EBP
+00404cd4  RET 0x4

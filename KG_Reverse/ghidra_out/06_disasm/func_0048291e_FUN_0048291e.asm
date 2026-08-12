@@ -1,0 +1,61 @@
+; Function: FUN_0048291e
+; Entry:    0048291e
+; Size:     182 bytes
+
+0048291e  PUSH EBP
+0048291f  MOV EBP,ESP
+00482921  SUB ESP,0x34
+00482924  PUSH EBX
+00482925  PUSH ESI
+00482926  PUSH EDI
+00482927  AND dword ptr [EBP + -0x28],0x0
+0048292b  MOV dword ptr [EBP + -0x24],0x4829d4
+00482932  MOV EAX,dword ptr [EBP + 0x18]
+00482935  MOV dword ptr [EBP + -0x20],EAX
+00482938  MOV EAX,dword ptr [EBP + 0xc]
+0048293b  MOV dword ptr [EBP + -0x1c],EAX
+0048293e  MOV EAX,dword ptr [EBP + 0x1c]
+00482941  MOV dword ptr [EBP + -0x18],EAX
+00482944  MOV EAX,dword ptr [EBP + 0x20]
+00482947  MOV dword ptr [EBP + -0x14],EAX
+0048294a  AND dword ptr [EBP + -0x10],0x0
+0048294e  AND dword ptr [EBP + -0xc],0x0
+00482952  AND dword ptr [EBP + -0x8],0x0
+00482956  AND dword ptr [EBP + -0x4],0x0
+0048295a  MOV dword ptr [EBP + -0x10],0x4829a6
+00482961  MOV dword ptr [EBP + -0xc],ESP
+00482964  MOV dword ptr [EBP + -0x8],EBP
+00482967  MOV EAX,FS:[0x0]
+0048296d  MOV dword ptr [EBP + -0x28],EAX
+00482970  LEA EAX,[EBP + 0xffffffd8]
+00482976  MOV FS:[0x0],EAX
+0048297c  MOV dword ptr [EBP + -0x34],0x1
+00482983  MOV EAX,dword ptr [EBP + 0x8]
+00482986  MOV dword ptr [EBP + -0x30],EAX
+00482989  MOV EAX,dword ptr [EBP + 0x10]
+0048298c  MOV dword ptr [EBP + -0x2c],EAX
+0048298f  LEA EAX,[EBP + -0x30]
+00482992  PUSH EAX
+00482993  MOV EAX,dword ptr [EBP + 0x8]
+00482996  PUSH dword ptr [EAX]
+00482998  CALL 0x004871ba
+0048299d  CALL dword ptr [EAX + 0x68]
+004829a0  POP ECX
+004829a1  POP ECX
+004829a2  AND dword ptr [EBP + -0x34],0x0
+004829a6  CMP dword ptr [EBP + -0x4],0x0
+004829aa  JZ 0x004829c3
+004829ac  MOV EBX,dword ptr FS:[0x0]
+004829b3  MOV EAX,dword ptr [EBX]
+004829b5  MOV EBX,dword ptr [EBP + -0x28]
+004829b8  MOV dword ptr [EBX],EAX
+004829ba  MOV dword ptr FS:[0x0],EBX
+004829c1  JMP 0x004829cc
+004829c3  MOV EAX,dword ptr [EBP + -0x28]
+004829c6  MOV FS:[0x0],EAX
+004829cc  MOV EAX,dword ptr [EBP + -0x34]
+004829cf  POP EDI
+004829d0  POP ESI
+004829d1  POP EBX
+004829d2  LEAVE
+004829d3  RET

@@ -1,0 +1,24 @@
+; Function: FUN_0048ab78
+; Entry:    0048ab78
+; Size:     43 bytes
+
+0048ab78  MOV EDX,dword ptr [ESP + 0x8]
+0048ab7c  MOV EAX,dword ptr [ESP + 0x4]
+0048ab80  TEST EDX,EDX
+0048ab82  PUSH ESI
+0048ab83  LEA ECX,[EDX + -0x1]
+0048ab86  JZ 0x0048ab95
+0048ab88  CMP byte ptr [EAX],0x0
+0048ab8b  JZ 0x0048ab95
+0048ab8d  INC EAX
+0048ab8e  MOV ESI,ECX
+0048ab90  DEC ECX
+0048ab91  TEST ESI,ESI
+0048ab93  JNZ 0x0048ab88
+0048ab95  CMP byte ptr [EAX],0x0
+0048ab98  POP ESI
+0048ab99  JNZ 0x0048aba0
+0048ab9b  SUB EAX,dword ptr [ESP + 0x4]
+0048ab9f  RET
+0048aba0  MOV EAX,EDX
+0048aba2  RET

@@ -1,0 +1,17 @@
+; Function: FUN_00482d59
+; Entry:    00482d59
+; Size:     40 bytes
+
+00482d59  CMP dword ptr [0x02fd9ac0],0x1
+00482d60  JLE 0x00482d70
+00482d62  PUSH 0x8
+00482d64  PUSH dword ptr [ESP + 0x8]
+00482d68  CALL 0x0048a852
+00482d6d  POP ECX
+00482d6e  POP ECX
+00482d6f  RET
+00482d70  MOV EAX,dword ptr [ESP + 0x4]
+00482d74  MOV ECX,dword ptr [0x02fd98b4]
+00482d7a  MOV AL,byte ptr [ECX + EAX*0x2]
+00482d7d  AND EAX,0x8
+00482d80  RET

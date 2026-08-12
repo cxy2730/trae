@@ -1,0 +1,21 @@
+; Function: FUN_004827de
+; Entry:    004827de
+; Size:     45 bytes
+
+004827de  PUSH EBP
+004827df  MOV EBP,ESP
+004827e1  PUSH ECX
+004827e2  PUSH EBX
+004827e3  PUSH ESI
+004827e4  PUSH EDI
+004827e5  MOV EAX,dword ptr [EBP + 0xc]
+004827e8  ADD EAX,0xc
+004827eb  MOV dword ptr [EBP + -0x4],EAX
+004827ee  MOV EBX,dword ptr FS:[0x0]
+004827f5  MOV EAX,dword ptr [EBX]
+004827f7  MOV FS:[0x0],EAX
+004827fd  MOV EAX,dword ptr [EBP + 0x8]
+00482800  MOV EBX,dword ptr [EBP + 0xc]
+00482803  MOV ESP,dword ptr [EBX + -0x4]
+00482806  MOV EBP,dword ptr [EBP + -0x4]
+00482809  JMP EAX

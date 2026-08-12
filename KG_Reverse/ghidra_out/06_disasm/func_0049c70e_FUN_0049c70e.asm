@@ -1,0 +1,8 @@
+; Function: FUN_0049c70e
+; Entry:    0049c70e
+; Size:     12 bytes
+
+0049c70e  PUSH 0x49c71a
+0049c713  CALL 0x00483c3b
+0049c718  POP ECX
+0049c719  RET

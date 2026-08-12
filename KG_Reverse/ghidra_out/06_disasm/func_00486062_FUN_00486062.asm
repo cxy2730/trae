@@ -1,0 +1,8 @@
+; Function: FUN_00486062
+; Entry:    00486062
+; Size:     9 bytes
+
+00486062  PUSH 0x9
+00486064  CALL 0x00489ab5
+00486069  POP ECX
+0048606a  RET

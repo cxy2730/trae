@@ -1,0 +1,23 @@
+; Function: __cintrindisp2
+; Entry:    00488a30
+; Size:     62 bytes
+
+00488a30  PUSH EBP
+00488a31  MOV EBP,ESP
+00488a33  ADD ESP,0xfffffd30
+00488a39  PUSH EBX
+00488a3a  FSTCW word ptr [EBP + 0xffffff5c]
+00488a41  WAIT
+00488a42  CMP dword ptr [0x02fdbe28],0x0
+00488a49  JZ 0x00488a5f
+00488a4b  CALL 0x00487c97
+00488a50  OR byte ptr [EBP + 0xfffffd38],0x3
+00488a57  CALL 0x00488afa
+00488a5c  POP EBX
+00488a5d  LEAVE
+00488a5e  RET
+00488a5f  FXCH
+00488a61  FST double ptr [EBP + 0xffffff7a]
+00488a67  FXCH
+00488a69  FST double ptr [EBP + -0x7e]
+00488a6c  JMP 0x00488a4b

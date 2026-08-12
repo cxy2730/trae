@@ -1,0 +1,16 @@
+; Function: FUN_00489a2b
+; Entry:    00489a2b
+; Size:     41 bytes
+
+00489a2b  PUSH ESI
+00489a2c  MOV ESI,dword ptr [0x004a22c8]
+00489a32  PUSH dword ptr [0x02fd9824]
+00489a38  CALL ESI
+00489a3a  PUSH dword ptr [0x02fd9814]
+00489a40  CALL ESI
+00489a42  PUSH dword ptr [0x02fd9804]
+00489a48  CALL ESI
+00489a4a  PUSH dword ptr [0x02fd97e4]
+00489a50  CALL ESI
+00489a52  POP ESI
+00489a53  RET

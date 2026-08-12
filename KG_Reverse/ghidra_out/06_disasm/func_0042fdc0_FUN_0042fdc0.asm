@@ -1,0 +1,43 @@
+; Function: FUN_0042fdc0
+; Entry:    0042fdc0
+; Size:     72 bytes
+
+0042fdc0  MOV EAX,dword ptr [ECX + 0x54]
+0042fdc3  PUSH EBX
+0042fdc4  PUSH EBP
+0042fdc5  MOV EBP,dword ptr [ECX + 0x4c]
+0042fdc8  SUB EAX,EBP
+0042fdca  MOV EBP,dword ptr [ECX + 0x48]
+0042fdcd  CDQ
+0042fdce  PUSH ESI
+0042fdcf  MOV ESI,EAX
+0042fdd1  MOV EAX,dword ptr [ECX + 0x50]
+0042fdd4  XOR ESI,EDX
+0042fdd6  SUB EAX,EBP
+0042fdd8  SUB ESI,EDX
+0042fdda  CDQ
+0042fddb  XOR EAX,EDX
+0042fddd  PUSH EDI
+0042fdde  MOV EDI,dword ptr [ECX + 0x54]
+0042fde1  SUB EAX,EDX
+0042fde3  MOV EDX,dword ptr [ECX + 0x4c]
+0042fde6  INC ESI
+0042fde7  INC EAX
+0042fde8  CMP EDX,EDI
+0042fdea  JL 0x0042fdee
+0042fdec  MOV EDX,EDI
+0042fdee  MOV EBX,dword ptr [ECX + 0x48]
+0042fdf1  MOV EBP,dword ptr [ECX + 0x50]
+0042fdf4  CMP EBX,EBP
+0042fdf6  JL 0x0042fdfa
+0042fdf8  MOV EBX,EBP
+0042fdfa  PUSH ESI
+0042fdfb  PUSH EAX
+0042fdfc  PUSH EDX
+0042fdfd  PUSH EBX
+0042fdfe  CALL 0x0042fe10
+0042fe03  POP EDI
+0042fe04  POP ESI
+0042fe05  POP EBP
+0042fe06  POP EBX
+0042fe07  RET

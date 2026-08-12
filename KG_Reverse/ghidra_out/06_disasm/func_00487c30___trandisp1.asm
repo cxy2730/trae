@@ -1,0 +1,33 @@
+; Function: __trandisp1
+; Entry:    00487c30
+; Size:     103 bytes
+
+00487c30  CMP byte ptr [EDX + 0xe],0x5
+00487c34  JNZ 0x00487c47
+00487c36  MOV BX,word ptr [EBP + 0xffffff5c]
+00487c3d  OR BH,0x2
+00487c40  AND BH,0xfe
+00487c43  MOV BL,0x3f
+00487c45  JMP 0x00487c4b
+00487c47  MOV BX,0x133f
+00487c4b  MOV word ptr [EBP + 0xffffff5e],BX
+00487c52  FLDCW word ptr [EBP + 0xffffff5e]
+00487c58  MOV EBX,0x2fd954c
+00487c5d  FXAM
+00487c5f  MOV dword ptr [EBP + 0xffffff6c],EDX
+00487c65  FSTSW word ptr [EBP + 0xffffff60]
+00487c6c  MOV byte ptr [EBP + 0xffffff70],0x0
+00487c73  WAIT
+00487c74  MOV CL,byte ptr [EBP + 0xffffff61]
+00487c7a  SHL CL,0x1
+00487c7c  SAR CL,0x1
+00487c7e  ROL CL,0x1
+00487c80  MOV AL,CL
+00487c82  AND AL,0xf
+00487c84  XLAT EBX
+00487c85  MOVSX EAX,AL
+00487c88  AND ECX,0x404
+00487c8e  MOV EBX,EDX
+00487c90  ADD EBX,EAX
+00487c92  ADD EBX,0x10
+00487c95  JMP dword ptr [EBX]

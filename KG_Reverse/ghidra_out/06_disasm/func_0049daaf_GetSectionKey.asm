@@ -1,0 +1,37 @@
+; Function: GetSectionKey
+; Entry:    0049daaf
+; Size:     70 bytes
+
+0049daaf  PUSH EBP
+0049dab0  MOV EBP,ESP
+0049dab2  PUSH ECX
+0049dab3  PUSH ECX
+0049dab4  PUSH ESI
+0049dab5  XOR ESI,ESI
+0049dab7  PUSH EDI
+0049dab8  MOV dword ptr [EBP + -0x4],ESI
+0049dabb  CALL 0x0049da1b
+0049dac0  MOV EDI,EAX
+0049dac2  CMP EDI,ESI
+0049dac4  JNZ 0x0049daca
+0049dac6  XOR EAX,EAX
+0049dac8  JMP 0x0049daef
+0049daca  LEA EAX,[EBP + -0x8]
+0049dacd  PUSH EAX
+0049dace  LEA EAX,[EBP + -0x4]
+0049dad1  PUSH EAX
+0049dad2  PUSH ESI
+0049dad3  PUSH 0x2001f
+0049dad8  PUSH ESI
+0049dad9  PUSH ESI
+0049dada  PUSH ESI
+0049dadb  PUSH dword ptr [EBP + 0x8]
+0049dade  PUSH EDI
+0049dadf  CALL dword ptr [0x004a200c]
+0049dae5  PUSH EDI
+0049dae6  CALL dword ptr [0x004a2010]
+0049daec  MOV EAX,dword ptr [EBP + -0x4]
+0049daef  POP EDI
+0049daf0  POP ESI
+0049daf1  LEAVE
+0049daf2  RET 0x4

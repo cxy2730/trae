@@ -1,0 +1,15 @@
+; Function: FUN_004064a0
+; Entry:    004064a0
+; Size:     25 bytes
+
+004064a0  PUSH ESI
+004064a1  MOV ESI,ECX
+004064a3  MOV EAX,dword ptr [ESI + 0x8]
+004064a6  PUSH EAX
+004064a7  CALL 0x004064c0
+004064ac  XOR EAX,EAX
+004064ae  MOV dword ptr [ESI + 0x8],EAX
+004064b1  MOV dword ptr [ESI + 0x10],EAX
+004064b4  MOV dword ptr [ESI + 0xc],EAX
+004064b7  POP ESI
+004064b8  RET

@@ -1,0 +1,15 @@
+; Function: FUN_00490d94
+; Entry:    00490d94
+; Size:     30 bytes
+
+00490d94  CALL 0x0049c724
+00490d99  MOV ECX,dword ptr [ESP + 0x4]
+00490d9d  TEST ECX,ECX
+00490d9f  MOV byte ptr [EAX + 0x14],CL
+00490da2  JNZ 0x00490dac
+00490da4  PUSH -0x3
+00490da6  CALL 0x0048659b
+00490dab  POP ECX
+00490dac  PUSH 0x1
+00490dae  POP EAX
+00490daf  RET 0x8

@@ -1,0 +1,24 @@
+; Function: FUN_0043ea60
+; Entry:    0043ea60
+; Size:     70 bytes
+
+0043ea60  FILD dword ptr [ESP + 0x4]
+0043ea64  SUB ESP,0x8
+0043ea67  FMUL double ptr [0x02f97a88]
+0043ea6d  FIMUL dword ptr [ESP + 0x10]
+0043ea71  FADD double ptr [0x02f97a58]
+0043ea77  FSTP double ptr [ESP]
+0043ea7a  CALL 0x004823c8
+0043ea7f  FCOM double ptr [0x02f97a68]
+0043ea85  ADD ESP,0x8
+0043ea88  FNSTSW AX
+0043ea8a  TEST AH,0x41
+0043ea8d  JZ 0x0043eaa1
+0043ea8f  FCOM double ptr [0x02f97a60]
+0043ea95  FNSTSW AX
+0043ea97  TEST AH,0x1
+0043ea9a  JNZ 0x0043eaa1
+0043ea9c  JMP 0x00482498
+0043eaa1  FSTP ST0
+0043eaa3  XOR EAX,EAX
+0043eaa5  RET

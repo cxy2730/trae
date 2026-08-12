@@ -1,0 +1,14 @@
+; Function: __frnd
+; Entry:    00488181
+; Size:     18 bytes
+
+00488181  PUSH EBP
+00488182  MOV EBP,ESP
+00488184  PUSH ECX
+00488185  PUSH ECX
+00488186  FLD double ptr [EBP + 0x8]
+00488189  FRNDINT
+0048818b  FSTP double ptr [EBP + -0x8]
+0048818e  FLD double ptr [EBP + -0x8]
+00488191  LEAVE
+00488192  RET

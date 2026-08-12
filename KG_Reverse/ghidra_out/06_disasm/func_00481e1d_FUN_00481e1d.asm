@@ -1,0 +1,24 @@
+; Function: FUN_00481e1d
+; Entry:    00481e1d
+; Size:     72 bytes
+
+00481e1d  MOV EAX,0x4a1c26
+00481e22  CALL 0x004858b8
+00481e27  PUSH ECX
+00481e28  PUSH ESI
+00481e29  MOV ESI,ECX
+00481e2b  MOV dword ptr [EBP + -0x10],ESI
+00481e2e  MOV dword ptr [ESI],0x2f9c8e4
+00481e34  MOV dword ptr [EBP + -0x4],0x1
+00481e3b  CALL 0x00498ce4
+00481e40  AND byte ptr [EBP + -0x4],0x0
+00481e44  LEA ECX,[ESI + 0x20]
+00481e47  CALL 0x00492aa4
+00481e4c  OR dword ptr [EBP + -0x4],0xffffffff
+00481e50  LEA ECX,[ESI + 0x4]
+00481e53  CALL 0x00492aa4
+00481e58  MOV ECX,dword ptr [EBP + -0xc]
+00481e5b  POP ESI
+00481e5c  MOV dword ptr FS:[0x0],ECX
+00481e63  LEAVE
+00481e64  RET

@@ -1,0 +1,49 @@
+; Function: FUN_0040dc70
+; Entry:    0040dc70
+; Size:     172 bytes
+
+0040dc70  PUSH -0x1
+0040dc72  PUSH 0x49e2b0
+0040dc77  MOV EAX,FS:[0x0]
+0040dc7d  PUSH EAX
+0040dc7e  MOV dword ptr FS:[0x0],ESP
+0040dc85  SUB ESP,0x6c
+0040dc88  PUSH ECX
+0040dc89  LEA ECX,[ESP + 0x1c]
+0040dc8d  CALL 0x00499cdd
+0040dc92  LEA EAX,[ESP + 0x8]
+0040dc96  LEA ECX,[ESP + 0x18]
+0040dc9a  PUSH EAX
+0040dc9b  MOV dword ptr [ESP + 0x78],0x0
+0040dca3  CALL 0x0049988e
+0040dca8  LEA ECX,[ESP + 0x8]
+0040dcac  PUSH ECX
+0040dcad  CALL dword ptr [0x004a251c]
+0040dcb3  TEST EAX,EAX
+0040dcb5  JNZ 0x0040dcfc
+0040dcb7  PUSH 0xff000000
+0040dcbc  CALL 0x00406fe0
+0040dcc1  ADD ESP,0x4
+0040dcc4  LEA ECX,[ESP]
+0040dcc8  PUSH EAX
+0040dcc9  CALL 0x00499eda
+0040dcce  TEST EAX,EAX
+0040dcd0  JZ 0x0040dcd5
+0040dcd2  MOV EAX,dword ptr [EAX + 0x4]
+0040dcd5  PUSH EAX
+0040dcd6  MOV EAX,dword ptr [ESP + 0x20]
+0040dcda  LEA EDX,[ESP + 0xc]
+0040dcde  PUSH EDX
+0040dcdf  PUSH EAX
+0040dce0  CALL dword ptr [0x004a2518]
+0040dce6  MOV dword ptr [ESP],0x2f9547c
+0040dcee  LEA ECX,[ESP]
+0040dcf2  MOV byte ptr [ESP + 0x74],0x1
+0040dcf7  CALL 0x00499e74
+0040dcfc  LEA ECX,[ESP + 0x18]
+0040dd00  MOV dword ptr [ESP + 0x74],0xffffffff
+0040dd08  CALL 0x00499d4f
+0040dd0d  MOV ECX,dword ptr [ESP + 0x6c]
+0040dd11  MOV dword ptr FS:[0x0],ECX
+0040dd18  ADD ESP,0x78
+0040dd1b  RET

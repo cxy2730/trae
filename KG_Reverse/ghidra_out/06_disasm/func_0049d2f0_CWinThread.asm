@@ -1,0 +1,24 @@
+; Function: CWinThread
+; Entry:    0049d2f0
+; Size:     61 bytes
+
+0049d2f0  MOV EAX,0x4a1aa8
+0049d2f5  CALL 0x004858b8
+0049d2fa  PUSH ECX
+0049d2fb  PUSH ESI
+0049d2fc  MOV ESI,ECX
+0049d2fe  MOV dword ptr [EBP + -0x10],ESI
+0049d301  CALL 0x00497a60
+0049d306  XOR EAX,EAX
+0049d308  MOV ECX,ESI
+0049d30a  MOV dword ptr [EBP + -0x4],EAX
+0049d30d  MOV dword ptr [ESI],0x2f9c448
+0049d313  MOV dword ptr [ESI + 0x4c],EAX
+0049d316  MOV dword ptr [ESI + 0x50],EAX
+0049d319  CALL 0x0049d32d
+0049d31e  MOV ECX,dword ptr [EBP + -0xc]
+0049d321  MOV EAX,ESI
+0049d323  POP ESI
+0049d324  MOV dword ptr FS:[0x0],ECX
+0049d32b  LEAVE
+0049d32c  RET

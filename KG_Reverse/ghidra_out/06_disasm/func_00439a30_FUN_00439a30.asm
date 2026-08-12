@@ -1,0 +1,12 @@
+; Function: FUN_00439a30
+; Entry:    00439a30
+; Size:     19 bytes
+
+00439a30  MOV EAX,dword ptr [ESP + 0x4]
+00439a34  PUSH EAX
+00439a35  CALL dword ptr [0x004a2694]
+00439a3b  NEG EAX
+00439a3d  SBB EAX,EAX
+00439a3f  AND AL,0xfe
+00439a41  INC EAX
+00439a42  RET

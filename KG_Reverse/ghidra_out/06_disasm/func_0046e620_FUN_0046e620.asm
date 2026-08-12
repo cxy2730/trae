@@ -1,0 +1,15 @@
+; Function: FUN_0046e620
+; Entry:    0046e620
+; Size:     33 bytes
+
+0046e620  PUSH ESI
+0046e621  MOV ESI,ECX
+0046e623  MOV ECX,dword ptr [ESI + 0xc]
+0046e626  CALL 0x0046bae0
+0046e62b  MOV ECX,dword ptr [ESI + 0x8]
+0046e62e  MOV byte ptr [ESI + 0x1c],0x0
+0046e632  CALL 0x0046bb50
+0046e637  MOV ECX,dword ptr [ESI + 0xc]
+0046e63a  CALL 0x0046baf0
+0046e63f  POP ESI
+0046e640  RET

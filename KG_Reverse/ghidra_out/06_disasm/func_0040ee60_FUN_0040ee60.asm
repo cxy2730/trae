@@ -1,0 +1,25 @@
+; Function: FUN_0040ee60
+; Entry:    0040ee60
+; Size:     65 bytes
+
+0040ee60  MOV EAX,dword ptr [ESP + 0x8]
+0040ee64  PUSH ESI
+0040ee65  LEA ESI,[EAX + 0x18]
+0040ee68  PUSH ESI
+0040ee69  CALL 0x00406cf0
+0040ee6e  ADD ESI,EAX
+0040ee70  PUSH ESI
+0040ee71  CALL 0x00406cf0
+0040ee76  MOV ECX,dword ptr [ESI + EAX*0x1 + 0x1c]
+0040ee7a  LEA EAX,[ESI + EAX*0x1 + 0x1c]
+0040ee7e  MOV EDX,dword ptr [EAX + ECX*0x4 + 0x4]
+0040ee82  LEA EAX,[EAX + ECX*0x4 + 0x4]
+0040ee86  LEA ESI,[EDX + EAX*0x1 + 0x4]
+0040ee8a  PUSH ESI
+0040ee8b  CALL 0x00406cf0
+0040ee90  MOV ECX,dword ptr [ESI + EAX*0x1 + 0xc]
+0040ee94  LEA EAX,[ESI + EAX*0x1 + 0xc]
+0040ee98  ADD ESP,0xc
+0040ee9b  LEA EAX,[EAX + ECX*0x8 + 0x18]
+0040ee9f  POP ESI
+0040eea0  RET

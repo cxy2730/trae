@@ -1,0 +1,26 @@
+; Function: ~CPaintDC
+; Entry:    00499d4f
+; Size:     71 bytes
+
+00499d4f  MOV EAX,0x4a15e0
+00499d54  CALL 0x004858b8
+00499d59  PUSH ECX
+00499d5a  PUSH ESI
+00499d5b  MOV ESI,ECX
+00499d5d  MOV dword ptr [EBP + -0x10],ESI
+00499d60  MOV dword ptr [ESI],0x2f9af30
+00499d66  AND dword ptr [EBP + -0x4],0x0
+00499d6a  LEA EAX,[ESI + 0x14]
+00499d6d  PUSH EAX
+00499d6e  PUSH dword ptr [ESI + 0x10]
+00499d71  CALL dword ptr [0x004a25f8]
+00499d77  MOV ECX,ESI
+00499d79  CALL 0x00499314
+00499d7e  OR dword ptr [EBP + -0x4],0xffffffff
+00499d82  MOV ECX,ESI
+00499d84  CALL 0x0049935b
+00499d89  MOV ECX,dword ptr [EBP + -0xc]
+00499d8c  POP ESI
+00499d8d  MOV dword ptr FS:[0x0],ECX
+00499d94  LEAVE
+00499d95  RET

@@ -1,0 +1,24 @@
+; Function: FUN_00481873
+; Entry:    00481873
+; Size:     56 bytes
+
+00481873  PUSH EBP
+00481874  MOV EBP,ESP
+00481876  PUSH dword ptr [EBP + 0x24]
+00481879  PUSH dword ptr [EBP + 0x20]
+0048187c  PUSH dword ptr [EBP + 0x1c]
+0048187f  PUSH dword ptr [EBP + 0x18]
+00481882  PUSH dword ptr [EBP + 0x14]
+00481885  PUSH dword ptr [EBP + 0x10]
+00481888  PUSH dword ptr [EBP + 0xc]
+0048188b  PUSH dword ptr [ECX + 0x4]
+0048188e  CALL dword ptr [0x004a25fc]
+00481894  MOV ECX,dword ptr [EBP + 0x8]
+00481897  MOVSX EDX,AX
+0048189a  SHR EAX,0x10
+0048189d  MOVSX EAX,AX
+004818a0  MOV dword ptr [ECX + 0x4],EAX
+004818a3  MOV dword ptr [ECX],EDX
+004818a5  MOV EAX,ECX
+004818a7  POP EBP
+004818a8  RET 0x20

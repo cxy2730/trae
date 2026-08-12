@@ -1,0 +1,17 @@
+; Function: FUN_00494b19
+; Entry:    00494b19
+; Size:     39 bytes
+
+00494b19  PUSH ESI
+00494b1a  MOV ESI,ECX
+00494b1c  PUSH 0x49c02d
+00494b21  MOV ECX,0x3010bd4
+00494b26  CALL 0x0049ccac
+00494b2b  PUSH dword ptr [EAX + 0x40]
+00494b2e  MOV EDX,dword ptr [ESI]
+00494b30  MOV ECX,ESI
+00494b32  PUSH dword ptr [EAX + 0x3c]
+00494b35  PUSH dword ptr [EAX + 0x38]
+00494b38  CALL dword ptr [EDX + 0xa0]
+00494b3e  POP ESI
+00494b3f  RET

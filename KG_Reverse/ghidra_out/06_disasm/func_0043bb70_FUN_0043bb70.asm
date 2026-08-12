@@ -1,0 +1,27 @@
+; Function: FUN_0043bb70
+; Entry:    0043bb70
+; Size:     56 bytes
+
+0043bb70  PUSH ESI
+0043bb71  MOV ESI,dword ptr [ESP + 0xc]
+0043bb75  MOV EAX,ESI
+0043bb77  XOR EDX,EDX
+0043bb79  IMUL EAX,dword ptr [ESP + 0x14]
+0043bb7e  TEST ESI,ESI
+0043bb80  LEA EAX,[EAX + EAX*0x2]
+0043bb83  JLE 0x0043bba6
+0043bb85  MOV ECX,dword ptr [ESP + 0x10]
+0043bb89  PUSH EDI
+0043bb8a  MOV EDI,dword ptr [ESP + 0xc]
+0043bb8e  LEA EAX,[EAX + ECX*0x1 + 0x2]
+0043bb92  MOV CL,byte ptr [EDX + EDI*0x1]
+0043bb95  INC EDX
+0043bb96  MOV byte ptr [EAX + -0x2],CL
+0043bb99  MOV byte ptr [EAX + -0x1],CL
+0043bb9c  MOV byte ptr [EAX],CL
+0043bb9e  ADD EAX,0x3
+0043bba1  CMP EDX,ESI
+0043bba3  JL 0x0043bb92
+0043bba5  POP EDI
+0043bba6  POP ESI
+0043bba7  RET

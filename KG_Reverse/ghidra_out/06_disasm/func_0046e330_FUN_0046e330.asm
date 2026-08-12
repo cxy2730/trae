@@ -1,0 +1,15 @@
+; Function: FUN_0046e330
+; Entry:    0046e330
+; Size:     31 bytes
+
+0046e330  PUSH ESI
+0046e331  MOV ESI,ECX
+0046e333  MOV EAX,dword ptr [ESI + 0x4]
+0046e336  MOV dword ptr [ESI],0x2f99fa4
+0046e33c  TEST EAX,EAX
+0046e33e  JZ 0x0046e347
+0046e340  PUSH EAX
+0046e341  CALL dword ptr [0x004a235c]
+0046e347  MOV dword ptr [ESI],0x2f99fbc
+0046e34d  POP ESI
+0046e34e  RET

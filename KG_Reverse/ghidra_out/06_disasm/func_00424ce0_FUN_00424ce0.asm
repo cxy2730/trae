@@ -1,0 +1,48 @@
+; Function: FUN_00424ce0
+; Entry:    00424ce0
+; Size:     145 bytes
+
+00424ce0  PUSH -0x1
+00424ce2  PUSH 0x49f611
+00424ce7  MOV EAX,FS:[0x0]
+00424ced  PUSH EAX
+00424cee  MOV dword ptr FS:[0x0],ESP
+00424cf5  SUB ESP,0x8
+00424cf8  MOV AL,byte ptr [ESP + 0x3]
+00424cfc  PUSH ESI
+00424cfd  PUSH EDI
+00424cfe  MOV ESI,ECX
+00424d00  XOR EDI,EDI
+00424d02  MOV dword ptr [ESP + 0xc],ESI
+00424d06  MOV byte ptr [ESI + 0x5c],AL
+00424d09  MOV dword ptr [ESI + 0x60],EDI
+00424d0c  MOV dword ptr [ESI + 0x64],EDI
+00424d0f  MOV dword ptr [ESI + 0x68],EDI
+00424d12  MOV CL,byte ptr [ESP + 0xb]
+00424d16  MOV dword ptr [ESP + 0x18],EDI
+00424d1a  MOV byte ptr [ESI + 0x6c],CL
+00424d1d  MOV dword ptr [ESI + 0x70],EDI
+00424d20  MOV dword ptr [ESI + 0x74],EDI
+00424d23  MOV dword ptr [ESI + 0x78],EDI
+00424d26  MOV DL,byte ptr [ESP + 0xb]
+00424d2a  MOV dword ptr [ESI + 0x80],EDI
+00424d30  MOV byte ptr [ESI + 0x7c],DL
+00424d33  MOV dword ptr [ESI + 0x84],EDI
+00424d39  MOV dword ptr [ESI + 0x88],EDI
+00424d3f  MOV ECX,ESI
+00424d41  MOV byte ptr [ESP + 0x18],0x2
+00424d46  MOV dword ptr [ESI],0x2f96140
+00424d4c  CALL 0x00424ea0
+00424d51  PUSH EDI
+00424d52  PUSH EDI
+00424d53  PUSH EDI
+00424d54  PUSH EDI
+00424d55  CALL dword ptr [0x004a2314]
+00424d5b  MOV ECX,dword ptr [ESP + 0x10]
+00424d5f  MOV dword ptr [ESI + 0x54],EAX
+00424d62  MOV EAX,ESI
+00424d64  POP EDI
+00424d65  POP ESI
+00424d66  MOV dword ptr FS:[0x0],ECX
+00424d6d  ADD ESP,0x14
+00424d70  RET

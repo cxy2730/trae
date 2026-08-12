@@ -1,0 +1,48 @@
+; Function: FUN_0041b0d0
+; Entry:    0041b0d0
+; Size:     162 bytes
+
+0041b0d0  PUSH EBP
+0041b0d1  MOV EBP,ESP
+0041b0d3  PUSH ECX
+0041b0d4  MOV dword ptr [EBP + -0x4],ECX
+0041b0d7  MOV EAX,dword ptr [EBP + -0x4]
+0041b0da  CMP dword ptr [EAX + 0x284],0x1
+0041b0e1  JNZ 0x0041b11c
+0041b0e3  MOV ECX,dword ptr [EBP + -0x4]
+0041b0e6  MOV dword ptr [ECX + 0x284],0x2
+0041b0f0  MOV EDX,dword ptr [EBP + -0x4]
+0041b0f3  CMP dword ptr [EDX + 0x284],0x0
+0041b0fa  JZ 0x0041b0fe
+0041b0fc  JMP 0x0041b0f0
+0041b0fe  MOV EAX,dword ptr [EBP + -0x4]
+0041b101  CMP dword ptr [EAX + 0x28c],0x0
+0041b108  JZ 0x0041b11c
+0041b10a  PUSH -0x1
+0041b10c  MOV ECX,dword ptr [EBP + -0x4]
+0041b10f  MOV EDX,dword ptr [ECX + 0x28c]
+0041b115  PUSH EDX
+0041b116  CALL dword ptr [0x004a2358]
+0041b11c  MOV EAX,dword ptr [EBP + -0x4]
+0041b11f  CMP dword ptr [EAX + 0x28c],0x0
+0041b126  JZ 0x0041b145
+0041b128  MOV ECX,dword ptr [EBP + -0x4]
+0041b12b  MOV EDX,dword ptr [ECX + 0x28c]
+0041b131  PUSH EDX
+0041b132  CALL dword ptr [0x004a235c]
+0041b138  MOV EAX,dword ptr [EBP + -0x4]
+0041b13b  MOV dword ptr [EAX + 0x28c],0x0
+0041b145  MOV ECX,dword ptr [EBP + -0x4]
+0041b148  XOR EDX,EDX
+0041b14a  CMP dword ptr [ECX + 0x2a0],0x0
+0041b151  SETZ DL
+0041b154  TEST EDX,EDX
+0041b156  JNZ 0x0041b166
+0041b158  MOV ECX,dword ptr [EBP + -0x4]
+0041b15b  ADD ECX,0x2a4
+0041b161  CALL 0x00424e70
+0041b166  MOV ECX,dword ptr [EBP + -0x4]
+0041b169  CALL 0x004112c0
+0041b16e  MOV ESP,EBP
+0041b170  POP EBP
+0041b171  RET

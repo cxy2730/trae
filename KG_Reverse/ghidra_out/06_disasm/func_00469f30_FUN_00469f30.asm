@@ -1,0 +1,8 @@
+; Function: FUN_00469f30
+; Entry:    00469f30
+; Size:     12 bytes
+
+00469f30  PUSH 0x469f40
+00469f35  CALL 0x00483c3b
+00469f3a  POP ECX
+00469f3b  RET

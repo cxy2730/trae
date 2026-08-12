@@ -1,0 +1,22 @@
+; Function: FUN_0041b7c0
+; Entry:    0041b7c0
+; Size:     48 bytes
+
+0041b7c0  PUSH EBP
+0041b7c1  MOV EBP,ESP
+0041b7c3  CMP dword ptr [EBP + 0x8],0x0
+0041b7c7  JZ 0x0041b7ee
+0041b7c9  MOV EAX,dword ptr [EBP + 0x8]
+0041b7cc  PUSH EAX
+0041b7cd  MOV ECX,0x2fe8230
+0041b7d2  CALL 0x00415c20
+0041b7d7  TEST EAX,EAX
+0041b7d9  JNZ 0x0041b7ee
+0041b7db  MOV ECX,dword ptr [EBP + 0x8]
+0041b7de  PUSH ECX
+0041b7df  PUSH 0x0
+0041b7e1  MOV EDX,dword ptr [0x02fe863c]
+0041b7e7  PUSH EDX
+0041b7e8  CALL dword ptr [0x004a22e8]
+0041b7ee  POP EBP
+0041b7ef  RET

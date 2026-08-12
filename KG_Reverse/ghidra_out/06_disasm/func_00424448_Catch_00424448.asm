@@ -1,0 +1,12 @@
+; Function: Catch@00424448
+; Entry:    00424448
+; Size:     24 bytes
+
+00424448  MOV ECX,dword ptr [EBP + 0x8]
+0042444b  MOV EAX,dword ptr [EBP + -0x14]
+0042444e  PUSH ECX
+0042444f  MOV dword ptr [EBP + -0x18],EAX
+00424452  CALL 0x00492f40
+00424457  ADD ESP,0x4
+0042445a  MOV EAX,0x4243f4
+0042445f  RET

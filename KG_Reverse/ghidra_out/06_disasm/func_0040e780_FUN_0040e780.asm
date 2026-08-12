@@ -1,0 +1,19 @@
+; Function: FUN_0040e780
+; Entry:    0040e780
+; Size:     40 bytes
+
+0040e780  MOV EAX,dword ptr [ESP + 0x4]
+0040e784  MOV EDX,dword ptr [ECX + 0x4]
+0040e787  CMP EAX,EDX
+0040e789  JGE 0x0040e7a3
+0040e78b  MOV EDX,dword ptr [ECX + 0x18]
+0040e78e  TEST EDX,EDX
+0040e790  JNZ 0x0040e79a
+0040e792  XOR ECX,ECX
+0040e794  MOV EAX,dword ptr [ECX + EAX*0x4]
+0040e797  RET 0x4
+0040e79a  MOV ECX,dword ptr [ECX + 0x10]
+0040e79d  MOV EAX,dword ptr [ECX + EAX*0x4]
+0040e7a0  RET 0x4
+0040e7a3  XOR EAX,EAX
+0040e7a5  RET 0x4

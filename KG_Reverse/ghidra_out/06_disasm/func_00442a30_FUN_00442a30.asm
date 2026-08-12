@@ -1,0 +1,166 @@
+; Function: FUN_00442a30
+; Entry:    00442a30
+; Size:     462 bytes
+
+00442a30  PUSH EBP
+00442a31  MOV EBP,ESP
+00442a33  AND ESP,0xfffffff8
+00442a36  SUB ESP,0x44
+00442a39  PUSH EBX
+00442a3a  PUSH ESI
+00442a3b  MOV ESI,dword ptr [EBP + 0x8]
+00442a3e  PUSH EDI
+00442a3f  MOV EDI,dword ptr [0x004a205c]
+00442a45  PUSH 0x58
+00442a47  PUSH ESI
+00442a48  CALL EDI
+00442a4a  PUSH 0x5a
+00442a4c  PUSH ESI
+00442a4d  MOV dword ptr [ESP + 0x18],EAX
+00442a51  CALL EDI
+00442a53  FILD dword ptr [ESP + 0x10]
+00442a57  PUSH 0x6e
+00442a59  PUSH ESI
+00442a5a  MOV dword ptr [ESP + 0x24],EAX
+00442a5e  FSTP double ptr [ESP + 0x28]
+00442a62  CALL EDI
+00442a64  MOV dword ptr [ESP + 0x10],EAX
+00442a68  PUSH 0x6f
+00442a6a  FILD dword ptr [ESP + 0x14]
+00442a6e  PUSH ESI
+00442a6f  FDIV double ptr [ESP + 0x28]
+00442a73  FSTP double ptr [ESP + 0x40]
+00442a77  FILD dword ptr [ESP + 0x24]
+00442a7b  FSTP double ptr [ESP + 0x18]
+00442a7f  CALL EDI
+00442a81  MOV dword ptr [ESP + 0x1c],EAX
+00442a85  PUSH 0x70
+00442a87  FILD dword ptr [ESP + 0x20]
+00442a8b  PUSH ESI
+00442a8c  FDIV double ptr [ESP + 0x18]
+00442a90  FSTP double ptr [ESP + 0x30]
+00442a94  CALL EDI
+00442a96  MOV dword ptr [ESP + 0x1c],EAX
+00442a9a  PUSH 0x71
+00442a9c  FILD dword ptr [ESP + 0x20]
+00442aa0  PUSH ESI
+00442aa1  FDIV double ptr [ESP + 0x28]
+00442aa5  FSTP double ptr [ESP + 0x48]
+00442aa9  CALL EDI
+00442aab  MOV dword ptr [ESP + 0x1c],EAX
+00442aaf  PUSH 0x8
+00442ab1  FILD dword ptr [ESP + 0x20]
+00442ab5  PUSH ESI
+00442ab6  FDIV double ptr [ESP + 0x18]
+00442aba  FSTP double ptr [ESP + 0x38]
+00442abe  CALL EDI
+00442ac0  MOV dword ptr [ESP + 0x1c],EAX
+00442ac4  PUSH 0xa
+00442ac6  FILD dword ptr [ESP + 0x20]
+00442aca  PUSH ESI
+00442acb  FDIV double ptr [ESP + 0x28]
+00442acf  FSTP double ptr [ESP + 0x50]
+00442ad3  CALL EDI
+00442ad5  MOV dword ptr [ESP + 0x1c],EAX
+00442ad9  MOV EAX,dword ptr [ESP + 0x3c]
+00442add  FILD dword ptr [ESP + 0x1c]
+00442ae1  MOV ECX,dword ptr [ESP + 0x38]
+00442ae5  PUSH 0x5
+00442ae7  PUSH 0x3
+00442ae9  PUSH EAX
+00442aea  FDIV double ptr [ESP + 0x1c]
+00442aee  PUSH ECX
+00442aef  FSUBR double ptr [ESP + 0x38]
+00442af3  FSUB double ptr [ESP + 0x40]
+00442af7  FSTP double ptr [ESP + 0x30]
+00442afb  CALL 0x00442870
+00442b00  FSTP double ptr [ESP + 0x8]
+00442b04  ADD ESP,0x8
+00442b07  CALL 0x00442810
+00442b0c  MOV ESI,dword ptr [EBP + 0xc]
+00442b0f  MOV EDX,dword ptr [ESP + 0x34]
+00442b13  PUSH 0x5
+00442b15  PUSH 0x3
+00442b17  MOV dword ptr [ESI],EAX
+00442b19  MOV EAX,dword ptr [ESP + 0x38]
+00442b1d  PUSH EDX
+00442b1e  PUSH EAX
+00442b1f  CALL 0x00442870
+00442b24  FSTP double ptr [ESP + 0x10]
+00442b28  ADD ESP,0x10
+00442b2b  CALL 0x00442810
+00442b30  MOV ECX,dword ptr [ESP + 0x4c]
+00442b34  MOV EDI,dword ptr [EBP + 0x10]
+00442b37  MOV EDX,dword ptr [ESP + 0x48]
+00442b3b  PUSH 0x5
+00442b3d  PUSH 0x3
+00442b3f  PUSH ECX
+00442b40  PUSH EDX
+00442b41  MOV dword ptr [EDI],EAX
+00442b43  CALL 0x00442870
+00442b48  FSTP double ptr [ESP + 0x10]
+00442b4c  ADD ESP,0x10
+00442b4f  CALL 0x00442840
+00442b54  MOV EBX,dword ptr [EBP + 0x1c]
+00442b57  MOV ECX,dword ptr [ESP + 0x38]
+00442b5b  PUSH 0x5
+00442b5d  PUSH 0x3
+00442b5f  MOV dword ptr [EBX],EAX
+00442b61  MOV EAX,dword ptr [ESP + 0x44]
+00442b65  PUSH EAX
+00442b66  PUSH ECX
+00442b67  CALL 0x00442870
+00442b6c  FSTP double ptr [ESP + 0x10]
+00442b70  ADD ESP,0x10
+00442b73  CALL 0x00442840
+00442b78  FLD double ptr [ESP + 0x40]
+00442b7c  FSUB double ptr [ESP + 0x50]
+00442b80  MOV EDX,dword ptr [EBP + 0x20]
+00442b83  ADD ESP,0x8
+00442b86  FSUB double ptr [ESP + 0x40]
+00442b8a  PUSH 0x5
+00442b8c  PUSH 0x3
+00442b8e  SUB ESP,0x8
+00442b91  MOV dword ptr [EDX],EAX
+00442b93  FSTP double ptr [ESP]
+00442b96  CALL 0x00442870
+00442b9b  FSTP double ptr [ESP + 0x8]
+00442b9f  ADD ESP,0x8
+00442ba2  CALL 0x00442840
+00442ba7  MOV ECX,dword ptr [EBP + 0x24]
+00442baa  MOV EDX,dword ptr [ESP + 0x2c]
+00442bae  PUSH 0x5
+00442bb0  PUSH 0x3
+00442bb2  MOV dword ptr [ECX],EAX
+00442bb4  MOV EAX,dword ptr [ESP + 0x30]
+00442bb8  PUSH EDX
+00442bb9  PUSH EAX
+00442bba  CALL 0x00442870
+00442bbf  FSTP double ptr [ESP + 0x10]
+00442bc3  ADD ESP,0x10
+00442bc6  CALL 0x00442840
+00442bcb  MOV ECX,dword ptr [EBP + 0x28]
+00442bce  ADD ESP,0x8
+00442bd1  MOV dword ptr [ECX],EAX
+00442bd3  MOV EDX,dword ptr [ESI]
+00442bd5  MOV EAX,dword ptr [EBX]
+00442bd7  SUB EDX,EAX
+00442bd9  MOV EAX,dword ptr [EBP + 0x24]
+00442bdc  MOV EBX,dword ptr [EAX]
+00442bde  MOV EAX,dword ptr [EBP + 0x14]
+00442be1  SUB EDX,EBX
+00442be3  MOV dword ptr [EAX],EDX
+00442be5  MOV EAX,dword ptr [EBP + 0x20]
+00442be8  MOV EDX,dword ptr [EDI]
+00442bea  POP EDI
+00442beb  MOV ESI,dword ptr [EAX]
+00442bed  MOV EAX,dword ptr [ECX]
+00442bef  MOV ECX,dword ptr [EBP + 0x18]
+00442bf2  SUB EDX,ESI
+00442bf4  SUB EDX,EAX
+00442bf6  POP ESI
+00442bf7  MOV dword ptr [ECX],EDX
+00442bf9  POP EBX
+00442bfa  MOV ESP,EBP
+00442bfc  POP EBP
+00442bfd  RET

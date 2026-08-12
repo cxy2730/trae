@@ -1,0 +1,21 @@
+; Function: ~CMiniDockFrameWnd
+; Entry:    004914be
+; Size:     56 bytes
+
+004914be  MOV EAX,0x4a1858
+004914c3  CALL 0x004858b8
+004914c8  PUSH ECX
+004914c9  PUSH ESI
+004914ca  MOV ESI,ECX
+004914cc  MOV dword ptr [EBP + -0x10],ESI
+004914cf  AND dword ptr [EBP + -0x4],0x0
+004914d3  LEA ECX,[ESI + 0xac]
+004914d9  CALL 0x004931d6
+004914de  OR dword ptr [EBP + -0x4],0xffffffff
+004914e2  MOV ECX,ESI
+004914e4  CALL 0x00493f68
+004914e9  MOV ECX,dword ptr [EBP + -0xc]
+004914ec  POP ESI
+004914ed  MOV dword ptr FS:[0x0],ECX
+004914f4  LEAVE
+004914f5  RET

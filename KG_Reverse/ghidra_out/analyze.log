@@ -1,0 +1,71 @@
+2026-08-12 15:23:24 INFO  (LoggingInitialization) Using log config file: jar:file:/opt/ghidra_12.1.2_PUBLIC/Ghidra/Framework/Generic/lib/Generic.jar!/generic.log4j.xml  
+2026-08-12 15:23:24 INFO  (LoggingInitialization) Using log file: /workspace/KG_Reverse/ghidra_out/analyze.log  
+2026-08-12 15:23:24 DEBUG (GhidraObjectInputFilter) Including serial input filter: FileSystem/data/client.rmi.serial.filter  
+2026-08-12 15:23:24 INFO  (Preferences) Loading user preferences: /root/.config/ghidra/ghidra_12.1.2_PUBLIC/preferences  
+2026-08-12 15:23:24 INFO  (Preferences) Loading previous preferences: /root/.config/ghidra/ghidra_11.4.1_PUBLIC/preferences  
+2026-08-12 15:23:24 INFO  (ClassSearcher) Searching for classes...  
+2026-08-12 15:23:25 INFO  (ClassSearcher) Class search complete (783 ms)  
+2026-08-12 15:23:25 INFO  (DefaultSSLContextInitializer) Initializing SSL Context  
+2026-08-12 15:23:25 INFO  (SecureRandomFactory) Initializing Random Number Generator...  
+2026-08-12 15:23:25 INFO  (SecureRandomFactory) Random Number Generator initialization complete: NativePRNGNonBlocking  
+2026-08-12 15:23:25 INFO  (DefaultTrustManagerFactory) Trust manager disabled, cacerts have not been set  
+2026-08-12 15:23:26 INFO  (AnalyzeHeadless) Headless startup complete (2562 ms)  
+2026-08-12 15:23:26 INFO  (ClassSearcher) Class searcher loaded 59 extension points (20 false positives)  
+2026-08-12 15:23:26 INFO  (HeadlessAnalyzer) HEADLESS Script Paths:
+    /opt/ghidra_12.1.2_PUBLIC/Ghidra/Processors/DATA/ghidra_scripts
+    /opt/ghidra_12.1.2_PUBLIC/Ghidra/Features/VersionTracking/ghidra_scripts
+    /opt/ghidra_12.1.2_PUBLIC/Ghidra/Processors/Atmel/ghidra_scripts
+    /opt/ghidra_12.1.2_PUBLIC/Ghidra/Features/MicrosoftCodeAnalyzer/ghidra_scripts
+    /opt/ghidra_12.1.2_PUBLIC/Ghidra/Features/SwiftDemangler/ghidra_scripts
+    /opt/ghidra_12.1.2_PUBLIC/Ghidra/Features/BSim/ghidra_scripts
+    /opt/ghidra_12.1.2_PUBLIC/Ghidra/Features/WildcardAssembler/ghidra_scripts
+    /opt/ghidra_12.1.2_PUBLIC/Ghidra/Processors/PIC/ghidra_scripts
+    /opt/ghidra_12.1.2_PUBLIC/Ghidra/Debug/Debugger/ghidra_scripts
+    /opt/ghidra_12.1.2_PUBLIC/Ghidra/Features/PyGhidra/ghidra_scripts
+    /workspace/KG_Reverse/scripts
+    /opt/ghidra_12.1.2_PUBLIC/Ghidra/Features/SystemEmulation/ghidra_scripts
+    /opt/ghidra_12.1.2_PUBLIC/Ghidra/Processors/8051/ghidra_scripts
+    /opt/ghidra_12.1.2_PUBLIC/Ghidra/Debug/Debugger-rmi-trace/ghidra_scripts
+    /opt/ghidra_12.1.2_PUBLIC/Ghidra/Features/DecompilerDependent/ghidra_scripts
+    /opt/ghidra_12.1.2_PUBLIC/Ghidra/Features/GnuDemangler/ghidra_scripts
+    /opt/ghidra_12.1.2_PUBLIC/Ghidra/Features/FileFormats/ghidra_scripts
+    /opt/ghidra_12.1.2_PUBLIC/Ghidra/Features/FunctionID/ghidra_scripts
+    /opt/ghidra_12.1.2_PUBLIC/Ghidra/Processors/JVM/ghidra_scripts
+    /opt/ghidra_12.1.2_PUBLIC/Ghidra/Features/Decompiler/ghidra_scripts
+    /opt/ghidra_12.1.2_PUBLIC/Ghidra/Features/PDB/ghidra_scripts
+    /opt/ghidra_12.1.2_PUBLIC/Ghidra/Features/BytePatterns/ghidra_scripts
+    /opt/ghidra_12.1.2_PUBLIC/Ghidra/Features/Base/ghidra_scripts  
+2026-08-12 15:23:27 INFO  (HeadlessAnalyzer) HEADLESS: execution starts  
+2026-08-12 15:23:27 INFO  (HeadlessAnalyzer) Opening existing project: /workspace/KG_Reverse/ghidra_project/KG_Project  
+2026-08-12 15:23:27 INFO  (HeadlessProject) Opening project: /workspace/KG_Reverse/ghidra_project/KG_Project  
+2026-08-12 15:23:29 INFO  (HeadlessAnalyzer) REPORT: Processing project file: /KG.exe  
+2026-08-12 15:23:30 INFO  (HeadlessAnalyzer) REPORT: Execute script: KGFullExport.class   
+2026-08-12 15:23:30 INFO  (HeadlessAnalyzer) SCRIPT: KGFullExport.class  
+2026-08-12 15:23:30 INFO  (GhidraScript) KGFullExport.class> [*] KG_Ghidra_FullExport starting, output: /workspace/KG_Reverse/ghidra_out  
+2026-08-12 15:23:30 INFO  (GhidraScript) KGFullExport.class> [*] Program: KG.exe  
+2026-08-12 15:23:30 INFO  (GhidraScript) KGFullExport.class> [*] Language: x86:LE:32:default  
+2026-08-12 15:23:30 INFO  (GhidraScript) KGFullExport.class> [*] Compiler: windows  
+2026-08-12 15:23:30 INFO  (GhidraScript) KGFullExport.class>   functions: 1000  
+2026-08-12 15:23:30 INFO  (GhidraScript) KGFullExport.class>   functions: 2000  
+2026-08-12 15:23:30 INFO  (GhidraScript) KGFullExport.class>   functions: 3000  
+2026-08-12 15:23:30 INFO  (GhidraScript) KGFullExport.class> [*] Functions exported: 3726 -> /workspace/KG_Reverse/ghidra_out/01_functions.json  
+2026-08-12 15:23:31 INFO  (GhidraScript) KGFullExport.class> [*] Strings exported: 8232 -> /workspace/KG_Reverse/ghidra_out/02_strings.json  
+2026-08-12 15:23:31 INFO  (GhidraScript) KGFullExport.class> [*] Imports exported: 2583 -> /workspace/KG_Reverse/ghidra_out/03_imports.json  
+2026-08-12 15:23:31 INFO  (GhidraScript) KGFullExport.class> [*] Exports exported: 1 -> /workspace/KG_Reverse/ghidra_out/04_exports.json  
+2026-08-12 15:23:38 INFO  (GhidraScript) KGFullExport.class>   decompiled: 500 (7s, 0 errors)  
+2026-08-12 15:23:45 INFO  (GhidraScript) KGFullExport.class>   decompiled: 1000 (14s, 0 errors)  
+2026-08-12 15:25:25 INFO  (GhidraScript) KGFullExport.class>   decompiled: 1500 (114s, 1 errors)  
+2026-08-12 15:25:30 INFO  (GhidraScript) KGFullExport.class>   decompiled: 2000 (118s, 1 errors)  
+2026-08-12 15:25:33 INFO  (GhidraScript) KGFullExport.class>   decompiled: 2500 (122s, 1 errors)  
+2026-08-12 15:25:35 INFO  (GhidraScript) KGFullExport.class>   decompiled: 3000 (123s, 1 errors)  
+2026-08-12 15:25:35 INFO  (GhidraScript) KGFullExport.class>   decompiled: 3500 (124s, 1 errors)  
+2026-08-12 15:25:36 INFO  (GhidraScript) KGFullExport.class> [*] Decompiled: 3726 (1 errors)  
+2026-08-12 15:25:36 INFO  (GhidraScript) KGFullExport.class>   disasm: 1000  
+2026-08-12 15:25:37 INFO  (GhidraScript) KGFullExport.class>   disasm: 2000  
+2026-08-12 15:25:37 INFO  (GhidraScript) KGFullExport.class>   disasm: 3000  
+2026-08-12 15:25:37 INFO  (GhidraScript) KGFullExport.class> [*] Disassembly exported: 3726  
+2026-08-12 15:25:37 INFO  (GhidraScript) KGFullExport.class> [*] Xrefs exported: 13718 -> /workspace/KG_Reverse/ghidra_out/07_xrefs.json  
+2026-08-12 15:25:37 INFO  (GhidraScript) KGFullExport.class> [*] Memory blocks exported: 6  
+2026-08-12 15:25:37 INFO  (GhidraScript) KGFullExport.class> [*] Summary -> /workspace/KG_Reverse/ghidra_out/09_summary.json  
+2026-08-12 15:25:37 INFO  (GhidraScript) KGFullExport.class> [*] KG_Ghidra_FullExport DONE  
+2026-08-12 15:25:37 INFO  (HeadlessAnalyzer) REPORT: Save succeeded for processed file: /KG.exe  

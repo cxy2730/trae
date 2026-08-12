@@ -1,0 +1,97 @@
+; Function: FUN_00424ea0
+; Entry:    00424ea0
+; Size:     280 bytes
+
+00424ea0  PUSH ECX
+00424ea1  PUSH EBX
+00424ea2  MOV EAX,ECX
+00424ea4  XOR EBX,EBX
+00424ea6  PUSH EBP
+00424ea7  MOV dword ptr [EAX + 0x4],EBX
+00424eaa  MOV dword ptr [EAX + 0x8],EBX
+00424ead  MOV dword ptr [EAX + 0xc],EBX
+00424eb0  MOV dword ptr [EAX + 0x10],EBX
+00424eb3  MOV dword ptr [EAX + 0x14],EBX
+00424eb6  MOV dword ptr [EAX + 0x18],EBX
+00424eb9  MOV dword ptr [EAX + 0x1c],EBX
+00424ebc  MOV dword ptr [EAX + 0x20],EBX
+00424ebf  MOV dword ptr [EAX + 0x24],EBX
+00424ec2  MOV dword ptr [EAX + 0x28],EBX
+00424ec5  MOV dword ptr [EAX + 0x2c],EBX
+00424ec8  MOV dword ptr [EAX + 0x30],EBX
+00424ecb  MOV dword ptr [EAX + 0x34],0x64
+00424ed2  MOV dword ptr [EAX + 0x38],EBX
+00424ed5  MOV dword ptr [EAX + 0x3c],EBX
+00424ed8  MOV dword ptr [EAX + 0x40],EBX
+00424edb  MOV dword ptr [EAX + 0x44],0xffffffff
+00424ee2  MOV dword ptr [EAX + 0x48],EBX
+00424ee5  MOV dword ptr [EAX + 0x4c],EBX
+00424ee8  MOV dword ptr [EAX + 0x50],EBX
+00424eeb  MOV dword ptr [EAX + 0x58],EBX
+00424eee  MOV EDX,dword ptr [EAX + 0x64]
+00424ef1  MOV EBP,dword ptr [EAX + 0x60]
+00424ef4  PUSH ESI
+00424ef5  CMP EDX,EDX
+00424ef7  PUSH EDI
+00424ef8  MOV dword ptr [ESP + 0x10],EDX
+00424efc  JZ 0x00424f17
+00424efe  MOV ECX,0x6
+00424f03  MOV ESI,EDX
+00424f05  MOV EDI,EBP
+00424f07  ADD EDX,0x18
+00424f0a  MOVSD.REP ES:EDI,ESI
+00424f0c  MOV ECX,dword ptr [ESP + 0x10]
+00424f10  ADD EBP,0x18
+00424f13  CMP EDX,ECX
+00424f15  JNZ 0x00424efe
+00424f17  MOV ECX,dword ptr [EAX + 0x64]
+00424f1a  MOV dword ptr [EAX + 0x64],EBP
+00424f1d  MOV ESI,dword ptr [EAX + 0x74]
+00424f20  MOV EDX,dword ptr [EAX + 0x70]
+00424f23  MOV dword ptr [ESP + 0x10],ECX
+00424f27  MOV ECX,ESI
+00424f29  CMP ECX,ESI
+00424f2b  JZ 0x00424f3b
+00424f2d  MOV EDI,dword ptr [ECX]
+00424f2f  ADD ECX,0x4
+00424f32  MOV dword ptr [EDX],EDI
+00424f34  ADD EDX,0x4
+00424f37  CMP ECX,ESI
+00424f39  JNZ 0x00424f2d
+00424f3b  MOV ECX,dword ptr [EAX + 0x74]
+00424f3e  MOV dword ptr [EAX + 0x74],EDX
+00424f41  MOV EDX,dword ptr [EAX + 0x84]
+00424f47  MOV EBP,dword ptr [EAX + 0x80]
+00424f4d  MOV dword ptr [ESP + 0x10],ECX
+00424f51  CMP EDX,EDX
+00424f53  MOV dword ptr [ESP + 0x10],EDX
+00424f57  JZ 0x00424f72
+00424f59  MOV ECX,0x15
+00424f5e  MOV ESI,EDX
+00424f60  MOV EDI,EBP
+00424f62  ADD EDX,0x54
+00424f65  MOVSD.REP ES:EDI,ESI
+00424f67  MOV ECX,dword ptr [ESP + 0x10]
+00424f6b  ADD EBP,0x54
+00424f6e  CMP EDX,ECX
+00424f70  JNZ 0x00424f59
+00424f72  MOV EDX,dword ptr [EAX + 0x84]
+00424f78  MOV dword ptr [EAX + 0x84],EBP
+00424f7e  MOV dword ptr [EAX + 0x8c],EBX
+00424f84  MOV dword ptr [EAX + 0x90],EBX
+00424f8a  MOV dword ptr [EAX + 0x94],EBX
+00424f90  MOV dword ptr [EAX + 0x98],EBX
+00424f96  MOV dword ptr [EAX + 0x9c],EBX
+00424f9c  XOR ECX,ECX
+00424f9e  ADD EAX,0xa0
+00424fa3  POP EDI
+00424fa4  POP ESI
+00424fa5  POP EBP
+00424fa6  MOV dword ptr [EAX],ECX
+00424fa8  MOV dword ptr [ESP + 0x4],EDX
+00424fac  POP EBX
+00424fad  MOV dword ptr [EAX + 0x4],ECX
+00424fb0  MOV dword ptr [EAX + 0x8],ECX
+00424fb3  MOV dword ptr [EAX + 0xc],ECX
+00424fb6  POP ECX
+00424fb7  RET

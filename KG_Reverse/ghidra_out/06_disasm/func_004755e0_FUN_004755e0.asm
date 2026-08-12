@@ -1,0 +1,14 @@
+; Function: FUN_004755e0
+; Entry:    004755e0
+; Size:     30 bytes
+
+004755e0  PUSH ESI
+004755e1  MOV ESI,ECX
+004755e3  MOV ECX,dword ptr [ESI + 0x4]
+004755e6  CALL 0x0046bae0
+004755eb  MOV AL,byte ptr [ESP + 0x8]
+004755ef  MOV ECX,dword ptr [ESI + 0x4]
+004755f2  MOV byte ptr [ESI + 0x20],AL
+004755f5  CALL 0x0046baf0
+004755fa  POP ESI
+004755fb  RET 0x4

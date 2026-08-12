@@ -1,0 +1,10 @@
+; Function: FUN_0049a209
+; Entry:    0049a209
+; Size:     14 bytes
+
+0049a209  PUSH ESI
+0049a20a  MOV ESI,ECX
+0049a20c  CALL 0x0049a3b6
+0049a211  AND dword ptr [ESI + 0x20],0x0
+0049a215  POP ESI
+0049a216  RET
