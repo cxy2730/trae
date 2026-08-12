@@ -206,8 +206,124 @@ pub fn restore_all_hijack_dlls(cb: LogCallback, game_dir: Option<&str>) -> bool 
 }
 
 /// 查找游戏目录
-/// 通过遍历进程找 League of Legends.exe, 然后取其路径
+///
+/// 正确启动顺序: 防封程序先启动 → 部署 DLL 劫持 → 用户启动大厅 → 进入游戏
+/// 所以这里不能依赖"查找运行中的 League of Legends.exe", 而应该:
+///   1. 优先从注册表读 LoL 安装路径 (Tencent/Riot 安装时写入)
+///   2. 回退: 找运行中的 League of Legends.exe / LeagueClientUx.exe (兼容已启动场景)
 fn find_game_directory() -> Option<String> {
+    // 1. 注册表查找 (推荐, 不依赖进程)
+    if let Some(dir) = find_game_dir_from_registry() {
+        return Some(dir);
+    }
+
+    // 2. 回退: 进程查找 (游戏已启动时)
+    if let Some(dir) = find_game_dir_from_process() {
+        return Some(dir);
+    }
+
+    None
+}
+
+/// 从注册表查找 LoL 安装路径
+///
+/// Tencent 国服可能写入的位置:
+///   HKLM\SOFTWARE\WOW6432Node\Tencent\LOL\InstallPath
+///   HKLM\SOFTWARE\WOW6432Node\RIOT Games\League of Legends
+///   HKCU\Software\Tencent\LOL
+///
+/// Riot 国际服:
+///   HKLM\SOFTWARE\WOW6432Node\Riot Games, Inc\League of Legends
+fn find_game_dir_from_registry() -> Option<String> {
+    const HKEY_LOCAL_MACHINE: usize = 0x80000002;
+    const HKEY_CURRENT_USER: usize = 0x80000001;
+    const KEY_READ: u32 = 0x20019;
+    const REG_SZ: u32 = 1;
+
+    extern "system" {
+        fn RegOpenKeyExW(
+            hKey: usize,
+            sub: *const u16,
+            opts: u32,
+            access: u32,
+            result: *mut usize,
+        ) -> i32;
+        fn RegQueryValueExW(
+            hKey: usize,
+            name: *const u16,
+            reserved: *mut u32,
+            kind: *mut u32,
+            data: *mut u8,
+            len: *mut u32,
+        ) -> i32;
+        fn RegCloseKey(h: usize) -> i32;
+    }
+
+    // 候选注册表路径 + 值名
+    let candidates: &[(&str, &str)] = &[
+        // Tencent 国服
+        ("SOFTWARE\\WOW6432Node\\Tencent\\LOL", "InstallPath"),
+        ("SOFTWARE\\Tencent\\LOL", "InstallPath"),
+        ("Software\\Tencent\\LOL", "InstallPath"),
+        // Riot 国际服
+        ("SOFTWARE\\WOW6432Node\\Riot Games, Inc\\League of Legends", "InstallPath"),
+        ("SOFTWARE\\Riot Games, Inc\\League of Legends", "InstallPath"),
+        // 通用
+        ("SOFTWARE\\WOW6432Node\\League of Legends", "Path"),
+    ];
+
+    let hkeys: &[usize] = &[HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER];
+
+    for &hkey in hkeys {
+        for (sub, val) in candidates {
+            let sub_w = wstr(sub);
+            let val_w = wstr(val);
+            let mut h: usize = 0;
+
+            let st = unsafe { RegOpenKeyExW(hkey, sub_w.as_ptr(), 0, KEY_READ, &mut h) };
+            if st != 0 || h == 0 {
+                continue;
+            }
+
+            let mut buf = [0u8; 1024];
+            let mut len = buf.len() as u32;
+            let mut kind: u32 = 0;
+
+            let ok = unsafe {
+                RegQueryValueExW(
+                    h,
+                    val_w.as_ptr(),
+                    core::ptr::null_mut(),
+                    &mut kind,
+                    buf.as_mut_ptr(),
+                    &mut len,
+                )
+            };
+            unsafe { RegCloseKey(h); }
+
+            if ok == 0 && kind == REG_SZ && len > 0 {
+                // REG_SZ 是 UTF-16, 转换
+                let u16_count = (len / 2) as usize;
+                let u16_slice: &[u16] = unsafe {
+                    core::slice::from_raw_parts(buf.as_ptr() as *const u16, u16_count)
+                };
+                // 去掉末尾 null
+                let end = u16_slice.iter().position(|&c| c == 0).unwrap_or(u16_count);
+                let s = String::from_utf16_lossy(&u16_slice[..end]);
+                let s = s.trim();
+                if !s.is_empty() {
+                    return Some(s.to_string());
+                }
+            }
+        }
+    }
+
+    None
+}
+
+/// 从运行中的进程查找游戏目录 (回退方案)
+/// 查找 League of Legends.exe 或 LeagueClientUx.exe
+fn find_game_dir_from_process() -> Option<String> {
     const TH32CS_SNAPPROCESS: u32 = 0x00000002;
 
     #[repr(C)]
@@ -243,10 +359,13 @@ fn find_game_directory() -> Option<String> {
         if Process32FirstW(snap, &mut entry) != 0 {
             loop {
                 let name = utf16_to_string(entry.szExeFile.as_ptr());
-                if name.to_lowercase() == "league of legends.exe" {
-                    // 通过 PID 获取完整路径
-                    found = get_process_path(entry.th32ProcessID);
-                    break;
+                let lower = name.to_lowercase();
+                // 匹配游戏进程或大厅进程
+                if lower == "league of legends.exe" || lower == "leagueclientux.exe" {
+                    if let Some(path) = get_process_path(entry.th32ProcessID) {
+                        found = Some(path);
+                        break;
+                    }
                 }
                 if Process32NextW(snap, &mut entry) == 0 {
                     break;
@@ -256,7 +375,6 @@ fn find_game_directory() -> Option<String> {
 
         CloseHandle(snap);
 
-        // 取目录 (去掉文件名)
         if let Some(path) = found {
             if let Some(idx) = path.rfind('\\') {
                 return Some(path[..idx].to_string());
