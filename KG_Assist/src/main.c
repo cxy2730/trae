@@ -1,15 +1,14 @@
 /**
- * KG Assist - 入口点 (Win11 GUI 模式)
+ * KG Assist - 入口点 (Win11 GUI + Rust 核心)
  *
  * 启动流程:
  *   1. 路径初始化 (paths.c)
  *   2. 日志系统初始化
- *   3. 安装防检测保护
- *   4. 启动 Win11 风格 GUI 菜单
+ *   3. 启动 Win11 风格 GUI 菜单
+ *      (Rust 核心 kg_core_init 在 KgGuiRun 内部初始化)
  *
  * 命令行参数 (可选):
  *   --root <dir>   覆盖根目录
- *   --config <file> 指定配置文件
  */
 
 #include "../include/common.h"
@@ -65,21 +64,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     /* --- 2) 日志初始化 --- */
     KgLogInit();
 
-    /* --- 3) 初始化核心 (API 表 + 内存子系统) --- */
-    if (!KgInit()) {
-        KG_ERROR("核心初始化失败, 内存子系统不可用");
-    }
-
     KG_INFO("============================================");
-    KG_INFO("  KG Assist v2.0 (Win11 GUI Mode)");
+    KG_INFO("  KG Assist v3.0 (Rust 核心)");
     KG_INFO("  Root: %s", KgPathGetRoot());
     KG_INFO("============================================");
 
-    /* --- 4) 启动 GUI (防封保护在模式线程中按需启动) --- */
+    /* --- 3) 启动 GUI (Rust 核心在 KgGuiRun 内初始化) --- */
     int ret = KgGuiRun(hInstance, nCmdShow);
 
-    /* --- 6) 清理 --- */
-    KgCleanup();
     KgLogClose();
 
     return ret;

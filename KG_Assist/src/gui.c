@@ -1,5 +1,5 @@
 /**
- * KG Assist - Win11 风格 GUI 菜单 (精简版)
+ * KG Assist - Win11 风格 GUI 菜单 (Rust FFI 版)
  *
  * 布局:
  *   [更新模式] [游戏模式]            <- 顶部模式选择
@@ -10,6 +10,13 @@
  *   [启动]  [停止]                    <- 底部操作
  *
  * 窗口: 只有最小化 + 关闭, 无最大化, 无状态栏
+ *
+ * 核心逻辑全部由 Rust DLL (kg_core.dll) 提供:
+ *   - kg_core_init()
+ *   - kg_update_mode(LogCallback)
+ *   - kg_game_mode(LogCallback)
+ *   - kg_install_protection(LogCallback)
+ *   - kg_stop()
  */
 
 #include "../include/common.h"
@@ -32,6 +39,18 @@
 #ifndef DWMSBT_MAINWINDOW
 #define DWMSBT_MAINWINDOW              2
 #endif
+
+/* ------------------------------------------------------------------
+ * Rust FFI 函数原型 (链接 libkg_core.dll.a)
+ * ------------------------------------------------------------------ */
+
+typedef void (*LogCallback)(const char* msg, int level);
+
+extern int kg_core_init(void);
+extern int kg_update_mode(LogCallback cb);
+extern int kg_game_mode(LogCallback cb);
+extern int kg_install_protection(LogCallback cb);
+extern void kg_stop(void);
 
 /* ------------------------------------------------------------------
  * 颜色 (Win11 暗色主题)
@@ -62,9 +81,6 @@ static HFONT g_hFont   = NULL;
 static int  g_Mode     = 0;     /* 0=更新模式, 1=游戏模式 */
 static BOOL g_Running  = FALSE;
 static HANDLE g_hWorkThread = NULL;
-
-/* bot 脚本 DLL 路径 */
-static char g_BotDllPath[KG_MAX_PATH] = "";
 
 /* ------------------------------------------------------------------
  * 辅助函数
@@ -109,286 +125,59 @@ void KgGuiAppendLog(const char* text) {
     SendMessageA(g_hLog, EM_SCROLLCARET, 0, 0);
 }
 
+/* Rust 调用的日志回调 (线程安全: 用 PostMessage 把日志推到主线程) */
+typedef struct {
+    char text[1024];
+} LogMessage;
+
+#define WM_KG_LOG  (WM_USER + 100)
+
+static void kg_log_callback(const char* msg, int level) {
+    if (!msg) return;
+    (void)level;
+    KgGuiAppendLog(msg);
+}
+
 /* ------------------------------------------------------------------
- * 工作线程: 更新模式
- * 扫描游戏更新后的反作弊特征码 / 反检测规则 / ACE 模块变化
+ * 工作线程: 更新模式 — 调用 Rust kg_update_mode
  * ------------------------------------------------------------------ */
 
 static DWORD WINAPI UpdateModeThread(LPVOID param) {
     (void)param;
     g_Running = TRUE;
-    KgGuiAppendLog("======== 更新模式启动 ========");
-    KgGuiAppendLog("目标: 更新游戏特征码 + 反作弊特征 + 数据基址");
-    KgGuiAppendLog("");
+    KgGuiAppendLog("======== 更新模式启动 (Rust 核心) ========");
 
-    /* 1. 安装防封保护 */
-    KgGuiAppendLog("[1/6] 安装防封保护...");
-    if (!KgInstallFullProtection()) {
-        KgGuiAppendLog("  [警告] 部分保护失败");
+    int result = kg_update_mode(kg_log_callback);
+
+    if (result != 0) {
+        KgGuiAppendLog("======== 更新模式失败 ========");
     } else {
-        KgGuiAppendLog("  [OK] 防封保护已启动");
+        KgGuiAppendLog("======== 更新模式完成 ========");
     }
 
-    /* 2. 查找游戏进程 */
-    KgGuiAppendLog("[2/6] 查找游戏进程...");
-    KgProcessInfo proc = {0};
-    if (!KgFindProcess(KG_LOL_PROCESS_NAME, &proc)) {
-        KgGuiAppendLog("  [错误] 游戏未运行, 无法提取特征码");
-        KgGuiAppendLog("  请先启动游戏再执行更新");
-        KgGuiAppendLog("");
-        KgGuiAppendLog("======== 更新失败 ========");
-        g_Running = FALSE;
-        return 1;
-    }
-
-    char buf[256];
-    snprintf(buf, sizeof(buf),
-             "  [OK] 找到进程: %s (PID: %lu)",
-             KG_LOL_PROCESS_NAME, (unsigned long)proc.pid);
-    KgGuiAppendLog(buf);
-
-    /* 3. 打开进程并枚举模块 */
-    KgGuiAppendLog("[3/6] 打开进程, 枚举模块...");
-    if (!KgOpenProcess(&proc, KG_PROCESS_ALL_ACCESS)) {
-        KgGuiAppendLog("  [错误] 无法打开进程 (需要管理员权限)");
-        KgGuiAppendLog("");
-        KgGuiAppendLog("======== 更新失败 ========");
-        g_Running = FALSE;
-        return 1;
-    }
-    if (!KgEnumModules(&proc)) {
-        KgGuiAppendLog("  [错误] 模块枚举失败");
-        KgCloseProcess(&proc);
-        g_Running = FALSE;
-        return 1;
-    }
-    char msum[128];
-    snprintf(msum, sizeof(msum),
-             "  [OK] 加载了 %u 个模块", proc.moduleCount);
-    KgGuiAppendLog(msum);
-
-    /* 4. 提取游戏特征码 (主模块基址/大小/PE时间戳) */
-    KgGuiAppendLog("[4/6] 提取游戏特征码...");
-    KgModuleInfo* mainMod = KgGetMainModule(&proc);
-    if (mainMod) {
-        /* 读取 PE 头获取时间戳 */
-        u32 peTimestamp = 0;
-        KgReadProcessMemory(proc.handle,
-                            mainMod->baseAddress + 0x3C,  /* e_lfanew */
-                            &peTimestamp, 4);
-        if (peTimestamp) {
-            u32 timestamp = 0;
-            KgReadProcessMemory(proc.handle,
-                                mainMod->baseAddress + peTimestamp + 8,
-                                &timestamp, 4);
-            char line[256];
-            snprintf(line, sizeof(line),
-                     "  游戏主模块: %s @ 0x%08X (%u bytes)  PE时间戳: 0x%08X",
-                     mainMod->name, mainMod->baseAddress,
-                     mainMod->sizeOfImage, timestamp);
-            KgGuiAppendLog(line);
-        } else {
-            char line[256];
-            snprintf(line, sizeof(line),
-                     "  游戏主模块: %s @ 0x%08X (%u bytes)",
-                     mainMod->name, mainMod->baseAddress,
-                     mainMod->sizeOfImage);
-            KgGuiAppendLog(line);
-        }
-    }
-
-    /* 5. 提取反作弊特征 (ACE/SGuard/TerSafe 模块信息) */
-    KgGuiAppendLog("[5/6] 提取反作弊特征...");
-    int aceCount = 0;
-    for (u32 i = 0; i < proc.moduleCount; i++) {
-        const char* mn = proc.modules[i].name;
-        if (strstr(mn, "ACE") || strstr(mn, "SGuard") ||
-            strstr(mn, "TerSafe") || strstr(mn, "vgc") ||
-            strstr(mn, "AntiCheat")) {
-            char line[512];
-            snprintf(line, sizeof(line),
-                     "  [反作弊] %s  基址: 0x%08X  大小: %u",
-                     mn, proc.modules[i].baseAddress,
-                     proc.modules[i].sizeOfImage);
-            KgGuiAppendLog(line);
-            aceCount++;
-        }
-    }
-    if (aceCount == 0) {
-        KgGuiAppendLog("  [OK] 未检测到反作弊模块");
-    } else {
-        char line[128];
-        snprintf(line, sizeof(line),
-                 "  [OK] 记录了 %d 个反作弊模块特征", aceCount);
-        KgGuiAppendLog(line);
-    }
-
-    /* 6. 写入数据基址文件 */
-    KgGuiAppendLog("[6/6] 保存数据基址...");
-    char dataPath[KG_MAX_PATH];
-    KgPathResolve("config/sigdata.ini", dataPath, sizeof(dataPath));
-    KgPathEnsureDir(dataPath);
-
-    FILE* fp = fopen(dataPath, "w");
-    if (fp) {
-        /* 游戏特征 */
-        fprintf(fp, "[Game]\n");
-        fprintf(fp, "Process=%s\n", KG_LOL_PROCESS_NAME);
-        if (mainMod) {
-            fprintf(fp, "MainModule=%s\n", mainMod->name);
-            fprintf(fp, "BaseAddress=0x%08X\n", mainMod->baseAddress);
-            fprintf(fp, "ImageSize=%u\n", mainMod->sizeOfImage);
-        }
-        fprintf(fp, "UpdateTime=%lu\n", (unsigned long)time(NULL));
-
-        /* 反作弊特征 */
-        fprintf(fp, "\n[AntiCheat]\n");
-        fprintf(fp, "ModuleCount=%d\n", aceCount);
-        int idx = 0;
-        for (u32 i = 0; i < proc.moduleCount && idx < aceCount; i++) {
-            const char* mn = proc.modules[i].name;
-            if (strstr(mn, "ACE") || strstr(mn, "SGuard") ||
-                strstr(mn, "TerSafe") || strstr(mn, "vgc") ||
-                strstr(mn, "AntiCheat")) {
-                fprintf(fp, "Module%d_Name=%s\n", idx, mn);
-                fprintf(fp, "Module%d_Base=0x%08X\n", idx,
-                        proc.modules[i].baseAddress);
-                fprintf(fp, "Module%d_Size=%u\n", idx,
-                        proc.modules[i].sizeOfImage);
-                idx++;
-            }
-        }
-
-        /* 保护配置 */
-        fprintf(fp, "\n[Protect]\n");
-        const KgProtectConfig* cfg = KgGetConfig();
-        if (cfg) {
-            fprintf(fp, "AntiDebug=%d\n", cfg->antiDebug);
-            fprintf(fp, "WindowSpoof=%d\n", cfg->windowSpoof);
-            fprintf(fp, "CodeIntegrity=%d\n", cfg->codeIntegrity);
-            fprintf(fp, "HandleStealth=%d\n", cfg->handleStealth);
-            fprintf(fp, "NtHook=%d\n", cfg->ntHook);
-            fprintf(fp, "AntiVm=%d\n", cfg->antiVm);
-            fprintf(fp, "ApiThrottle=%d\n", cfg->apiThrottle);
-        }
-
-        fclose(fp);
-        char saveLine[KG_MAX_PATH + 64];
-        snprintf(saveLine, sizeof(saveLine), "  [OK] 数据已保存: %s", dataPath);
-        KgGuiAppendLog(saveLine);
-    } else {
-        KgGuiAppendLog("  [错误] 无法写入数据文件");
-    }
-
-    KgCloseProcess(&proc);
-
-    KgGuiAppendLog("");
-    KgGuiAppendLog("======== 更新完成 ========");
     g_Running = FALSE;
-    return 0;
+    return (DWORD)result;
 }
 
 /* ------------------------------------------------------------------
- * 工作线程: 游戏模式
- * 自动注入 bot 游戏脚本 DLL 到目标进程 (KG 式 NtCreateThreadEx)
+ * 工作线程: 游戏模式 — 调用 Rust kg_game_mode
  * ------------------------------------------------------------------ */
 
 static DWORD WINAPI GameModeThread(LPVOID param) {
     (void)param;
     g_Running = TRUE;
-    KgGuiAppendLog("======== 游戏模式启动 ========");
-    KgGuiAppendLog("目标: 自动注入 bot 游戏脚本");
-    KgGuiAppendLog("");
+    KgGuiAppendLog("======== 游戏模式启动 (Rust 核心) ========");
 
-    /* 1. 安装防封保护 */
-    KgGuiAppendLog("[1/4] 安装防封保护...");
-    if (!KgInstallFullProtection()) {
-        KgGuiAppendLog("  [警告] 部分保护失败");
+    int result = kg_game_mode(kg_log_callback);
+
+    if (result != 0) {
+        KgGuiAppendLog("======== 游戏模式失败 ========");
     } else {
-        KgGuiAppendLog("  [OK] 防封保护已启动");
+        KgGuiAppendLog("======== 游戏模式结束 ========");
     }
 
-    /* 2. 定位 bot 脚本 DLL */
-    KgGuiAppendLog("[2/4] 定位 bot 脚本 DLL...");
-    if (g_BotDllPath[0] == '\0') {
-        KgPathResolve("bot.dll", g_BotDllPath, sizeof(g_BotDllPath));
-    }
-    if (GetFileAttributesA(g_BotDllPath) == INVALID_FILE_ATTRIBUTES) {
-        KgGuiAppendLog("  [错误] bot.dll 不存在:");
-        KgGuiAppendLog(g_BotDllPath);
-        KgGuiAppendLog("  请将 bot.dll 放到程序同目录");
-        g_Running = FALSE;
-        return 1;
-    }
-    char dllLine[KG_MAX_PATH + 64];
-    snprintf(dllLine, sizeof(dllLine), "  [OK] DLL: %s", g_BotDllPath);
-    KgGuiAppendLog(dllLine);
-
-    /* 3. 查找游戏进程 */
-    KgGuiAppendLog("[3/4] 查找游戏进程...");
-    KgProcessInfo proc = {0};
-    if (!KgFindProcess(KG_LOL_PROCESS_NAME, &proc)) {
-        KgGuiAppendLog("  [警告] 未找到游戏进程, 等待中...");
-
-        for (int i = 0; i < 60 && g_Running; i++) {
-            Sleep(2000);
-            if (KgFindProcess(KG_LOL_PROCESS_NAME, &proc)) break;
-            if (i % 10 == 9) {
-                KgGuiAppendLog("  仍在等待游戏启动...");
-            }
-        }
-    }
-
-    if (!g_Running) {
-        KgGuiAppendLog("======== 已停止 ========");
-        return 0;
-    }
-
-    if (proc.pid == 0) {
-        KgGuiAppendLog("  [错误] 等待超时, 未检测到游戏进程");
-        g_Running = FALSE;
-        return 1;
-    }
-
-    char buf[256];
-    snprintf(buf, sizeof(buf),
-             "  [OK] 找到进程: %s (PID: %lu)",
-             KG_LOL_PROCESS_NAME, (unsigned long)proc.pid);
-    KgGuiAppendLog(buf);
-
-    /* 4. 打开进程并注入 bot 脚本 */
-    KgGuiAppendLog("[4/4] 打开进程, 注入 bot 脚本...");
-    if (!KgOpenProcess(&proc, KG_PROCESS_ALL_ACCESS)) {
-        KgGuiAppendLog("  [错误] 打开进程失败 (需要管理员权限)");
-        g_Running = FALSE;
-        return 1;
-    }
-    KgGuiAppendLog("  [OK] 已获取进程句柄");
-
-    /* 注入 bot DLL (KG 式 NtCreateThreadEx) */
-    KgGuiAppendLog("  正在注入 bot.dll (NtCreateThreadEx)...");
-    BOOL injectOk = KgAutoInject(proc.handle, g_BotDllPath);
-    if (injectOk) {
-        KgGuiAppendLog("  [OK] bot 脚本注入成功!");
-    } else {
-        KgGuiAppendLog("  [错误] 注入失败");
-    }
-
-    KgCloseProcess(&proc);
-
-    if (injectOk) {
-        KgGuiAppendLog("");
-        KgGuiAppendLog("======== bot 脚本已注入, 防封保护运行中 ========");
-        KgGuiAppendLog("关闭窗口或点击停止以退出");
-
-        /* 保持运行 */
-        while (g_Running) {
-            Sleep(1000);
-        }
-    }
-
-    KgGuiAppendLog("======== 已停止 ========");
-    return 0;
+    g_Running = FALSE;
+    return (DWORD)result;
 }
 
 /* ------------------------------------------------------------------
@@ -438,20 +227,13 @@ static void CreateControls(HWND hwnd) {
     SendMessageA(g_hLog, WM_SETFONT, (WPARAM)g_hFont, TRUE);
 
     /* 初始日志 */
-    KgGuiAppendLog("KG Assist v2.0 已启动");
-    char rootLine[KG_MAX_PATH + 32];
-    snprintf(rootLine, sizeof(rootLine), "根目录: %s", KgPathGetRoot());
-    KgGuiAppendLog(rootLine);
-
-    char botPath[KG_MAX_PATH];
-    KgPathResolve("bot.dll", botPath, sizeof(botPath));
-    if (GetFileAttributesA(botPath) != INVALID_FILE_ATTRIBUTES) {
-        KgGuiAppendLog("[OK] bot.dll 已就绪");
-    } else {
-        KgGuiAppendLog("[提示] bot.dll 不存在, 游戏模式需要此文件");
-    }
-    KgGuiAppendLog("选择模式后点击启动");
+    KgGuiAppendLog("KG Assist v3.0 (Rust 核心) 已启动");
     KgGuiAppendLog("");
+    KgGuiAppendLog("功能:");
+    KgGuiAppendLog("  [更新模式] 扫描游戏特征 + 反作弊特征, 写入 sigdata.txt");
+    KgGuiAppendLog("  [游戏模式] 自动注入 bot.dll (NtCreateThreadEx)");
+    KgGuiAppendLog("");
+    KgGuiAppendLog("选择模式后点击启动");
 }
 
 /* ------------------------------------------------------------------
@@ -494,13 +276,15 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
             }
 
             if (id == IDC_BTN_STOP && g_Running) {
-                g_Running = FALSE;
                 KgGuiAppendLog("正在停止...");
+                kg_stop();  /* 通知 Rust 核心停止 */
+                g_Running = FALSE;
                 if (g_hWorkThread) {
                     WaitForSingleObject(g_hWorkThread, 3000);
                     CloseHandle(g_hWorkThread);
                     g_hWorkThread = NULL;
                 }
+                KgGuiAppendLog("======== 已停止 ========");
                 return 0;
             }
             return 0;
@@ -535,6 +319,7 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 
         case WM_DESTROY:
             g_Running = FALSE;
+            kg_stop();
             if (g_hWorkThread) {
                 WaitForSingleObject(g_hWorkThread, 2000);
                 CloseHandle(g_hWorkThread);
@@ -570,17 +355,17 @@ int KgGuiRun(HINSTANCE hInstance, int nCmdShow) {
     icc.dwICC = ICC_STANDARD_CLASSES;
     InitCommonControlsEx(&icc);
 
+    /* 初始化 Rust 核心 */
+    kg_core_init();
+
     if (!KgGuiInit(hInstance)) {
         MessageBoxA(NULL, "窗口类注册失败",
                     "Error", MB_OK | MB_ICONERROR);
         return 1;
     }
 
-    /* WS_OVERLAPPEDWINDOW 去掉 WS_THICKFRAME (不可调整大小)
-     * 去掉 WS_MAXIMIZEBOX (无最大化按钮)
-     * 保留 WS_MINIMIZEBOX (最小化) + WS_SYSMENU (关闭) */
     g_hMain = CreateWindowExA(
-        0, "KgAssistGui", "KG Assist v2.0",
+        0, "KgAssistGui", "KG Assist v3.0 (Rust)",
         WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
         CW_USEDEFAULT, CW_USEDEFAULT,
         580, 500,
