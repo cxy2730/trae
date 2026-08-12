@@ -1,20 +1,34 @@
 //! 游戏模式
 //!
 //! 对应 KG 的 bot 注入流程:
-//!   1. 安装防护 (protector::install_full)
+//!   1. 安装防护 (protector::install_full) — 在大厅启动前完成
 //!   2. 定位 bot.dll (exe 同级目录)
-//!   3. 查找 LoL 游戏进程, 等待启动
-//!   4. 打开进程
-//!   5. NtCreateThreadEx 注入 bot.dll (auto_inject 自动回退)
-//!   6. 保持运行直到停止
+//!   3. 等待 League of Legends.exe 启动 (不是大厅进程!)
+//!   4. 等待玩家进入泉水 (游戏场景加载完成)
+//!   5. 打开进程
+//!   6. NtCreateThreadEx 注入 bot.dll
+//!   7. 保持运行直到停止
+//!
+//! 关键: 不能在大厅阶段注入, 也不能在加载界面注入
+//!       必须等玩家进入泉水 (Spawn 阶段) 才注入
 
 use crate::native_api::*;
-use crate::ffi::{LogCallback, log, log_warn, log_error};
+use crate::ffi::{LogCallback, log, log_warn, log_error, log_debug};
 use crate::protector;
 use crate::process::{self, PROCESS_ALL_ACCESS};
 use crate::injector;
 
 const LOL_PROCESS_NAME: &str = "League of Legends.exe";
+
+/// 游戏窗口标题 (LoL 加载完成后的标题)
+const LOL_GAME_WINDOW_TITLE: &str = "League of Legends (TM) Client";
+
+/// 进程启动后等待泉水的最短时间 (秒)
+/// LoL 加载地图 + 进入围城阶段通常需要 30-90 秒
+const MIN_FOUNTAIN_WAIT_SECS: u32 = 30;
+
+/// 进程启动后等待泉水的最长时间 (秒)
+const MAX_FOUNTAIN_WAIT_SECS: u32 = 180;
 
 static mut STOP_REQUESTED: bool = false;
 
@@ -26,16 +40,16 @@ pub fn run(cb: LogCallback) -> i32 {
     unsafe { STOP_REQUESTED = false; }
 
     log(cb, "======== 游戏模式启动 ========");
-    log(cb, "目标: 自动注入 bot 游戏脚本");
+    log(cb, "目标: 检测进入泉水后自动注入 bot 脚本");
 
-    // 1. 安装防护
-    log(cb, "[1/4] 安装防护...");
+    // 1. 安装防护 (在大厅启动前完成)
+    log(cb, "[1/5] 安装防护 (停 ACE + hook + DLL 劫持)...");
     protector::install_full(cb);
 
     if check_stop() { return 1; }
 
     // 2. 定位 bot.dll
-    log(cb, "[2/4] 定位 bot 脚本 DLL...");
+    log(cb, "[2/5] 定位 bot 脚本 DLL...");
     let bot_path = get_bot_dll_path();
     if !file_exists(&bot_path) {
         log_error(cb, &format!("  [错误] bot.dll 不存在: {}", bot_path));
@@ -46,8 +60,9 @@ pub fn run(cb: LogCallback) -> i32 {
 
     if check_stop() { return 1; }
 
-    // 3. 查找游戏进程 (等待最多 120 秒)
-    log(cb, "[3/4] 查找游戏进程...");
+    // 3. 查找游戏进程 (League of Legends.exe, 不是大厅)
+    log(cb, "[3/5] 等待游戏进程启动 (League of Legends.exe)...");
+    log(cb, "  [提示] 请在大厅点击开始游戏");
     let mut proc = match find_game_process_with_wait(cb) {
         Some(p) => p,
         None => {
@@ -64,8 +79,21 @@ pub fn run(cb: LogCallback) -> i32 {
 
     if check_stop() { return 1; }
 
-    // 4. 打开进程 + 注入
-    log(cb, "[4/4] 打开进程, 注入 bot 脚本...");
+    // 4. 等待玩家进入泉水 (关键步骤!)
+    log(cb, "[4/5] 等待进入泉水...");
+    if !wait_for_fountain(cb, proc.pid) {
+        if check_stop() {
+            log(cb, "======== 已停止 ========");
+            return 0;
+        }
+        log_error(cb, "  [错误] 等待泉水超时");
+        return 1;
+    }
+
+    if check_stop() { return 1; }
+
+    // 5. 打开进程 + 注入
+    log(cb, "[5/5] 进入泉水, 开始注入 bot 脚本...");
     if !process::open_process(&mut proc, PROCESS_ALL_ACCESS) {
         log_error(cb, "  [错误] 打开进程失败 (需要管理员权限)");
         return 1;
@@ -102,14 +130,14 @@ fn check_stop() -> bool {
     unsafe { STOP_REQUESTED }
 }
 
-/// 等待游戏进程启动 (最多 120 秒)
+/// 等待游戏进程启动 (最多 180 秒)
 fn find_game_process_with_wait(cb: LogCallback) -> Option<process::ProcessInfo> {
     if let Some(p) = process::find_process(LOL_PROCESS_NAME) {
         return Some(p);
     }
 
     log_warn(cb, "  [提示] 未找到游戏进程, 等待中...");
-    for i in 0..60 {
+    for i in 0..90 {
         if check_stop() {
             return None;
         }
@@ -122,6 +150,171 @@ fn find_game_process_with_wait(cb: LogCallback) -> Option<process::ProcessInfo> 
         }
     }
     None
+}
+
+/// 等待玩家进入泉水
+///
+/// 判定逻辑 (多重条件):
+///   1. 游戏窗口标题变为 "League of Legends (TM) Client"
+///   2. 窗口可绘制 (IsWindowVisible + GetUpdateRect 成功)
+///   3. 至少等待 MIN_FOUNTAIN_WAIT_SECS 秒 (避免在加载界面注入)
+///   4. 窗口非最小化 (玩家实际在看游戏)
+fn wait_for_fountain(cb: LogCallback, pid: u32) -> bool {
+    log(cb, "  等待游戏窗口就绪 + 玩家进入泉水...");
+    log(cb, &format!("  最短等待 {} 秒, 最长 {} 秒", MIN_FOUNTAIN_WAIT_SECS, MAX_FOUNTAIN_WAIT_SECS));
+
+    let start_tick = get_tick_count64();
+    let min_wait_ms = (MIN_FOUNTAIN_WAIT_SECS * 1000) as u64;
+    let max_wait_ms = (MAX_FOUNTAIN_WAIT_SECS * 1000) as u64;
+
+    let mut window_ready = false;
+    let mut last_log = 0u64;
+
+    loop {
+        if check_stop() {
+            return false;
+        }
+
+        let elapsed = get_tick_count64().saturating_sub(start_tick);
+
+        // 超过最大等待时间
+        if elapsed > max_wait_ms {
+            log_warn(cb, "  [超时] 等待泉水超时");
+            return false;
+        }
+
+        // 检测游戏窗口
+        let win_state = check_game_window(pid);
+
+        // 窗口就绪后, 还需满足最短等待时间
+        if win_state.ready {
+            if !window_ready {
+                window_ready = true;
+                log(cb, &format!("  [OK] 游戏窗口就绪 ({}s)",
+                    elapsed / 1000));
+            }
+
+            // 满足最短等待时间, 且窗口非最小化
+            if elapsed >= min_wait_ms && !win_state.minimized {
+                log(cb, &format!("  [OK] 已进入泉水 (等待 {}s, 窗口可见)",
+                    elapsed / 1000));
+                return true;
+            }
+        }
+
+        // 每 10 秒报告一次状态
+        if elapsed / 10000 > last_log {
+            last_log = elapsed / 10000;
+            let status = if win_state.ready {
+                if win_state.minimized {
+                    "窗口最小化, 等待恢复"
+                } else {
+                    "等待最短加载时间"
+                }
+            } else {
+                "加载中"
+            };
+            log_debug(cb, &format!("  [{}] {}s", status, elapsed / 1000));
+        }
+
+        unsafe { SleepLite(1000); }
+    }
+}
+
+/// 游戏窗口状态
+struct WindowState {
+    ready: bool,
+    minimized: bool,
+}
+
+/// 检查游戏窗口是否就绪
+fn check_game_window(pid: u32) -> WindowState {
+    use windows_sys::Win32::{
+        Foundation::BOOL,
+        UI::WindowsAndMessaging::{
+            EnumWindows, GetWindow, GetWindowTextW, GetWindowTextLengthW,
+            IsWindowVisible, IsIconic, GetWindowThreadProcessId,
+            GW_OWNER, SW_SHOWMINIMIZED,
+        },
+    };
+
+    struct EnumCtx {
+        target_pid: u32,
+        found: bool,
+        minimized: bool,
+        title_ok: bool,
+    }
+
+    unsafe extern "system" fn enum_proc(hwnd: isize, lparam: isize) -> BOOL {
+        let ctx = &mut *(lparam as *mut EnumCtx);
+
+        // 检查窗口所属进程
+        let mut wnd_pid: u32 = 0;
+        GetWindowThreadProcessId(hwnd, &mut wnd_pid);
+        if wnd_pid != ctx.target_pid {
+            return 1; // 继续枚举
+        }
+
+        // 检查是否是顶层窗口 (无 owner)
+        let owner = GetWindow(hwnd, GW_OWNER);
+        if owner != 0 {
+            return 1;
+        }
+
+        // 检查可见性
+        if IsWindowVisible(hwnd) == 0 {
+            return 1;
+        }
+
+        // 读窗口标题
+        let len = GetWindowTextLengthW(hwnd);
+        if len <= 0 {
+            return 1;
+        }
+
+        let mut buf = [0u16; 256];
+        let copied = GetWindowTextW(hwnd, buf.as_mut_ptr(), buf.len() as i32);
+        if copied <= 0 {
+            return 1;
+        }
+
+        let title = String::from_utf16_lossy(&buf[..copied as usize]);
+
+        // LoL 游戏窗口标题
+        if title.contains("League of Legends") {
+            ctx.found = true;
+            ctx.minimized = IsIconic(hwnd) != 0;
+            ctx.title_ok = title.contains("(TM) Client") || title.contains("Client");
+            return 0; // 停止枚举
+        }
+
+        1 // 继续枚举
+    }
+
+    let mut ctx = EnumCtx {
+        target_pid: pid,
+        found: false,
+        minimized: false,
+        title_ok: false,
+    };
+
+    unsafe {
+        EnumWindows(Some(enum_proc), &mut ctx as *mut _ as isize);
+    }
+
+    WindowState {
+        // 窗口就绪: 找到 LoL 窗口 + 标题正确
+        ready: ctx.found && ctx.title_ok,
+        minimized: ctx.minimized,
+    }
+}
+
+/// 获取系统启动后的毫秒数
+fn get_tick_count64() -> u64 {
+    extern "system" {
+        fn GetTickCount64() -> u64;
+    }
+    unsafe { GetTickCount64() }
 }
 
 /// bot.dll 路径 (exe 同级目录)
