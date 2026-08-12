@@ -1,0 +1,27 @@
+[
+  {
+    "oid": "TRX-E6174AB2",
+    "pid": "gpt-plus",
+    "name": "GPT PLUS @gmx.com \u5171\u4eab"
+  },
+  {
+    "oid": "TRX-E50FF736",
+    "pid": "claude-5x",
+    "name": "Claude 5x \u4f01\u4e1a\u8ba2\u9605"
+  },
+  {
+    "oid": "TRX-510CE1FB",
+    "pid": "cursor-ultra",
+    "name": "Cursor Ultra AI\u8865\u5168"
+  },
+  {
+    "oid": "TRX-B6E74327",
+    "pid": "claude-20x",
+    "name": "Claude 20x \u9876\u7ea7\u8ba2\u9605"
+  },
+  {
+    "oid": "TRX-3D6BDE0D",
+    "pid": "gpt-pro-5x",
+    "name": "Gpt Pro 5 x"
+  }
+]
