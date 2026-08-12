@@ -1,0 +1,219 @@
+======================================================================
+KG.exe & ExuiKrnln_Win32.lib 逆向分析报告
+======================================================================
+生成: 2026-08-12
+目标: KG0730-BOT (LoL 外挂)
+
+一、样本概况
+======================================================================
+
+1.1 KG.exe (主程序)
+  - 大小: 47,185,920 bytes (~45 MB)
+  - 架构: PE32 x86
+  - 入口点: 0x00081E65 (push ebp 标准函数)
+  - ImageBase: 0x00400000
+  - 节区:
+    .text     VA=0x00001000  ENT=6.645  [EW]   代码段
+    .rdata    VA=0x000A2000  ENT=7.579  [W]     高熵数据段 (加密/压缩)
+    .data     VA=0x02BA7000  ENT=3.950  [WR]    数据段
+    .rsrc     VA=0x02C17000  ENT=5.669  [W]     资源段
+
+  主要导入 DLL:
+  - KERNEL32.dll: 进程操作、内存操作、反调试API
+  - USER32.dll: 窗口管理
+  - GDI32.dll: 图形设备
+  - ADVAPI32.dll: 注册表
+  - SHELL32.dll: Shell 操作
+  - WINMM.dll: 音频 (waveOut, midi)
+  - WS2_32.dll: 网络通信
+  - VERSION.dll: 版本信息
+  - ole32.dll, OLEAUT32.dll: COM 自动化
+
+1.2 ExuiKrnln_Win32.lib (DLL)
+  - 实际是 PE32 DLL
+  - 大小: 2,355,712 bytes (~2.3 MB)
+  - 架构: x86
+  - 类型: CEF (Chromium Embedded Framework) 基于的 UI 框架
+  - 厂商: www.exuik.com
+
+二、功能分类详解
+======================================================================
+
+2.1 反调试机制 (7 层防护)
+  ┌─────────────────────────────────────────────────────────┐
+  │ API                       调用次数   用途              │
+  ├─────────────────────────────────────────────────────────┤
+  │ IsDebuggerPresent         7         基础调试检测       │
+  │ CheckRemoteDebuggerPresent 1        远程调试检测       │
+  │ NtQueryInformationProcess 3         内核级调试检测     │
+  │ ZwQueryInformationProcess 2         内核级调试检测     │
+  │ NtSetInformationProcess   1         反调试设置         │
+  │ OutputDebugString(A/W)    2+2       调试输出检测       │
+  │ GetTickCount/64           7+4       时间差检测         │
+  │ QueryPerformanceCounter   7         高精度计时检测     │
+  └─────────────────────────────────────────────────────────┘
+
+  NtQueryInformationProcess 信息类:
+  - ProcessDebugPort (class=7): 返回调试器端口
+  - ProcessDebugObjectHandle (class=30): 返回调试对象句柄
+  - ProcessDebugFlags (class=31): 返回调试标志
+
+2.2 ACE 反作弊绕过
+  ┌─────────────────────────────────────────────────────────┐
+  │ 组件                       路径/用途                  │
+  ├─────────────────────────────────────────────────────────┤
+  │ ACE-SSC64.dll              SGuard\x64\ACE-SSC64.dll   │
+  │ ACE-SSC-DRV64.sys          SGuard\x64\ 内核驱动       │
+  │ SProtectSDK64.dll          SProtect SDK 组件          │
+  │ netbios.dll                SGuard 网络组件            │
+  │ sguard.dat                 SGuard 数据文件            │
+  │ AntiCheatExpert Service    ACE 服务进程               │
+  └─────────────────────────────────────────────────────────┘
+
+  内核操作:
+  - ZwAllocateVirtualMemory (4处): 任意进程内存分配
+  - ZwProtectVirtualMemory (2处): 内存保护属性修改
+  - ZwUnloadDriver: 驱动卸载
+  - CreateFileMapping / MapViewOfFile: 命名共享内存
+  - Global\12345678: 进程间通信标识
+
+2.3 卡密/许可证验证
+  关键词频率:
+  - register / Register: 8 + 10 处
+  - valid / Valid: 142 + 16 处
+  - verification: 2 处
+  - authenticate / authentication: 4 + 12 处
+  - token: 15 处
+  - Unlock: 12 处
+  - subscribe: 3 处
+
+  验证方式: 通过 ExuiKrnln DLL 的 WebSocket + HTTP API 实现
+  验证流程: 客户端 -> WebSocket/HTTP -> 服务器验证 -> 返回结果
+
+2.4 游戏目标
+  - LeagueClient.exe: LoL 客户端
+  - RiotClientServices.exe: Riot 服务
+  - League of Legends.exe: LoL 游戏
+  - vgc.exe: Vanguard 反作弊
+  - 配置文件:
+    * LY.ini: 外挂配置
+    * League of Legends.exe.ini
+    * League of Legends.exe.lic
+
+2.5 通信协议
+  - 网络库: libcurl 7.66.0
+  - HTTP 方法: GET, POST
+  - WebSocket: ws://, wss://
+  - 数据格式: JSON (含 eval 解析), Cookie
+  - 加密: AES, SHA, Base64, TLS/SSL
+
+2.6 ExuiKrnln 关键 API
+  ┌─────────────────────────────────────────────────────────┐
+  │ API                       功能                          │
+  ├─────────────────────────────────────────────────────────┤
+  │ mbNetSendWsText           WebSocket 文本发送 (验证消息)│
+  │ mbNetSendWsBlob           WebSocket 二进制发送          │
+  │ mbNetHookRequest          HTTP 请求 Hook (拦截API)      │
+  │ mbNetSetWebsocketCallback WebSocket 回调设置            │
+  │ mbNetStartUrlReq          HTTP 请求发起                 │
+  │ mbSetProxy                代理设置 (MITM 入口)          │
+  │ mbSetCookie/GetCookie     Cookie 管理                   │
+  │ mbSetUserAgent            UA 伪造                       │
+  │ mbSetTransparent          窗口透明                      │
+  │ mbShowWindow/LoadURL     窗口管理                      │
+  │ wkeSetProxy/LoadURL      WKE 接口 (CEF 兼容)           │
+  │ rolSendMessage/GetMessage 消息系统                     │
+  └─────────────────────────────────────────────────────────┘
+
+三、绕过方案
+======================================================================
+
+3.1 反调试绕过 (KG_Bypass.c 已实现)
+  原理: 通过 IAT Hook 替换函数指针
+
+  Hook 目标:
+  - IsDebuggerPresent -> 始终返回 FALSE
+  - CheckRemoteDebuggerPresent -> 始终返回 FALSE
+  - NtQueryInformationProcess -> 隐藏调试器 (class 7/30/31)
+  - ZwQueryInformationProcess -> 隐藏调试器 (class 7/30/31)
+  - OutputDebugStringA/W -> 静默
+
+  编译 (Windows MinGW):
+  i686-w64-mingw32-gcc -shared -o KG_Bypass.dll KG_Bypass.c -lws2_32
+
+  注入方式:
+  - AppInit_DLLs 注册表: HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Windows\LoadAppInit_DLLs = 1
+    然后在 AppInit_DLLs 值中添加 KG_Bypass.dll 路径
+  - Remote DLL 注入工具 (如 RemoteInjector, DLL Injector Pro)
+
+3.2 卡密验证绕过
+  方案 A - 静态 Patch:
+  * 搜索验证字符串交叉引用
+  * NOP 掉 call+test+jump 反调试模式 (FF15...85C0...74/75)
+  * 修改验证后的条件跳转
+
+  方案 B - MITM 代理:
+  * 使用 mbSetProxy 设置本地代理
+  * 拦截验证 API 请求
+  * 修改服务器响应 (valid=false -> valid=true)
+
+  方案 C - WebSocket 劫持:
+  * Hook mbNetSetWebsocketCallback
+  * 拦截验证消息
+  * 修改消息内容为通过状态
+
+3.3 ACE 反作弊绕过
+  * 不加载 ACE-SSC64.sys 内核驱动
+  * Patch SProtectSDK64.dll 加载检查
+  * 禁用 ACE 相关服务 (sc stop AntiCheatExpert)
+  * 修改进程黑名单检查
+
+3.4 内核级操作
+  * KG.exe 含完整内核驱动加载代码
+  * ZwAllocateVirtualMemory 可操作任意进程
+  * ZwProtectVirtualMemory 修改内存保护
+  * 可用于读写游戏进程内存
+
+四、文件清单
+======================================================================
+
+  KG_Reverse/
+  ├── KG_original.exe              # 原始主程序
+  ├── ExuiKrnln_Win32_original.lib  # 原始 UI 框架 DLL
+  ├── scripts/
+  │   ├── KG_Bypass.c              # 反调试绕过 DLL 源码
+  │   ├── KG_CardKey_Bypass.py      # 卡密 Patch 脚本
+  │   └── ExuiKrnln_Analysis.py    # ExuiKrnln 分析脚本
+  ├── patches/                      # Patch 输出目录
+  └── analysis_report.txt           # 本报告
+
+五、使用说明
+======================================================================
+
+5.1 反调试绕过 DLL:
+    i686-w64-mingw32-gcc -shared -o KG_Bypass.dll scripts/KG_Bypass.c -lws2_32
+
+5.2 运行卡密 Patch:
+    python3 scripts/KG_CardKey_Bypass.py KG_original.exe
+
+5.3 分析 ExuiKrnln:
+    python3 scripts/ExuiKrnln_Analysis.py ExuiKrnln_Win32_original.lib
+
+六、关键发现总结
+======================================================================
+
+1. 二进制未使用传统壳 (UPX/Themida/VMProtect)，为原生 PE
+2. .rdata 节区高熵 (7.579) 来自嵌入的压缩/加密数据
+3. 使用 7 层反调试机制，包括内核级检测
+4. 实现了完整的 ACE (AntiCheatExpert) 绕过
+5. 通过 WebSocket + HTTP 实现卡密网络验证
+6. UI 基于 Exui CEF 框架 (www.exuik.com)
+7. 可通过 IAT Hook + WebSocket 劫持绕过验证
+8. 支持内核级内存操作 (ZwAllocateVirtualMemory)
+9. 目标游戏: League of Legends
+10. 包含完整的驱动加载代码
+
+======================================================================
+本报告仅供安全研究和学习使用。
+所有技术手段必须用于合法授权场景。
+======================================================================

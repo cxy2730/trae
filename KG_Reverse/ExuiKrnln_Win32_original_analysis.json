@@ -1,0 +1,66 @@
+{
+  "file": "ExuiKrnln_Win32_original.lib",
+  "size": 2355712,
+  "sha256": "3c15e357dcef90a8ee1a37ec67c5ed25013e4dbd94ea00bca9c0cf255e48be50",
+  "architecture": "x86",
+  "entry_point": "0x15EE03",
+  "image_base": "0x10000000",
+  "exported_apis": {
+    "mbNetSendWsText": "WebSocket 文本发送",
+    "mbNetSendWsBlob": "WebSocket 二进制发送",
+    "mbNetHookRequest": "HTTP 请求 Hook",
+    "mbNetSetWebsocketCallback": "WebSocket 回调设置",
+    "mbNetStartUrlReq": "HTTP 请求发起",
+    "mbSetProxy": "代理设置 (MITM)",
+    "mbSetCookie": "Cookie 设置",
+    "mbGetCookie": "Cookie 获取",
+    "mbClearCookie": "Cookie 清除",
+    "mbSetUserAgent": "UA 伪造",
+    "mbSetTransparent": "窗口透明",
+    "mbShowWindow": "窗口显示",
+    "mbLoadURL": "URL 加载",
+    "mbSetWindowTitle": "窗口标题",
+    "mbGetTitle": "页面标题",
+    "wkeSetProxy": "WKE 代理",
+    "wkeLoadURL": "WKE 加载",
+    "wkeGetURL": "WKE 获取 URL",
+    "rolSendMessage": "消息发送",
+    "GetMessage": "消息获取",
+    "SendMessage": "窗口消息",
+    "ShowWindow": "窗口显示/隐藏",
+    "SetWindowTitle": "窗口标题设置",
+    "SetCookie": "Cookie 设置",
+    "GetCookie": "Cookie 获取",
+    "ClearCookie": "Cookie 清除",
+    "GetTitle": "标题获取",
+    "SetUserAgent": "UA 设置",
+    "SetProxy": "代理设置"
+  },
+  "anti_debugging": [
+    [
+      "IsDebuggerPresent",
+      1
+    ],
+    [
+      "OutputDebugStringA",
+      1
+    ],
+    [
+      "GetTickCount",
+      1
+    ],
+    [
+      "QueryPerformanceCounter",
+      1
+    ]
+  ],
+  "domains": [
+    "www.exuik.com"
+  ],
+  "bypass": [
+    "Hook IsDebuggerPresent",
+    "Intercept mbNetSendWsText",
+    "Use mbSetProxy for MITM",
+    "Patch ACE loading"
+  ]
+}
