@@ -2,9 +2,10 @@
  * KG Assist - GUI 入口
  *
  * WinMain 模式, 无控制台窗口, 启动后:
- *   1. 初始化路径 / 日志 / API / 防封
- *   2. 创建一个隐藏主窗口作为消息循环宿主
- *   3. 在系统托盘添加图标, 右键菜单提供:
+ *   1. 初始化路径 / 日志
+ *   2. 安装防封保护 (反调试 / 反检测 / 进程伪装)
+ *   3. 创建一个隐藏主窗口作为消息循环宿主
+ *   4. 在系统托盘添加图标, 右键菜单提供:
  *        - 状态
  *        - 打开日志
  *        - 退出
@@ -82,19 +83,16 @@ static VOID ShowContextMenu(HWND hwnd) {
  * ============================================================ */
 
 static VOID ShowStatus(VOID) {
-    const KgCheatConfig* cfg = KgGetConfig();
     char buf[512];
     snprintf(buf, sizeof(buf),
         "KG Assist 已运行\r\n\r\n"
         "日志文件:\r\n%s\r\n\r\n"
-        "ESP:       %s\r\n"
-        "自瞄:      %s (%.0f%%)\r\n"
-        "加速:      %s\r\n",
-        KgPathGetLogFile() ? KgPathGetLogFile() : "(无)",
-        cfg->espEnabled      ? "开" : "关",
-        cfg->aimbotEnabled   ? "开" : "关",
-        cfg->aimbotSpeed * 100,
-        cfg->speedHackEnabled? "开" : "关");
+        "防封保护: 已激活\r\n"
+        "  - 反调试\r\n"
+        "  - 反检测\r\n"
+        "  - 进程伪装\r\n"
+        "  - 完整性保护\r\n",
+        KgPathGetLogFile() ? KgPathGetLogFile() : "(无)");
     MessageBoxA(g_hWnd, buf, "KG Assist - 状态", MB_ICONINFORMATION | MB_OK);
 }
 
@@ -157,52 +155,6 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 }
 
 /* ============================================================
- * 后台工作线程
- * ============================================================ */
-
-static DWORD WINAPI WorkerThread(LPVOID param) {
-    (void)param;
-    KG_INFO("工作线程启动, 等待目标进程...");
-
-    /* 简单示例: 每 5 秒扫一次, 找到 LoL 就尝试注入 cheat.dll (若同目录存在) */
-    char dllPath[KG_MAX_PATH];
-    {
-        const char* logPath = KgPathGetLogFile();
-        if (logPath) {
-            strncpy(dllPath, logPath, sizeof(dllPath) - 1);
-            char* p = strrchr(dllPath, '\\');
-            if (p) *p = '\0';
-            strncat(dllPath, "\\cheat.dll", sizeof(dllPath) - strlen(dllPath) - 1);
-        } else {
-            dllPath[0] = '\0';
-        }
-    }
-
-    while (g_Running) {
-        KgProcessInfo info;
-        if (KgFindProcess(KG_LOL_PROCESS_NAME, &info)) {
-            KG_INFO("发现目标进程 PID=%lu", info.pid);
-            if (dllPath[0] && GetFileAttributesA(dllPath) != INVALID_FILE_ATTRIBUTES) {
-                if (KgOpenProcess(&info, 0x1F0FFF)) {
-                    if (KgAutoInject(info.handle, dllPath)) {
-                        KG_INFO("注入成功");
-                        TrayShowBalloon("KG Assist", "已注入到 LoL");
-                    } else {
-                        KG_WARN("注入失败");
-                    }
-                    KgCloseProcess(&info);
-                }
-            } else {
-                KG_INFO("目标进程已就绪, 但 cheat.dll 不在同目录 (跳过注入)");
-            }
-        }
-        Sleep(5000);
-    }
-    KG_INFO("工作线程退出");
-    return 0;
-}
-
-/* ============================================================
  * WinMain
  * ============================================================ */
 
@@ -250,35 +202,17 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR cmd, int show) {
         return 1;
     }
 
-    /* 6) 启动后台工作线程 */
-    CreateThread(NULL, 0, WorkerThread, NULL, 0, NULL);
-
-    /* 7) 启动提示 */
+    /* 6) 启动提示 */
     TrayShowBalloon("KG Assist 已启动", "右键托盘图标可打开菜单");
 
-    /* 8) 消息循环 */
+    /* 7) 消息循环 */
     MSG msg;
     while (GetMessageA(&msg, NULL, 0, 0) > 0) {
         TranslateMessage(&msg);
         DispatchMessageA(&msg);
     }
 
-    /* 9) 清理 */
-    g_Running = FALSE;
-    KgCleanup();
+    /* 8) 清理 */
     KgLogClose();
     return 0;
-}
-
-/* ============================================================
- * 桩 (供其他模块调用)
- * ============================================================ */
-
-BOOL KgInit(VOID) {
-    if (!KgLoadApis()) return FALSE;
-    return TRUE;
-}
-
-VOID KgCleanup(VOID) {
-    /* 留空 - 子模块各自负责 */
 }

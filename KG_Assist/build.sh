@@ -49,17 +49,13 @@ TARGET="KG_Assist.exe"
 
 mkdir -p "$OUT_DIR"
 
-# 源文件
+# 源文件 (只保留防封模块)
 SOURCES=(
     "$SRC_DIR/main.c"
     "$SRC_DIR/logger.c"
     "$SRC_DIR/paths.c"
     "$SRC_DIR/protector.c"
-    "$SRC_DIR/memory.c"
     "$SRC_DIR/antidetect.c"
-    "$SRC_DIR/process.c"
-    "$SRC_DIR/injector.c"
-    "$SRC_DIR/core.c"
 )
 
 # 编译
