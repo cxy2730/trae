@@ -509,6 +509,7 @@ VOID   ApplyEnvOverrides(VOID);
 
 BOOL KgGuiInit(HINSTANCE hInstance);
 int  KgGuiRun(HINSTANCE hInstance, int nCmdShow);
+void KgGuiAppendLog(const char* text);
 
 /* ============================================================
  * 内联辅助函数

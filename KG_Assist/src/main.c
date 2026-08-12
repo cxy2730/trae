@@ -70,12 +70,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     KG_INFO("  Root: %s", KgPathGetRoot());
     KG_INFO("============================================");
 
-    /* --- 4) 安装防护 --- */
-    if (!KgInstallFullProtection()) {
-        KG_WARN("\xe9\x83\xa8\xe5\x88\x86\xe4\xbf\x9d\xe6\x8a\xa4\xe5\xa4\xb1\xe8\xb4\xa5");  /* 部分保护失败 */
-    }
-
-    /* --- 5) 启动 GUI --- */
+    /* --- 4) 启动 GUI (防封保护在模式线程中按需启动) --- */
     int ret = KgGuiRun(hInstance, nCmdShow);
 
     /* --- 6) 清理 --- */
