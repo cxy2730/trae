@@ -30,6 +30,8 @@ const SERVICE_STOP_PENDING: u32 = 0x00000003;
 const SERVICE_RUNNING: u32 = 0x00000004;
 
 const SERVICE_DISABLED: u32 = 0x00000004;
+const SERVICE_AUTO_START: u32 = 0x00000002; // SERVICE_AUTO_START
+const SERVICE_DEMAND_START: u32 = 0x00000003; // SERVICE_DEMAND_START (手动启动)
 
 // ---- 注册表 ----
 const HKEY_LOCAL_MACHINE: usize = 0x80000002;
@@ -114,6 +116,14 @@ extern "system" {
         dwType: u32,
         lpData: *const u8,
         cbData: u32,
+    ) -> i32;
+    fn RegQueryValueExW(
+        hKey: usize,
+        lpValueName: *const u16,
+        lpReserved: *mut u32,
+        lpType: *mut u32,
+        lpData: *mut u8,
+        lpcbData: *mut u32,
     ) -> i32;
     fn RegCloseKey(hKey: usize) -> i32;
 }
@@ -244,4 +254,130 @@ unsafe fn Sleep_lite(ms: u32) {
         fn Sleep(ms: u32);
     }
     Sleep(ms);
+}
+
+// ============================================================
+// 还原 (停止时调用)
+// ============================================================
+
+/// 还原 ACE 服务启动类型: SERVICE_DISABLED → SERVICE_AUTO_START / SERVICE_DEMAND_START
+///
+/// 启动时我们禁了 ACE 下次自启, 关掉程序时必须还原, 不然下次重启 ACE 起不来。
+///
+/// 还原策略:
+///   - 驱动类服务 (含 DRV / AntiCheatExpert): SERVICE_DEMAND_START (由 ACE 启动器加载)
+///   - 普通服务 (SGuardSvc / ACE-SSC 等): SERVICE_AUTO_START (跟随系统)
+pub fn restore_ace_services(cb: LogCallback) -> bool {
+    log(cb, "======== 还原 ACE 服务启动类型 ========");
+    log_debug(cb, "  启动时禁用的 DISABLED 改回 AUTO_START / DEMAND_START");
+
+    let h_scm = unsafe { OpenSCManagerW(core::ptr::null(), core::ptr::null(), SC_MANAGER_ALL_ACCESS) };
+    if h_scm == 0 {
+        log_error(cb, "  [错误] OpenSCManager 失败 (需要管理员权限)");
+        return false;
+    }
+
+    let mut restored = 0usize;
+
+    for svc_name in ACE_SERVICES {
+        let name_w = wstr(svc_name);
+        let h_svc = unsafe { OpenServiceW(h_scm, name_w.as_ptr(), SERVICE_ALL_ACCESS) };
+        if h_svc == 0 {
+            continue;
+        }
+
+        // 驱动类服务 → DEMAND_START; 用户态服务 → AUTO_START
+        let start_type = if svc_name.contains("DRV") || svc_name.contains("AntiCheatExpert") {
+            SERVICE_DEMAND_START
+        } else {
+            SERVICE_AUTO_START
+        };
+
+        let ok = unsafe {
+            ChangeServiceConfigW(
+                h_svc,
+                0xFFFFFFFF,          // SERVICE_NO_CHANGE
+                start_type,
+                0xFFFFFFFF,           // SERVICE_NO_CHANGE
+                core::ptr::null(),
+                core::ptr::null(),
+                core::ptr::null_mut(),
+                core::ptr::null(),
+                core::ptr::null(),
+                core::ptr::null(),
+                core::ptr::null(),
+            )
+        };
+        if ok != 0 {
+            let tag = if start_type == SERVICE_AUTO_START { "AUTO" } else { "DEMAND" };
+            log(cb, &format!("    [OK] {} → {}_START", svc_name, tag));
+            restored += 1;
+        }
+
+        unsafe { CloseServiceHandle(h_svc); }
+    }
+
+    unsafe { CloseServiceHandle(h_scm); }
+
+    // 注册表兜底: 把 Start = 4 改回 Start = 2 (AUTO)
+    let reg_restored = restore_via_registry(cb);
+    if reg_restored > 0 {
+        log(cb, &format!("  [注册表] 还原 {} 个服务项 Start = 2 (AUTO)", reg_restored));
+    }
+
+    log(cb, &format!("  [汇总] SCM 还原 {} 个 + 注册表还原 {} 个", restored, reg_restored));
+    true
+}
+
+/// 通过注册表还原服务启动项 (兜底)
+/// HKLM\SYSTEM\CurrentControlSet\Services\<svc>\Start → 2 (AUTO)
+fn restore_via_registry(cb: LogCallback) -> usize {
+    let mut count = 0;
+    let sub_key_prefix = "SYSTEM\\CurrentControlSet\\Services\\";
+
+    for svc_name in ACE_SERVICES {
+        let full_path = format!("{}{}", sub_key_prefix, svc_name);
+        let path_w = wstr(&full_path);
+
+        let mut h_key: usize = 0;
+        let status = unsafe {
+            RegOpenKeyExW(HKEY_LOCAL_MACHINE, path_w.as_ptr(), 0, KEY_ALL_ACCESS, &mut h_key)
+        };
+        if status != 0 || h_key == 0 {
+            continue;
+        }
+
+        // 读当前 Start, 如果已经不是 4 就不用改了
+        let mut cur_start: u32 = 0;
+        let mut sz: u32 = 4;
+        let _ = unsafe {
+            RegQueryValueExW(
+                h_key,
+                wstr("Start").as_ptr(),
+                core::ptr::null_mut(),
+                core::ptr::null_mut(),
+                (&mut cur_start as *mut u32) as *mut u8,
+                &mut sz,
+            )
+        };
+
+        if cur_start == SERVICE_DISABLED {
+            let start_val: u32 = SERVICE_AUTO_START;
+            let _ = unsafe {
+                RegSetValueExW(
+                    h_key,
+                    wstr("Start").as_ptr(),
+                    0,
+                    4, // REG_DWORD
+                    (&start_val as *const u32) as *const u8,
+                    4,
+                )
+            };
+            count += 1;
+        }
+
+        unsafe { RegCloseKey(h_key); }
+    }
+
+    count
 }

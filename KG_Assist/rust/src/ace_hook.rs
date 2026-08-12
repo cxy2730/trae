@@ -315,9 +315,31 @@ struct HookEntry {
     hook_addr: usize,
 }
 
+// ---- Hook 安装记录 (卸载时还原 thunk 原始值) ----
+#[repr(C)]
+#[derive(Clone, Copy)]
+struct PatchedIat {
+    thunk_addr: usize,   // IAT thunk 在内存中的地址
+    thunk_size: usize,   // 4 (PE32) 或 8 (PE32+)
+    orig_value: u64,     // 安装前的原始函数地址
+    dll_name: &'static str,
+    func_name: &'static str,
+}
+
+static mut PATCHED_IATS: [Option<PatchedIat>; 16] = [None; 16];
+static mut PATCHED_COUNT: usize = 0;
+static mut HOOKS_INSTALLED: bool = false;
+
 /// 安装所有 ACE 拦截 hook (IAT 方式)
 pub fn install_ace_hooks(cb: LogCallback) -> bool {
     log(cb, "======== 安装 ACE 用户态 Hook ========");
+
+    unsafe {
+        if HOOKS_INSTALLED {
+            log_debug(cb, "  Hook 已安装, 跳过重复安装");
+            return true;
+        }
+    }
 
     // 在 patch IAT 之前, 先保存原始 API 地址 (避免 hook 后死循环)
     unsafe {
@@ -397,6 +419,10 @@ pub fn install_ace_hooks(cb: LogCallback) -> bool {
         } else {
             log_warn(cb, &format!("  [失败] {}!{}", hook.dll_name, hook.func_name));
         }
+    }
+
+    unsafe {
+        HOOKS_INSTALLED = installed > 0;
     }
 
     log(cb, &format!("  [汇总] 已安装 {}/{} 个 hook", installed, hooks.len()));
@@ -504,17 +530,40 @@ fn install_iat_hook(dll_name: &str, func_name: &str, hook_addr: usize) -> bool {
                                 &mut old_protect,
                             );
                             if prot_ok != 0 {
+                                // 先读原始值, 保存
+                                let orig_value: u64 = if thunk_size == 4 {
+                                    *(ft_addr as *const u32) as u64
+                                } else {
+                                    *(ft_addr as *const u64)
+                                };
+
+                                // 写 hook 地址
                                 if thunk_size == 4 {
                                     *(ft_addr as *mut u32) = hook_addr as u32;
                                 } else {
                                     *(ft_addr as *mut u64) = hook_addr as u64;
                                 }
+
                                 VirtualProtect(
                                     ft_addr as *const _,
                                     thunk_size,
                                     old_protect,
                                     &mut old_protect,
                                 );
+
+                                // 保存到 PATCHED_IATS, 卸载时还原
+                                let idx = PATCHED_COUNT;
+                                if idx < PATCHED_IATS.len() {
+                                    PATCHED_IATS[idx] = Some(PatchedIat {
+                                        thunk_addr: ft_addr,
+                                        thunk_size,
+                                        orig_value,
+                                        dll_name: "", // dll_name 生命周期不匹配, 卸日志用简单计数即可
+                                        func_name: "",
+                                    });
+                                    PATCHED_COUNT = idx + 1;
+                                }
+
                                 found = true;
                             }
                             break;
@@ -541,4 +590,75 @@ unsafe fn read_cstr(ptr: *const u8) -> String {
         len += 1;
     }
     String::from_utf8_lossy(core::slice::from_raw_parts(ptr, len)).into_owned()
+}
+
+// ============================================================
+// IAT Hook 卸载 (停止还原)
+// ============================================================
+
+/// 卸载 ACE 用户态 Hook, 将 IAT thunks 写回原始值
+///
+/// 停止时必须调用, 否则进程内存中一直留着 patched 代码。
+pub fn uninstall_ace_hooks(cb: LogCallback) -> bool {
+    unsafe {
+        if !HOOKS_INSTALLED {
+            log_debug(cb, "  Hook 未安装, 跳过卸载");
+            return true;
+        }
+    }
+
+    log(cb, "======== 卸载 ACE 用户态 Hook (还原 IAT) ========");
+
+    let mut restored = 0usize;
+    let mut failed = 0usize;
+
+    unsafe {
+        for idx in 0..PATCHED_COUNT {
+            let Some(patch) = PATCHED_IATS[idx] else {
+                continue;
+            };
+
+            // 改保护属性 → 写原始值 → 恢复保护
+            let mut old_protect: u32 = 0;
+            let prot_ok = VirtualProtect(
+                patch.thunk_addr as *const _,
+                patch.thunk_size,
+                PAGE_READWRITE,
+                &mut old_protect,
+            );
+            if prot_ok == 0 {
+                failed += 1;
+                continue;
+            }
+
+            if patch.thunk_size == 4 {
+                *(patch.thunk_addr as *mut u32) = patch.orig_value as u32;
+            } else {
+                *(patch.thunk_addr as *mut u64) = patch.orig_value;
+            }
+
+            let mut _unused: u32 = 0;
+            VirtualProtect(
+                patch.thunk_addr as *const _,
+                patch.thunk_size,
+                old_protect,
+                &mut _unused,
+            );
+            restored += 1;
+
+            // 清槽
+            PATCHED_IATS[idx] = None;
+        }
+
+        // 复位记录
+        PATCHED_COUNT = 0;
+        HOOKS_INSTALLED = false;
+        ORIG_GET_PROC_ADDRESS = None;
+        ORIG_LOAD_LIBRARY_A = None;
+        ORIG_GET_MODULE_HANDLE_A = None;
+    }
+
+    log(cb, &format!("  [汇总] 还原 {} 个, 失败 {} 个", restored, failed));
+    log(cb, "======== ACE Hook 卸载完成 ========");
+    true
 }

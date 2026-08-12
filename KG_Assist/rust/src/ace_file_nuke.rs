@@ -14,6 +14,11 @@
 //! + dll_hijack.rs (部署伪造 version.dll/TerSafe.dll 拦截 ACE API)。
 
 use crate::ffi::{LogCallback, log, log_warn, log_error, log_debug};
+use std::sync::atomic::{AtomicBool, Ordering};
+
+// ---- 监控线程停止标志 ----
+static MONITOR_RUNNING: AtomicBool = AtomicBool::new(false);
+static mut MONITOR_JOIN_HANDLE: Option<std::thread::JoinHandle<()>> = None;
 
 // ---- KG 实际删除的文件 (Ghidra 反编译 FUN_00403ec3) ----
 //
@@ -193,23 +198,65 @@ pub fn nuke_all_ace_files(cb: LogCallback, league_dir: Option<&str>) -> bool {
 /// ⚠️ 注意: **绝对不监控 ACE 核心文件**, 只监控非官方的劫持 DLL (netbios.dll/123.dll 等)
 ///       防止别人的老外挂残留或 ACE 自修复放了冲突文件。
 pub fn start_ace_file_monitor(cb: LogCallback) {
+    if MONITOR_RUNNING.load(Ordering::Acquire) {
+        log_debug(cb, "  监控已在运行, 跳过启动");
+        return;
+    }
     log(cb, "======== 启动 ACE 劫持文件监控 (后台) ========");
     log_debug(cb, "  只监控 netbios.dll / 123.dll / TerSafe.dll 劫持占位; 不碰 ACE 核心");
 
+    MONITOR_RUNNING.store(true, Ordering::Release);
+
     // 只监控非官方 DLL, 绝不碰 ACE-SSC64 / 驱动 / sguard.dat
-    std::thread::spawn(move || {
+    let handle = std::thread::spawn(move || {
         let only_monitor = [
             "C:\\Program Files\\AntiCheatExpert\\SGuard\\x64\\netbios.dll",
             "C:\\Program Files\\AntiCheatExpert\\SGuard\\x64\\123.dll",
             "C:\\Program Files\\AntiCheatExpert\\SGuard\\x64\\TerSafe.dll",
         ];
         loop {
+            // 收到停止信号立即退出
+            if !MONITOR_RUNNING.load(Ordering::Acquire) {
+                break;
+            }
             for f in only_monitor.iter() {
                 if file_exists(f) {
                     nuke_file(f);
                 }
             }
-            std::thread::sleep(std::time::Duration::from_secs(5));
+            // 小段 sleep, 让停止响应更快
+            for _ in 0..50 {
+                if !MONITOR_RUNNING.load(Ordering::Acquire) {
+                    break;
+                }
+                std::thread::sleep(std::time::Duration::from_millis(100));
+            }
         }
     });
+
+    unsafe {
+        MONITOR_JOIN_HANDLE = Some(handle);
+    }
+}
+
+/// 停止 ACE 劫持文件监控线程 (停止按钮 / 还原流程调用)
+pub fn stop_ace_file_monitor(cb: LogCallback) {
+    if !MONITOR_RUNNING.load(Ordering::Acquire) {
+        log_debug(cb, "  监控未运行, 跳过停止");
+        return;
+    }
+    log(cb, "======== 停止 ACE 劫持文件监控 ========");
+
+    MONITOR_RUNNING.store(false, Ordering::Release);
+
+    // 取出 join handle, 最多等 2 秒
+    unsafe {
+        if let Some(handle) = MONITOR_JOIN_HANDLE.take() {
+            match handle.join() {
+                Ok(_) => log_debug(cb, "  监控线程已优雅退出"),
+                Err(_) => log_warn(cb, "  监控线程退出异常"),
+            }
+        }
+    }
+    log(cb, "  [OK] ACE 文件监控已停止");
 }

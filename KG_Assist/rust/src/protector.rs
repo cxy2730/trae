@@ -10,7 +10,7 @@
 //! 启动顺序对应 KG 的 sub_43a000 初始化流程。
 
 use crate::native_api::*;
-use crate::ffi::{LogCallback, log, log_warn, log_error};
+use crate::ffi::{LogCallback, log, log_warn, log_error, log_debug};
 use crate::antidebug;
 use windows_sys::Win32::{
     Foundation::{HMODULE, BOOL},
@@ -23,6 +23,21 @@ use windows_sys::Win32::{
 };
 
 const XTEA_KEY: u32 = 0xDEADBEEF;
+
+// ---- 停止标志原子变量 ----
+use std::sync::atomic::{AtomicBool, Ordering as AtomicOrdering};
+static INTEGRITY_RUNNING: AtomicBool = AtomicBool::new(false);
+static mut INTEGRITY_THREAD_HANDLE: HANDLE = 0;
+
+// ---- 安装状态 (还原时需要知道当时把哪些目录部署了 DLL 劫持) ----
+static mut PROTECTOR_INSTALLED: bool = false;
+static mut INTEGRITY_MONITOR_RUNNING: bool = false;
+static mut LAST_LEAGUE_DIR: Option<String> = None;
+
+/// 是否已执行过 install (防止重复/空 uninstall)
+pub fn is_installed() -> bool {
+    unsafe { PROTECTOR_INSTALLED }
+}
 
 /// 安装完整防护 — 对齐 KG 真正过检测方式 (用户指出关键修正!)
 ///
@@ -45,6 +60,13 @@ const XTEA_KEY: u32 = 0xDEADBEEF;
 ///
 /// 一句话: **ACE 驱动/服务保持运行, ACE 检测 API 的返回被 KG 全部替换成假数据**
 pub fn install_full(cb: LogCallback) -> i32 {
+    unsafe {
+        if PROTECTOR_INSTALLED {
+            log_warn(cb, "  已安装, 跳过重复 install");
+            return 0;
+        }
+    }
+
     log(cb, "========================================");
     log(cb, "  KG 防检测系统启动 (用户修正版: Hook 核心)");
     log(cb, "========================================");
@@ -53,6 +75,9 @@ pub fn install_full(cb: LogCallback) -> i32 {
     // [0/7] 清除 DLL 劫持残留 (FUN_00403ec3, 只清非核心)
     log(cb, "[0/7] 清除 ACE 目录 DLL 劫持残留...");
     let league_dir = crate::process::find_league_client_install_path();
+    unsafe {
+        LAST_LEAGUE_DIR = league_dir.clone();
+    }
     crate::ace_file_nuke::nuke_all_ace_files(cb, league_dir.as_deref());
 
     // [1/7] 环境检测
@@ -69,7 +94,7 @@ pub fn install_full(cb: LogCallback) -> i32 {
 
     // [3/7] DLL 劫持部署 (放游戏目录, 版本优先加载, 拦截 ACE 调用)
     log(cb, "[3/7] 部署 DLL 劫持 (TerSafe.dll / version.dll)...");
-    crate::dll_hijack::deploy_all_hijack_dlls(cb, None);
+    crate::dll_hijack::deploy_all_hijack_dlls(cb, league_dir.as_deref());
 
     // [4/7] ACE 用户态 API hook (IAT) — 核心! 返回假正常数据包
     log(cb, "[4/7] 安装 ACE API Hook (IAT + inline) — 核心过检测!");
@@ -88,10 +113,82 @@ pub fn install_full(cb: LogCallback) -> i32 {
     // [7/7] 窗口伪装 + 完整性校验
     log(cb, "[7/7] 窗口伪装 + 完整性自校验...");
     spoof_self_window(cb);
-    start_integrity_monitor(cb);
+    unsafe {
+        start_integrity_monitor(cb);
+        INTEGRITY_MONITOR_RUNNING = true;
+    }
+
+    unsafe { PROTECTOR_INSTALLED = true; }
 
     log(cb, "========================================");
     log(cb, "  过检测启动完成 (ACE 仍在线, 检测API返回假数据)");
+    log(cb, "========================================");
+    0
+}
+
+/// 完整还原过检测 (停止时调用, 与 install_full 逆序执行)
+///
+/// 还原顺序 (严格执行 install 反方向):
+///   [7] 停止完整性自校验 + 还原窗口标题
+///   [6] 停止 ACE 文件监控线程 (join)
+///   [5] 还原 ACE 服务启动类型 (DISABLED → AUTO_START)
+///   [4] 卸载 IAT/inline hook, 写回原始 thunk 值
+///   [3] 撤回 DLL 劫持部署: .bak 还原 / stub 删除
+///   [2] 卸载反调试
+///   [1] (可选) 环境状态还原
+pub fn uninstall_full(cb: LogCallback) -> i32 {
+    unsafe {
+        if !PROTECTOR_INSTALLED {
+            log_debug(cb, "  未执行过 install, 跳过 uninstall");
+            return 0;
+        }
+    }
+
+    log(cb, "========================================");
+    log(cb, "  KG 过检测系统完整还原 (停止流程)");
+    log(cb, "========================================");
+
+    let league_dir = unsafe { LAST_LEAGUE_DIR.clone() };
+
+    // [7/7] 先停后台线程 (监控/完整性校验) — 避免还原时它们又改东西
+    log(cb, "[7] 停止后台监控 + 完整性校验...");
+    crate::ace_file_nuke::stop_ace_file_monitor(cb);
+    unsafe {
+        if INTEGRITY_MONITOR_RUNNING {
+            stop_integrity_monitor();
+            INTEGRITY_MONITOR_RUNNING = false;
+        }
+        restore_window_title(cb);
+    }
+
+    // [6/7] 还原 ACE 服务启动类型 (禁用 → AUTO / DEMAND)
+    log(cb, "[6] 还原 ACE 服务启动类型...");
+    crate::ace_service::restore_ace_services(cb);
+
+    // [5/7] 卸载 ACE IAT Hook 还原 thunks (必须 DLL 撤回前做, 避免顺序依赖)
+    log(cb, "[5] 卸载 ACE API Hook, 还原 IAT 原始值...");
+    crate::ace_hook::uninstall_ace_hooks(cb);
+
+    // [4/7] 撤回 DLL 劫持部署 (.bak 还原 + stub 删除)
+    log(cb, "[4] 撤回 DLL 劫持部署 (.bak 还原 + stub 删除)...");
+    crate::dll_hijack::undeploy_all_hijack_dlls(cb, league_dir.as_deref());
+
+    // [3/7] 卸载反调试
+    log(cb, "[3] 卸载反调试 (PEB 还原)...");
+    antidebug::uninstall(cb);
+
+    // [2/7] ACE 目录劫持残留的监控已在 [7] 停
+
+    // [1/7] (ACE 文件监控已停)
+    log(cb, "[1] 清理线程句柄与状态标志...");
+
+    unsafe {
+        LAST_LEAGUE_DIR = None;
+        PROTECTOR_INSTALLED = false;
+    }
+
+    log(cb, "========================================");
+    log(cb, "  过检测系统已完全还原 (ACE 服务启动/心跳保持)");
     log(cb, "========================================");
     0
 }
@@ -211,6 +308,7 @@ fn start_integrity_monitor(cb: LogCallback) {
     }
 
     unsafe {
+        INTEGRITY_RUNNING.store(true, AtomicOrdering::Release);
         let h = CreateThread(
             core::ptr::null(),
             0,
@@ -220,17 +318,83 @@ fn start_integrity_monitor(cb: LogCallback) {
             core::ptr::null_mut(),
         );
         if h != 0 {
-            // 不 close, 让线程后台运行
+            INTEGRITY_THREAD_HANDLE = h;
             log(cb, &format!("[完整性] 监控线程已启动 (.text @ 0x{:X}, {} bytes)",
                 INTEGRITY.addr, INTEGRITY.size));
         }
     }
 }
 
+/// 停止后台完整性校验线程
+///
+/// 发送停止标志 + WaitForSingleObject 3 秒, 超时强杀
+unsafe fn stop_integrity_monitor() {
+    extern "system" {
+        fn WaitForSingleObject(h: HANDLE, ms: u32) -> u32;
+        fn TerminateThread(h: HANDLE, exit_code: u32) -> i32;
+        fn CloseHandle(h: HANDLE) -> i32;
+    }
+
+    INTEGRITY_RUNNING.store(false, AtomicOrdering::Release);
+
+    if INTEGRITY_THREAD_HANDLE != 0 {
+        let wait = WaitForSingleObject(INTEGRITY_THREAD_HANDLE, 3000);
+        if wait != 0 {
+            // WAIT_OBJECT_0 = 0, 其他就是超时/失败, 强杀兜底
+            TerminateThread(INTEGRITY_THREAD_HANDLE, 0);
+        }
+        CloseHandle(INTEGRITY_THREAD_HANDLE);
+        INTEGRITY_THREAD_HANDLE = 0;
+    }
+}
+
+/// 还原被我们伪装的窗口标题 (KG 自身窗口从 "Windows System Component" 改回实际标题)
+unsafe fn restore_window_title(cb: LogCallback) {
+    extern "system" {
+        fn GetCurrentProcessId() -> u32;
+        fn GetWindowThreadProcessId(hwnd: isize, pid: *mut u32) -> u32;
+        fn IsWindowVisible(hwnd: isize) -> BOOL;
+        fn SetWindowTextA(hwnd: isize, title: *const u8) -> BOOL;
+        fn GetWindowTextLengthA(hwnd: isize) -> i32;
+    }
+
+    let current_pid = GetCurrentProcessId();
+    let restored_count = std::sync::atomic::AtomicUsize::new(0);
+
+    extern "system" fn enum_proc(hwnd: isize, lparam: isize) -> BOOL {
+        unsafe {
+            let mut pid = 0u32;
+            GetWindowThreadProcessId(hwnd, &mut pid);
+            let target_pid = lparam as u32;
+            if pid == target_pid && IsWindowVisible(hwnd) != 0 {
+                // 恢复标题: 如果原来被我们改成了 "Windows System Component\0" 就改回来
+                // 无法记原始标题时, 直接改成 KG 的默认标题
+                let title = b"KG Assist v3.0\0";
+                SetWindowTextA(hwnd, title.as_ptr());
+                (&*(lparam as *const std::sync::atomic::AtomicUsize))
+                    .fetch_add(1, AtomicOrdering::Relaxed);
+            }
+            1 // 继续枚举
+        }
+    }
+
+    EnumWindows(Some(enum_proc), (&restored_count as *const _) as isize);
+    let n = restored_count.load(AtomicOrdering::Relaxed);
+    if n > 0 {
+        log_debug(cb, &format!("  [还原] 已恢复 {} 个自身窗口标题", n));
+    }
+}
+
 unsafe extern "system" fn integrity_thread(_param: *mut core::ffi::c_void) -> u32 {
     loop {
+        // 收到停止信号立即退出
+        if !INTEGRITY_RUNNING.load(AtomicOrdering::Acquire) {
+            break;
+        }
+
         Sleep(5000); // 5 秒
-        if INTEGRITY.valid {
+
+        if INTEGRITY.valid && INTEGRITY_RUNNING.load(AtomicOrdering::Acquire) {
             let cur = fnv1a32(core::slice::from_raw_parts(
                 INTEGRITY.addr as *const u8,
                 INTEGRITY.size as usize,
@@ -241,6 +405,7 @@ unsafe extern "system" fn integrity_thread(_param: *mut core::ffi::c_void) -> u3
             }
         }
     }
+    0
 }
 
 /// FNV-1a 32 位哈希

@@ -38,8 +38,27 @@ fn main() {
     gui::run();
 }
 
-/// 停止所有模式 (供 GUI 调用)
+/// 停止所有模式 + 完整还原过检测 (停止按钮 / 关闭窗口调用)
 pub fn stop_all() {
+    use crate::ffi::LogCallback;
+
+    unsafe extern "C" fn noop_cb(_msg: *const u8, _level: i32) {}
+    let cb: LogCallback = noop_cb;
+
+    // 1. 先让各模式循环停止 (game_mode / update_mode)
     game_mode::stop();
     update_mode::stop();
+
+    // 2. 完整还原过检测 (Hook / DLL 劫持 / 服务启动类型)
+    protector::uninstall_full(cb);
+}
+
+/// 供 GUI 调用的带日志 stop
+pub fn stop_all_with_log(cb: crate::ffi::LogCallback) {
+    // 1. 先让各模式循环停止
+    game_mode::stop();
+    update_mode::stop();
+
+    // 2. 完整还原过检测 (逆序执行 install)
+    protector::uninstall_full(cb);
 }

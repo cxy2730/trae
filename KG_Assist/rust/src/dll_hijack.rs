@@ -161,7 +161,7 @@ fn get_exe_path() -> Option<String> {
 
 /// 还原所有劫持 DLL (清理)
 pub fn restore_all_hijack_dlls(cb: LogCallback, game_dir: Option<&str>) -> bool {
-    log(cb, "======== 还原 DLL 劫持 ========");
+    log(cb, "======== 还原 DLL 劫持 (优先用 .bak 还原) ========");
 
     let target_dir = match game_dir {
         Some(d) => d.to_string(),
@@ -184,14 +184,60 @@ pub fn restore_all_hijack_dlls(cb: LogCallback, game_dir: Option<&str>) -> bool 
             let _ = delete_file(&dll_path);
             if move_file(&bak_path, &dll_path) {
                 restored += 1;
-                log(cb, &format!("  [还原] {}", dll_name));
+                log(cb, &format!("  [还原] {} (.bak → 原 DLL)", dll_name));
+            } else {
+                log_warn(cb, &format!("  [失败] {} .bak 还原失败", dll_name));
             }
         }
     }
 
-    log(cb, &format!("  [汇总] 还原 {} 个", restored));
+    log(cb, &format!("  [汇总] .bak 还原 {} 个", restored));
     log(cb, "======== DLL 劫持还原完成 ========");
     restored > 0
+}
+
+/// 彻底撤回 DLL 劫持 (停止按钮调用)
+///
+/// 策略:
+///   1. 优先 .bak → 原文件还原 (最佳路径)
+///   2. 没 .bak 备份就删 stub 劫持文件 (等于没装过; 如果原文件存在会被系统自动重新加载)
+///   3. 只对"明确是我们部署过的 stub"做删除, 有数字签名或体积较大的官方文件保留不动
+pub fn undeploy_all_hijack_dlls(cb: LogCallback, game_dir: Option<&str>) -> bool {
+    log(cb, "======== 撤回 DLL 劫持部署 ========");
+
+    let target_dir = match game_dir {
+        Some(d) => d.to_string(),
+        None => match find_game_directory() {
+            Some(d) => d,
+            None => {
+                log_debug(cb, "  未找到游戏目录, 跳过撤回");
+                return true;
+            }
+        }
+    };
+
+    log(cb, &format!("  目标目录: {}", target_dir));
+
+    // [1] 先走 .bak 还原
+    let _ = restore_all_hijack_dlls(cb, Some(&target_dir));
+
+    // [2] 兜底: 仍然在的 HIJACK_DLL 删掉 (部署的 stub)
+    let mut removed = 0;
+    for dll_name in HIJACK_DLLS {
+        let dll_path = format!("{}\\{}", target_dir, dll_name);
+        if file_exists(&dll_path) {
+            if delete_file(&dll_path) {
+                log_debug(cb, &format!("  [移除] stub {} (无 .bak 备份, 兜底删除)", dll_name));
+                removed += 1;
+            }
+        }
+    }
+
+    if removed > 0 {
+        log(cb, &format!("  [兜底] 删除 stub {} 个", removed));
+    }
+    log(cb, "======== DLL 劫持撤回完成 ========");
+    true
 }
 
 /// 查找游戏目录

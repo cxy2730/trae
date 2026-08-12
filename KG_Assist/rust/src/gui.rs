@@ -362,15 +362,20 @@ unsafe extern "system" fn wnd_proc(
                 }
                 IDC_BTN_STOP => {
                     if G_RUNNING {
-                        append_log("正在停止...", LOG_WARN);
-                        crate::stop_all();
-                        G_RUNNING = false;
+                        append_log("正在停止 (完整还原过检测)...", LOG_WARN);
+                        // 1. 先让游戏/更新线程的循环退出检查 stop 标志
+                        crate::game_mode::stop();
+                        crate::update_mode::stop();
                         if G_WORK_THREAD != 0 {
                             WaitForSingleObject(G_WORK_THREAD, 3000);
                             CloseHandle(G_WORK_THREAD);
                             G_WORK_THREAD = 0;
                         }
-                        append_log("======== 已停止 ========", LOG_INFO);
+                        // 2. 完整还原过检测: 逆序 restore hook/DLL/service/window
+                        let cb: LogCallback = core::mem::transmute(log_callback as usize);
+                        crate::protector::uninstall_full(cb);
+                        G_RUNNING = false;
+                        append_log("======== 已停止 (ACE 心跳保持) ========", LOG_INFO);
                     }
                     return 0;
                 }
@@ -416,11 +421,16 @@ unsafe extern "system" fn wnd_proc(
 
         WM_DESTROY => {
             G_RUNNING = false;
-            crate::stop_all();
+            crate::game_mode::stop();
+            crate::update_mode::stop();
             if G_WORK_THREAD != 0 {
                 WaitForSingleObject(G_WORK_THREAD, 2000);
                 CloseHandle(G_WORK_THREAD);
+                G_WORK_THREAD = 0;
             }
+            // 完整还原过检测
+            let cb: LogCallback = core::mem::transmute(log_callback as usize);
+            crate::protector::uninstall_full(cb);
             if G_HFONT != 0 { DeleteObject(G_HFONT as _); }
             PostQuitMessage(0);
             return 0;

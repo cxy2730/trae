@@ -12,7 +12,7 @@
 //!   - KgSpoofSelfWindow 改所有窗口 → 只改自己的窗口
 
 use crate::native_api::*;
-use crate::ffi::{LogCallback, log, log_warn};
+use crate::ffi::{LogCallback, log, log_warn, log_debug};
 use windows_sys::Win32::{
     Foundation::{HMODULE, FARPROC},
     System::LibraryLoader::{GetModuleHandleA, GetProcAddress},
@@ -25,83 +25,184 @@ const PEB_NT_GLOBAL_FLAG: u32 = 0x68;
 /// 调试器标志位掩码 (低 7 位)
 const NT_GLOBAL_FLAG_DEBUG_MASK: u32 = 0x70;
 
+// ---------- 安装前的原始状态 (停止时还原) ----------
+static mut ANTIDEBUG_INSTALLED: bool = false;
+static mut ORIG_BEING_DEBUGGED: u8 = 0;
+static mut ORIG_NT_GLOBAL_FLAG_32: u32 = 0;
+static mut ORIG_NT_GLOBAL_FLAG_64_BC: u32 = 0;
+
+/// IAT hook 原始值记录, 最多 8 条
+#[derive(Copy, Clone)]
+struct IatPatchRecord {
+    thunk_addr: usize,
+    thunk_size: usize,
+    orig_value: u64,
+}
+static mut IAT_PATCHES: [Option<IatPatchRecord>; 8] = [None; 8];
+static mut IAT_PATCH_COUNT: usize = 0;
+
+fn push_iat_patch(rec: IatPatchRecord) {
+    unsafe {
+        if IAT_PATCH_COUNT < IAT_PATCHES.len() {
+            IAT_PATCHES[IAT_PATCH_COUNT] = Some(rec);
+            IAT_PATCH_COUNT += 1;
+        }
+    }
+}
+
 /// 安装全部反调试措施
 pub fn install(cb: LogCallback) -> bool {
     let mut ok = true;
+    unsafe {
+        // 重置状态: 清空 IAT patch 记录
+        for i in 0..IAT_PATCH_COUNT { IAT_PATCHES[i] = None; }
+        IAT_PATCH_COUNT = 0;
 
-    // 1. PEB 清零
-    if !clear_peb_debug_flags() {
-        log_warn(cb, "[反调试] PEB 清零失败");
-        ok = false;
-    } else {
-        log(cb, "[反调试] PEB BeingDebugged + NtGlobalFlag 已清除");
+        // 1. PEB 清零 (先读原始值再清, 存 ORIG_*)
+        if !save_and_clear_peb_debug_flags() {
+            log_warn(cb, "[反调试] PEB 清零失败");
+            ok = false;
+        } else {
+            log(cb, "[反调试] PEB BeingDebugged + NtGlobalFlag 已清除");
+        }
+
+        // 2. IAT hook (IsDebuggerPresent 等) — 真实 patch IAT, 并记录原始 thunk
+        install_iat_hooks(cb);
+
+        // 3. NtQueryInformationProcess hook (静态导入场景)
+        install_nt_query_iat_hook(cb);
+
+        ANTIDEBUG_INSTALLED = true;
     }
-
-    // 2. IAT hook (IsDebuggerPresent 等) — 真实 patch IAT
-    install_iat_hooks(cb);
-
-    // 3. NtQueryInformationProcess hook (通过 IAT, 让 ace_hook 一起处理)
-    // 注: ace_hook::install_ace_hooks 已经把 GetProcAddress hook 掉,
-    //     间接拦截 NtQueryInformationProcess 的动态解析。
-    //     这里补一个直接的 NtQueryInformationProcess IAT hook (针对静态导入场景)。
-    install_nt_query_iat_hook(cb);
-
     ok
 }
 
-/// 清除 PEB 调试标志
-///
-/// 32 位: fs:0x30 → PEB
-/// 64 位: gs:0x60 → PEB
-#[cfg(target_pointer_width = "32")]
-fn clear_peb_debug_flags() -> bool {
+/// 卸载反调试: 还原 PEB 原始值 + 还原 IAT thunk 原始值
+pub fn uninstall(cb: LogCallback) -> bool {
     unsafe {
-        let mut success = true;
-        // 读取 PEB 地址: mov eax, fs:[0x30]
-        let peb: *mut u8;
-        core::arch::asm!(
-            "mov {}, fs:0x30",
-            out(reg) peb,
-            options(nostack, preserves_flags, readonly),
-        );
-
-        if peb.is_null() {
-            return false;
+        if !ANTIDEBUG_INSTALLED {
+            log_debug(cb, "  [反调试] 未安装, 跳过还原");
+            return true;
         }
 
-        // BeingDebugged = PEB + 0x2
-        *peb.add(PEB_BEING_DEBUGGED as usize) = 0;
+        use windows_sys::Win32::System::Memory::{VirtualProtect, PAGE_READWRITE};
 
-        // NtGlobalFlag = PEB + 0x68
-        let nt_global_flag = peb.add(PEB_NT_GLOBAL_FLAG as usize) as *mut u32;
-        *nt_global_flag &= !NT_GLOBAL_FLAG_DEBUG_MASK;  // 清低 7 位 (0x70)
+        let mut ok = true;
 
-        success
+        // 1. 还原 IAT thunk
+        for i in 0..IAT_PATCH_COUNT {
+            let Some(rec) = IAT_PATCHES[i] else { continue; };
+            let mut old: u32 = 0;
+            if VirtualProtect(rec.thunk_addr as *const _, rec.thunk_size, PAGE_READWRITE, &mut old) == 0 {
+                ok = false;
+                continue;
+            }
+            if rec.thunk_size == 4 {
+                *(rec.thunk_addr as *mut u32) = rec.orig_value as u32;
+            } else {
+                *(rec.thunk_addr as *mut u64) = rec.orig_value;
+            }
+            let mut _tmp = 0u32;
+            VirtualProtect(rec.thunk_addr as *const _, rec.thunk_size, old, &mut _tmp);
+        }
+        log_debug(cb, &format!("  [反调试] IAT hook 还原 {} 条", IAT_PATCH_COUNT));
+        for i in 0..IAT_PATCH_COUNT { IAT_PATCHES[i] = None; }
+        IAT_PATCH_COUNT = 0;
+
+        // 2. 还原 PEB 原始值
+        if !restore_peb_debug_flags() {
+            log_warn(cb, "[反调试] PEB 还原失败");
+            ok = false;
+        } else {
+            log_debug(cb, "  [反调试] PEB BeingDebugged + NtGlobalFlag 已还原");
+        }
+
+        ANTIDEBUG_INSTALLED = false;
+        ok
     }
 }
 
+/// 保存原始 PEB 调试标志后清除 (install 时调用)
+#[cfg(target_pointer_width = "32")]
+unsafe fn save_and_clear_peb_debug_flags() -> bool {
+    let peb: *mut u8;
+    core::arch::asm!(
+        "mov {}, fs:0x30",
+        out(reg) peb,
+        options(nostack, preserves_flags, readonly),
+    );
+    if peb.is_null() { return false; }
+
+    // 保存原始值
+    ORIG_BEING_DEBUGGED = *peb.add(PEB_BEING_DEBUGGED as usize);
+    let gflag = peb.add(PEB_NT_GLOBAL_FLAG as usize) as *const u32;
+    ORIG_NT_GLOBAL_FLAG_32 = *gflag;
+
+    // 清除
+    *peb.add(PEB_BEING_DEBUGGED as usize) = 0;
+    *(gflag as *mut u32) &= !NT_GLOBAL_FLAG_DEBUG_MASK;
+    true
+}
+
 #[cfg(target_pointer_width = "64")]
+unsafe fn save_and_clear_peb_debug_flags() -> bool {
+    let peb: *mut u8;
+    core::arch::asm!(
+        "mov {}, gs:0x60",
+        out(reg) peb,
+        options(nostack, preserves_flags, readonly),
+    );
+    if peb.is_null() { return false; }
+
+    ORIG_BEING_DEBUGGED = *peb.add(PEB_BEING_DEBUGGED as usize);
+    let gflag_32 = peb.add(PEB_NT_GLOBAL_FLAG as usize) as *const u32;
+    ORIG_NT_GLOBAL_FLAG_32 = *gflag_32;
+    let gflag_64 = peb.add(0xBC) as *const u32;
+    ORIG_NT_GLOBAL_FLAG_64_BC = *gflag_64;
+
+    *peb.add(PEB_BEING_DEBUGGED as usize) = 0;
+    *(gflag_32 as *mut u32) &= !NT_GLOBAL_FLAG_DEBUG_MASK;
+    *(gflag_64 as *mut u32) &= !NT_GLOBAL_FLAG_DEBUG_MASK;
+    true
+}
+
+/// 还原 install 时的 PEB 原始值
+#[cfg(target_pointer_width = "32")]
+unsafe fn restore_peb_debug_flags() -> bool {
+    let peb: *mut u8;
+    core::arch::asm!(
+        "mov {}, fs:0x30",
+        out(reg) peb,
+        options(nostack, preserves_flags, readonly),
+    );
+    if peb.is_null() { return false; }
+    *peb.add(PEB_BEING_DEBUGGED as usize) = ORIG_BEING_DEBUGGED;
+    let gflag = peb.add(PEB_NT_GLOBAL_FLAG as usize) as *mut u32;
+    *gflag = ORIG_NT_GLOBAL_FLAG_32;
+    true
+}
+
+#[cfg(target_pointer_width = "64")]
+unsafe fn restore_peb_debug_flags() -> bool {
+    let peb: *mut u8;
+    core::arch::asm!(
+        "mov {}, gs:0x60",
+        out(reg) peb,
+        options(nostack, preserves_flags, readonly),
+    );
+    if peb.is_null() { return false; }
+    *peb.add(PEB_BEING_DEBUGGED as usize) = ORIG_BEING_DEBUGGED;
+    let gflag_32 = peb.add(PEB_NT_GLOBAL_FLAG as usize) as *mut u32;
+    *gflag_32 = ORIG_NT_GLOBAL_FLAG_32;
+    let gflag_64 = peb.add(0xBC) as *mut u32;
+    *gflag_64 = ORIG_NT_GLOBAL_FLAG_64_BC;
+    true
+}
+
+/// (保留别名, 兼容旧代码 — 直接走 save_and_clear)
+#[allow(dead_code)]
 fn clear_peb_debug_flags() -> bool {
-    unsafe {
-        let peb: *mut u8;
-        core::arch::asm!(
-            "mov {}, gs:0x60",
-            out(reg) peb,
-            options(nostack, preserves_flags, readonly),
-        );
-
-        if peb.is_null() {
-            return false;
-        }
-
-        *peb.add(PEB_BEING_DEBUGGED as usize) = 0;
-        let nt_global_flag = peb.add(PEB_NT_GLOBAL_FLAG as usize) as *mut u32;
-        // 64 位偏移不同: NtGlobalFlag at PEB+0xBC
-        let nt_global_flag_64 = peb.add(0xBC) as *mut u32;
-        *nt_global_flag_64 &= !NT_GLOBAL_FLAG_DEBUG_MASK;
-
-        true
-    }
+    unsafe { save_and_clear_peb_debug_flags() }
 }
 
 /// IAT hook 结构
@@ -260,6 +361,18 @@ unsafe fn install_iat_hook_internal(dll_name: &str, func_name_with_null: &[u8], 
                             &mut old_protect,
                         );
                         if prot_ok != 0 {
+                            // 记录原始 thunk 值 (停止时还原)
+                            let orig_val = if thunk_size == 4 {
+                                *(ft_addr as *const u32) as u64
+                            } else {
+                                *(ft_addr as *const u64)
+                            };
+                            push_iat_patch(IatPatchRecord {
+                                thunk_addr: ft_addr,
+                                thunk_size,
+                                orig_value: orig_val,
+                            });
+
                             if thunk_size == 4 {
                                 *(ft_addr as *mut u32) = hook_addr as u32;
                             } else {
