@@ -27,7 +27,7 @@ if ! command -v cargo &> /dev/null; then
     exit 1
 fi
 
-TARGET="i686-pc-windows-gnu"
+TARGET="x86_64-pc-windows-gnu"
 BUILD_TYPE=${1:-release}
 
 # 确保 Rust target 已安装
