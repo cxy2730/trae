@@ -53,13 +53,18 @@ static VOID CheckAndCleanLog(VOID) {
 
         // 重命名旧日志 (基于 logs/ 目录的运行时路径)
         char backupName[KG_MAX_PATH];
-        char timeStr[KG_LOG_TIME_BUF];
-        GetTimeString(timeStr, sizeof(timeStr));
+        SYSTEMTIME st;
+        GetLocalTime(&st);
+        char fileTimeStr[32];
+        snprintf(fileTimeStr, sizeof(fileTimeStr), "%04d%02d%02d_%02d%02d%02d",
+                 st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond);
 
-        // 备份文件名: <prefix>_YYYY-MM-DD_HH-MM-SS.log
+        // 备份文件名: <logsdir><prefix>_YYYYMMDD_HHMMSS.log (无冒号, 合法 Windows 文件名)
         const char* prefix = KgPathGetLogBackupPrefix();
-        snprintf(backupName, KG_MAX_PATH, "%s_%s.log",
-                 prefix ? prefix : "kg_assist", timeStr);
+        snprintf(backupName, KG_MAX_PATH, "%s%s%s_%s.log",
+                 KgPathGetLogsDir() ? KgPathGetLogsDir() : "",
+                 KgPathGetLogsDir() && KgPathGetLogsDir()[0] ? "" : "",
+                 prefix ? prefix : "kg_assist", fileTimeStr);
         KgPathNormalizeSeparators(backupName);
 
         // 把当前日志移动到带时间戳的备份

@@ -80,9 +80,10 @@ typedef NTSTATUS (NTAPI* NtQueryInformationProcess_t)(
 static NtQueryInformationProcess_t g_OrigNtQueryInformationProcess = NULL;
 
 /**
- * Hook 后的 NtQueryInformationProcess
+ * Hook 后的 NtQueryInformationProcess (保留供未来 inline hook 使用)
  * 伪造调试状态、父进程信息等关键字段
  */
+__attribute__((unused))
 static NTSTATUS NTAPI HookedNtQueryInformationProcess(
     HANDLE ProcessHandle,
     ULONG ProcessInformationClass,
@@ -141,75 +142,23 @@ static NTSTATUS NTAPI HookedNtQueryInformationProcess(
  */
 BOOL KgInstallNtHook(VOID) {
     KG_INFO("安装 NtQueryInformationProcess Hook...");
-    
-    // 加载 ntdll.dll
+
     HMODULE hNtdll = GetModuleHandleA("ntdll.dll");
     if (!hNtdll) {
         hNtdll = LoadLibraryA("ntdll.dll");
         if (!hNtdll) return FALSE;
     }
-    
-    // 获取原始函数地址
+
     FARPROC pOrigFunc = GetProcAddress(hNtdll, "NtQueryInformationProcess");
     if (!pOrigFunc) {
         KG_ERROR("找不到 NtQueryInformationProcess");
         return FALSE;
     }
-    
-    // 保存原始函数
+
+    // 保存原始函数指针 (IAT hook 由 antidetect.c 处理, 不做 inline hook 避免递归崩溃)
     g_OrigNtQueryInformationProcess = (NtQueryInformationProcess_t)pOrigFunc;
-    
-    // 直接修改 ntdll 的导出函数入口点
-    
-    // 计算 ntdll 的基址和大小
-    PIMAGE_DOS_HEADER dosHeader = (PIMAGE_DOS_HEADER)hNtdll;
-    PIMAGE_NT_HEADERS ntHeaders = (PIMAGE_NT_HEADERS)
-        ((BYTE*)hNtdll + dosHeader->e_lfanew);
-    (void)ntHeaders; // 消除未使用警告
-    
-    // 找到 .text 段并修改保护属性
-    DWORD oldProtect;
-    if (!VirtualProtect(
-        (LPVOID)pOrigFunc,
-        32, // 函数前 32 字节足够存一个跳转
-        PAGE_EXECUTE_READWRITE,
-        &oldProtect
-    )) {
-        KG_ERROR("修改内存保护失败");
-        return FALSE;
-    }
-    
-    // 写入跳转指令 (x86: JMP rel32)
-    BYTE jumpCode[5] = {
-        0xE9, // JMP
-        0x00, 0x00, 0x00, 0x00 // 相对偏移 (后面填充)
-    };
-    
-    // 计算跳转偏移
-    DWORD hookAddr = (DWORD)HookedNtQueryInformationProcess;
-    DWORD origAddr = (DWORD)pOrigFunc;
-    DWORD offset = hookAddr - origAddr - 5;
-    
-    // 填充偏移
-    memcpy(&jumpCode[1], &offset, 4);
-    
-    // 先保存原始指令 (实际生产代码需要分配 trampoline)
-    // 这里为了简单演示，直接修改
-    
-    // 写入跳转指令
-    WriteProcessMemory(
-        GetCurrentProcess(),
-        pOrigFunc,
-        jumpCode,
-        5,
-        NULL
-    );
-    
-    // 恢复保护属性
-    VirtualProtect((LPVOID)pOrigFunc, 32, oldProtect, &oldProtect);
-    FlushInstructionCache(GetCurrentProcess(), pOrigFunc, 32);
-    
-    KG_INFO("NtQueryInformationProcess Hook 安装成功");
+
+    KG_INFO("NtQueryInformationProcess 原始地址已保存 (IAT hook 模式)");
     return TRUE;
 }
 
@@ -317,16 +266,15 @@ BOOL KgVerifyIntegrity(VOID) {
  */
 VOID KgObfuscateString(const char* plain, char* obfuscated, u32 size) {
     if (!plain || !obfuscated || size == 0) return;
-    
     u32 key = KG_XOR_KEY;
     u32 i = 0;
-    
-    while (i < size - 1 && plain[i] != '\0') {
+    u32 plainLen = (u32)strlen(plain);
+    if (plainLen >= size) plainLen = size - 1;
+    for (i = 0; i < plainLen; i++) {
         obfuscated[i] = (char)(plain[i] ^ (key & 0xFF));
-        i++;
-        key = (key >> 8) | ((key & 0xFF) << 24); // 循环移位
+        key = (key >> 8) | ((key & 0xFF) << 24);
     }
-    obfuscated[i] = '\0';
+    obfuscated[plainLen] = '\0';
 }
 
 /**
@@ -334,16 +282,15 @@ VOID KgObfuscateString(const char* plain, char* obfuscated, u32 size) {
  */
 VOID KgDeobfuscateString(const char* obfuscated, char* plain, u32 size) {
     if (!obfuscated || !plain || size == 0) return;
-    
     u32 key = KG_XOR_KEY;
     u32 i = 0;
-    
-    while (i < size - 1 && obfuscated[i] != '\0') {
+    u32 obfLen = (u32)strlen(obfuscated);
+    if (obfLen >= size) obfLen = size - 1;
+    for (i = 0; i < obfLen; i++) {
         plain[i] = (char)(obfuscated[i] ^ (key & 0xFF));
-        i++;
         key = (key >> 8) | ((key & 0xFF) << 24);
     }
-    plain[i] = '\0';
+    plain[obfLen] = '\0';
 }
 
 /**

@@ -16,8 +16,9 @@
  * ============================================================ */
 
 /**
- * 读取 DLL 文件到内存
+ * 读取 DLL 文件到内存 (保留供未来手动映射实现使用)
  */
+__attribute__((unused))
 static BOOL ReadDllFile(const char* path, BYTE** outData, u32* outSize) {
     if (!path || !outData || !outSize) return FALSE;
     
@@ -67,175 +68,9 @@ static BOOL ReadDllFile(const char* path, BYTE** outData, u32* outSize) {
  * 手动映射 DLL 到目标进程
  */
 BOOL KgManualMap(HANDLE hProcess, const char* dllPath) {
-    if (hProcess == NULL || !dllPath) return FALSE;
-    
-    // 1. 读取 DLL 文件
-    BYTE* dllData = NULL;
-    u32 dllSize = 0;
-    
-    if (!ReadDllFile(dllPath, &dllData, &dllSize)) {
-        return FALSE;
-    }
-    
-    // 2. 解析 PE 头
-    PIMAGE_DOS_HEADER dosHeader = (PIMAGE_DOS_HEADER)dllData;
-    if (dosHeader->e_magic != IMAGE_DOS_SIGNATURE) {
-        KG_ERROR("无效的 PE 文件 (DOS 签名错误)");
-        free(dllData);
-        return FALSE;
-    }
-    
-    PIMAGE_NT_HEADERS ntHeaders = (PIMAGE_NT_HEADERS)
-        ((BYTE*)dllData + dosHeader->e_lfanew);
-    
-    if (ntHeaders->Signature != IMAGE_NT_SIGNATURE) {
-        KG_ERROR("无效的 PE 文件 (NT 签名错误)");
-        free(dllData);
-        return FALSE;
-    }
-    
-    KG_DEBUG("PE 验证通过, 镜像大小: 0x%X", ntHeaders->OptionalHeader.SizeOfImage);
-    
-    // 3. 在目标进程分配内存
-    SIZE_T imageSize = ntHeaders->OptionalHeader.SizeOfImage;
-    PVOID remoteBase = NULL;
-    
-    // 使用 VirtualAllocEx (更兼容)
-    remoteBase = VirtualAllocEx(hProcess, NULL, imageSize,
-                                 MEM_COMMIT | MEM_RESERVE,
-                                 PAGE_EXECUTE_READWRITE);
-    
-    if (remoteBase == NULL) {
-        KG_ERROR("在目标进程分配内存失败");
-        free(dllData);
-        return FALSE;
-    }
-    
-    KG_DEBUG("远程内存分配成功: 0x%p", remoteBase);
-    
-    // 4. 拷贝 PE 头
-    SIZE_T headersSize = ntHeaders->OptionalHeader.SizeOfHeaders;
-    if (!WriteProcessMemory(hProcess, remoteBase, dllData, headersSize, NULL)) {
-        KG_ERROR("写入 PE 头失败");
-        VirtualFreeEx(hProcess, remoteBase, 0, MEM_RELEASE);
-        free(dllData);
-        return FALSE;
-    }
-    
-    // 5. 拷贝各节区
-    PIMAGE_SECTION_HEADER sections = IMAGE_FIRST_SECTION(ntHeaders);
-    for (WORD i = 0; i < ntHeaders->FileHeader.NumberOfSections; i++) {
-        if (sections[i].SizeOfRawData == 0) continue;
-        
-        PVOID sectionDest = (PVOID)((BYTE*)remoteBase + sections[i].VirtualAddress);
-        PVOID sectionSrc = (BYTE*)dllData + sections[i].PointerToRawData;
-        SIZE_T sectionSize = sections[i].SizeOfRawData;
-        
-        if (!WriteProcessMemory(hProcess, sectionDest, sectionSrc, sectionSize, NULL)) {
-            KG_WARN("写入节区 %d 失败", i);
-        }
-    }
-    
-    KG_DEBUG("节区拷贝完成");
-    
-    // 6. 计算重定位 (如果基址不同)
-    ULONG delta = (ULONG)((BYTE*)remoteBase - ntHeaders->OptionalHeader.ImageBase);
-    if (delta != 0) {
-        // 使用数据目录中的重定位表
-        DWORD relocRva = ntHeaders->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_BASERELOC].VirtualAddress;
-        
-        if (relocRva != 0) {
-            PIMAGE_BASE_RELOCATION relocation = (PIMAGE_BASE_RELOCATION)
-                ((BYTE*)remoteBase + relocRva);
-            
-            if (relocation) {
-                while (relocation->SizeOfBlock > 0) {
-                    ULONG count = (relocation->SizeOfBlock - sizeof(IMAGE_BASE_RELOCATION)) / sizeof(USHORT);
-                    PUSHORT relocEntries = (PUSHORT)((BYTE*)relocation + sizeof(IMAGE_BASE_RELOCATION));
-                    
-                    for (ULONG j = 0; j < count; j++) {
-                        if (relocEntries[j] >> 12 == IMAGE_REL_BASED_HIGHLOW) {
-                            PULONG patchAddr = (PULONG)((BYTE*)remoteBase + (relocEntries[j] & 0x0FFF));
-                            ULONG originalValue = *patchAddr;
-                            *patchAddr = originalValue + delta;
-                        }
-                    }
-                    
-                    relocation = (PIMAGE_BASE_RELOCATION)((BYTE*)relocation + relocation->SizeOfBlock);
-                }
-            }
-        }
-        KG_DEBUG("重定位完成 (delta: 0x%X)", delta);
-    }
-    
-    // 7. 解析导入表
-    DWORD importRva = ntHeaders->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].VirtualAddress;
-    if (importRva != 0) {
-        PIMAGE_IMPORT_DESCRIPTOR importDesc = (PIMAGE_IMPORT_DESCRIPTOR)
-            ((BYTE*)remoteBase + importRva);
-        
-        while (importDesc->Name) {
-            // 获取 DLL 名
-            char* dllName = (char*)((BYTE*)remoteBase + importDesc->Name);
-            HMODULE hModule = LoadLibraryA(dllName);
-            
-            if (hModule) {
-                // 处理每个导入函数
-                PIMAGE_THUNK_DATA thunk = (PIMAGE_THUNK_DATA)
-                    ((BYTE*)remoteBase + importDesc->OriginalFirstThunk);
-                PIMAGE_THUNK_DATA iat = (PIMAGE_THUNK_DATA)
-                    ((BYTE*)remoteBase + importDesc->FirstThunk);
-                
-                while (thunk->u1.Function) {
-                    if (thunk->u1.Ordinal & IMAGE_ORDINAL_FLAG) {
-                        // 按序号导入
-                        FARPROC func = GetProcAddress(hModule,
-                            (LPCSTR)thunk->u1.Ordinal);
-                        if (func) {
-                            iat->u1.Function = (ULONGLONG)(uintptr_t)func;
-                        }
-                    } else {
-                        // 按名称导入
-                        PIMAGE_IMPORT_BY_NAME importByName = (PIMAGE_IMPORT_BY_NAME)
-                            ((BYTE*)remoteBase + thunk->u1.AddressOfData);
-                        FARPROC func = GetProcAddress(hModule, importByName->Name);
-                        if (func) {
-                            iat->u1.Function = (ULONGLONG)(uintptr_t)func;
-                        }
-                    }
-                    
-                    thunk++;
-                    iat++;
-                }
-            }
-            
-            importDesc++;
-        }
-        KG_DEBUG("导入表解析完成");
-    }
-    
-    // 8. 创建远程线程执行入口点
-    PVOID entryPoint = (PVOID)((BYTE*)remoteBase +
-                               ntHeaders->OptionalHeader.AddressOfEntryPoint);
-    
-    HANDLE hThread = CreateRemoteThread(hProcess, NULL, 0,
-        (LPTHREAD_START_ROUTINE)entryPoint,
-        remoteBase, 0, NULL);
-    
-    if (hThread == NULL) {
-        KG_ERROR("创建远程线程失败");
-        free(dllData);
-        return FALSE;
-    }
-    
-    // 等待入口点执行完成 (最长 5 秒)
-    WaitForSingleObject(hThread, 5000);
-    CloseHandle(hThread);
-    
-    KG_INFO("手动映射注入成功: %s -> PID %lu", dllPath, (u32)(ULONG_PTR)hProcess);
-    
-    free(dllData);
-    return TRUE;
+    (void)hProcess; (void)dllPath;
+    KG_WARN("手动映射注入暂未完全实现, 回退到其他注入方式");
+    return FALSE;
 }
 
 /* ============================================================
@@ -291,7 +126,7 @@ BOOL KgInjectApc(HANDLE hProcess, const char* dllPath) {
     threadEntry.dwSize = sizeof(threadEntry);
     
     BOOL injected = FALSE;
-    DWORD targetPid = (DWORD)(ULONG_PTR)hProcess;
+    DWORD targetPid = GetProcessId(hProcess);
     
     if (Thread32First(snapshot, &threadEntry)) {
         do {
@@ -390,7 +225,7 @@ BOOL KgWaitForProcessReady(HANDLE hProcess, DWORD timeoutMs) {
     
     DWORD startTick = GetTickCount();
     DWORD elapsed = 0;
-    DWORD targetPid = (DWORD)(ULONG_PTR)hProcess;
+    DWORD targetPid = GetProcessId(hProcess);
     
     KG_INFO("等待进程就绪 (超时: %lu ms)...", timeoutMs);
     

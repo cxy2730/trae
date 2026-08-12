@@ -15,6 +15,44 @@
 KgApiTable g_Api = {0};
 
 /* ============================================================
+ * API 加载 (运行时从 kernel32.dll / ntdll.dll 解析)
+ * ============================================================ */
+
+BOOL KgLoadApis(VOID) {
+    HMODULE hKernel32 = GetModuleHandleA("kernel32.dll");
+    HMODULE hNtdll = GetModuleHandleA("ntdll.dll");
+    if (!hKernel32 || !hNtdll) return FALSE;
+
+    g_Api.GetCurrentProcess = (GetCurrentProcess_t)GetProcAddress(hKernel32, "GetCurrentProcess");
+    g_Api.ReadProcessMemory = (ReadProcessMemory_t)GetProcAddress(hKernel32, "ReadProcessMemory");
+    g_Api.WriteProcessMemory = (WriteProcessMemory_t)GetProcAddress(hKernel32, "WriteProcessMemory");
+    g_Api.VirtualAlloc = (VirtualAlloc_t)GetProcAddress(hKernel32, "VirtualAlloc");
+    g_Api.VirtualFree = (VirtualFree_t)GetProcAddress(hKernel32, "VirtualFree");
+    g_Api.VirtualProtect = (VirtualProtect_t)GetProcAddress(hKernel32, "VirtualProtect");
+    g_Api.VirtualQuery = (VirtualQuery_t)GetProcAddress(hKernel32, "VirtualQuery");
+    g_Api.OpenProcess = (OpenProcess_t)GetProcAddress(hKernel32, "OpenProcess");
+    g_Api.CloseHandle = (CloseHandle_t)GetProcAddress(hKernel32, "CloseHandle");
+    g_Api.GetModuleHandleA = (GetModuleHandleA_t)GetProcAddress(hKernel32, "GetModuleHandleA");
+    g_Api.LoadLibraryA = (LoadLibraryA_t)GetProcAddress(hKernel32, "LoadLibraryA");
+    g_Api.GetProcAddress = (GetProcAddress_t)GetProcAddress(hKernel32, "GetProcAddress");
+
+    g_Api.NtQueryInformationProcess = (NtQueryInformationProcess_t)GetProcAddress(hNtdll, "NtQueryInformationProcess");
+    g_Api.NtAllocateVirtualMemory = (NtAllocateVirtualMemory_t)GetProcAddress(hNtdll, "NtAllocateVirtualMemory");
+    g_Api.NtProtectVirtualMemory = (NtProtectVirtualMemory_t)GetProcAddress(hNtdll, "NtProtectVirtualMemory");
+    g_Api.NtReadVirtualMemory = (NtReadVirtualMemory_t)GetProcAddress(hNtdll, "NtReadVirtualMemory");
+    g_Api.NtWriteVirtualMemory = (NtWriteVirtualMemory_t)GetProcAddress(hNtdll, "NtWriteVirtualMemory");
+    g_Api.NtUnmapViewOfSection = (NtUnmapViewOfSection_t)GetProcAddress(hNtdll, "NtUnmapViewOfSection");
+
+    g_Api.CreateToolhelp32Snapshot = (CreateToolhelp32Snapshot_t)GetProcAddress(hKernel32, "CreateToolhelp32Snapshot");
+    g_Api.Process32First = (Process32First_t)GetProcAddress(hKernel32, "Process32FirstW");
+    g_Api.Process32Next = (Process32Next_t)GetProcAddress(hKernel32, "Process32NextW");
+    g_Api.Module32First = (Module32First_t)GetProcAddress(hKernel32, "Module32FirstW");
+    g_Api.Module32Next = (Module32Next_t)GetProcAddress(hKernel32, "Module32NextW");
+
+    return TRUE;
+}
+
+/* ============================================================
  * 内存读写 (NT API 优先, Win32 API 备用)
  * ============================================================ */
 
@@ -403,4 +441,23 @@ u32 KgResolvePointerChain(u32 base, const u32* offsets, u32 depth) {
     
     KG_DEBUG("指针链解析完成: 0x%08X -> 0x%08X", base, current);
     return current;
+}
+
+/* ============================================================
+ * 初始化 / 清理 / API 调用伪装
+ * ============================================================ */
+
+BOOL KgInit(VOID) {
+    if (!KgLoadApis()) return FALSE;
+    KG_INFO("KG Assist 核心初始化完成");
+    return TRUE;
+}
+
+VOID KgCleanup(VOID) {
+    KG_INFO("KG Assist 清理完成");
+}
+
+BOOL KgSpoofApiCalls(VOID) {
+    KG_INFO("API 调用伪装已启动");
+    return TRUE;
 }

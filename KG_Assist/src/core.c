@@ -341,13 +341,17 @@ static KgProtectConfig g_Config = {
  */
 BOOL KgLoadConfig(const char* path) {
     if (!path) return FALSE;
-    
-    // 简化的配置加载 (实际应使用 JSON 或 INI 格式)
     KG_INFO("加载配置: %s", path);
-    
-    // 读取配置文件并更新 g_Config
-    // ...
-    
+
+    g_Config.antiDebug     = GetPrivateProfileIntA("Protect", "AntiDebug", 1, path);
+    g_Config.windowSpoof   = GetPrivateProfileIntA("Protect", "WindowSpoof", 1, path);
+    g_Config.codeIntegrity = GetPrivateProfileIntA("Protect", "CodeIntegrity", 1, path);
+    g_Config.handleStealth = GetPrivateProfileIntA("Protect", "HandleStealth", 1, path);
+    g_Config.ntHook        = GetPrivateProfileIntA("Protect", "NtHook", 1, path);
+    g_Config.antiVm        = GetPrivateProfileIntA("Protect", "AntiVm", 1, path);
+    g_Config.apiThrottle   = GetPrivateProfileIntA("Protect", "ApiThrottle", 1, path);
+
+    KG_INFO("配置加载完成");
     return TRUE;
 }
 
@@ -356,12 +360,17 @@ BOOL KgLoadConfig(const char* path) {
  */
 BOOL KgSaveConfig(const char* path) {
     if (!path) return FALSE;
-    
     KG_INFO("保存配置: %s", path);
-    
-    // 写入配置
-    // ...
-    
+
+    WritePrivateProfileStringA("Protect", "AntiDebug",     g_Config.antiDebug ? "1" : "0", path);
+    WritePrivateProfileStringA("Protect", "WindowSpoof",   g_Config.windowSpoof ? "1" : "0", path);
+    WritePrivateProfileStringA("Protect", "CodeIntegrity", g_Config.codeIntegrity ? "1" : "0", path);
+    WritePrivateProfileStringA("Protect", "HandleStealth", g_Config.handleStealth ? "1" : "0", path);
+    WritePrivateProfileStringA("Protect", "NtHook",        g_Config.ntHook ? "1" : "0", path);
+    WritePrivateProfileStringA("Protect", "AntiVm",        g_Config.antiVm ? "1" : "0", path);
+    WritePrivateProfileStringA("Protect", "ApiThrottle",   g_Config.apiThrottle ? "1" : "0", path);
+
+    KG_INFO("配置保存完成");
     return TRUE;
 }
 

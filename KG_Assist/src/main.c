@@ -65,6 +65,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     /* --- 2) 日志初始化 --- */
     KgLogInit();
 
+    /* --- 3) 初始化核心 (API 表 + 内存子系统) --- */
+    if (!KgInit()) {
+        KG_ERROR("核心初始化失败, 内存子系统不可用");
+    }
+
     KG_INFO("============================================");
     KG_INFO("  KG Assist v2.0 (Win11 GUI Mode)");
     KG_INFO("  Root: %s", KgPathGetRoot());
@@ -74,7 +79,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
     int ret = KgGuiRun(hInstance, nCmdShow);
 
     /* --- 6) 清理 --- */
-    KG_INFO("\xe7\xa8\x8b\xe5\xba\x8f\xe9\x80\x80\xe5\x87\xba");  /* 程序退出 */
+    KgCleanup();
     KgLogClose();
 
     return ret;
