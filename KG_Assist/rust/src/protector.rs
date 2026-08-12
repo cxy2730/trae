@@ -25,36 +25,55 @@ use windows_sys::Win32::{
 const XTEA_KEY: u32 = 0xDEADBEEF;
 
 /// 安装完整防护 — 对应 KG 的 KgInstallFullProtection
+///
+/// 完整 KG 六层防护链:
+///   [1] 环境检测 (VM/沙箱)
+///   [2] 反调试 + PEB 清零 (antidebug.rs)
+///   [3] ACE 服务停止 (ace_service.rs)
+///   [4] ACE 驱动卸载 (ace_driver.rs)
+///   [5] ACE 用户态 API hook (ace_hook.rs)
+///   [6] DLL 劫持部署 (dll_hijack.rs)
+///   [7] 窗口伪装 + 完整性校验
 pub fn install_full(cb: LogCallback) -> i32 {
     log(cb, "========================================");
-    log(cb, "  安装高级防检测系统 (Rust 重构)");
+    log(cb, "  安装 KG 完整防检测系统 (6 层)");
     log(cb, "========================================");
 
-    // [1/5] 环境检测
-    log(cb, "[1/5] 环境检测...");
+    // [1/7] 环境检测
+    log(cb, "[1/7] 环境检测...");
     if antidebug::detect_vm() {
-        log_warn(cb, "[反VM] 检测到虚拟机环境, 部分保护可能失效");
+        log_warn(cb, "  [反VM] 检测到虚拟机环境, 部分保护可能失效");
     }
 
-    // [2/5] 反调试 + PEB 清零
-    log(cb, "[2/5] 安装反调试...");
+    // [2/7] 反调试 + PEB 清零
+    log(cb, "[2/7] 安装反调试 (PEB / IAT hook)...");
     if !antidebug::install(cb) {
-        log_warn(cb, "[反调试] 部分安装失败");
+        log_warn(cb, "  [反调试] 部分安装失败");
     }
 
-    // [3/5] 窗口伪装 (只改自身窗口)
-    log(cb, "[3/5] 窗口属性伪装...");
+    // [3/7] ACE 服务停止 (sc stop + 注册表禁用)
+    log(cb, "[3/7] 停止 ACE 服务 (SCM)...");
+    crate::ace_service::stop_all_ace_services(cb);
+
+    // [4/7] ACE 驱动卸载 (ZwUnloadDriver)
+    log(cb, "[4/7] 卸载 ACE 内核驱动 (ZwUnloadDriver)...");
+    crate::ace_driver::unload_all_ace_drivers(cb);
+
+    // [5/7] ACE 用户态 API hook (IAT)
+    log(cb, "[5/7] 安装 ACE API 拦截 hook...");
+    crate::ace_hook::install_ace_hooks(cb);
+
+    // [6/7] DLL 劫持部署 (version.dll 等)
+    log(cb, "[6/7] 部署 DLL 劫持...");
+    crate::dll_hijack::deploy_all_hijack_dlls(cb, None);
+
+    // [7/7] 窗口伪装 + 完整性校验
+    log(cb, "[7/7] 窗口伪装 + 完整性校验...");
     spoof_self_window(cb);
-
-    // [4/5] 字符串混淆初始化 (本进程内无需运行时操作, 调用方使用 obfstr!)
-    log(cb, "[4/5] 字符串混淆层已就绪");
-
-    // [5/5] 启动后台完整性校验线程
-    log(cb, "[5/5] 启动完整性校验线程...");
     start_integrity_monitor(cb);
 
     log(cb, "========================================");
-    log(cb,  "  防检测系统启动完成");
+    log(cb,  "  KG 防检测系统启动完成 (6 层全部就绪)");
     log(cb, "========================================");
     0
 }

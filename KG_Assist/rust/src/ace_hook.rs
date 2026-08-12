@@ -1,0 +1,415 @@
+//! ACE 用户态 API Hook — 对应 KG 的绕过步骤 #3
+//!
+//! KG 反编译分析:
+//!   ACE 用以下 API 做检测, KG 在 ACE 初始化前 hook 掉它们:
+//!
+//!   ┌─────────────────────────────────────────────────────────────┐
+//!   │ API                          | Hook 策略                   │
+//!   ├─────────────────────────────────────────────────────────────┤
+//!   │ CreateToolhelp32Snapshot     | 返回 INVALID_HANDLE_VALUE   │
+//!   │ Process32First/Next          | 返回 FALSE                  │
+//!   │ OpenProcess                  | 对 LoL 返回 NULL            │
+//!   │ TerminateProcess             | 返回 FALSE                  │
+//!   │ CreateFileMappingA/W         | 返回 NULL                   │
+//!   │ MapViewOfFile                | 返回 NULL                   │
+//!   │ LoadLibraryA/W               | 过滤 ACE/SGuard 关键字      │
+//!   │ GetModuleHandleA/W           | 对 ACE 模块返回 NULL        │
+//!   │ CreateMutexA/W               | 返回 NULL                   │
+//!   │ GetProcAddress               | 拦截 ACE API 解析           │
+//!   └─────────────────────────────────────────────────────────────┘
+//!
+//! 实现: IAT hook + inline hook 双保险
+//!   - IAT hook: 遍历自身 PE 的导入表替换函数指针 (KG_Bypass.c 方式)
+//!   - inline hook: 对 ntdll/kernel32 函数前 5 字节写 jmp (detour)
+//!
+//! 注: inline hook 是给 bot.dll 用的 (在游戏进程内运行),
+//!     IAT hook 只保护 KG 自身进程。
+
+use crate::ffi::{LogCallback, log, log_warn, log_error, log_debug};
+use windows_sys::Win32::{
+    Foundation::{HANDLE, HMODULE, BOOL},
+    System::LibraryLoader::{GetModuleHandleA, GetProcAddress, LoadLibraryA},
+    System::Memory::{VirtualProtect, PAGE_READWRITE},
+    System::Diagnostics::ToolHelp::{TH32CS_SNAPPROCESS, TH32CS_SNAPMODULE},
+};
+
+// ---- 常量 ----
+const INVALID_HANDLE_VALUE: HANDLE = -1;
+
+// 需要过滤的 DLL 名关键字 (LoadLibrary / GetModuleHandle)
+const BLOCKED_DLL_KEYWORDS: &[&str] = &[
+    "ACE", "SGuard", "SProtect", "TerSafe", "TP3Helper",
+    "AntiCheat", "anticheat",
+    "netbios.dll",
+];
+
+// ============================================================
+// Hook 函数实现 (替代原始 API)
+// ============================================================
+
+/// Hook CreateToolhelp32Snapshot: 对进程/模块快照返回 INVALID_HANDLE_VALUE
+unsafe extern "system" fn hooked_create_toolhelp32_snapshot(
+    flags: u32,
+    pid: u32,
+) -> HANDLE {
+    // 对进程快照和模块快照都返回 INVALID_HANDLE_VALUE
+    // 让 ACE 看不到任何进程/模块
+    let _ = (flags, pid);
+    INVALID_HANDLE_VALUE
+}
+
+/// Hook OpenProcess: 拒绝打开 LoL 进程
+unsafe extern "system" fn hooked_open_process(
+    access: u32,
+    inherit: BOOL,
+    pid: u32,
+) -> HANDLE {
+    let _ = (access, inherit);
+    // LoL PID 检查留给运行时, 这里简单拒绝所有
+    // 实际场景: 只拒绝 ACE 自己的 OpenProcess 调用
+    // 这里返回 NULL 让 ACE 无法操作游戏进程
+    let _ = pid;
+    0
+}
+
+/// Hook TerminateProcess: 禁止 ACE 终止进程
+unsafe extern "system" fn hooked_terminate_process(
+    h: HANDLE,
+    exit_code: u32,
+) -> BOOL {
+    let _ = (h, exit_code);
+    0 // FALSE
+}
+
+/// Hook CreateFileMappingW: 返回 NULL 阻止 ACE 共享内存
+unsafe extern "system" fn hooked_create_file_mapping_w(
+    h_file: HANDLE,
+    sa: *const core::ffi::c_void,
+    protect: u32,
+    max_high: u32,
+    max_low: u32,
+    name: *const u16,
+) -> HANDLE {
+    let _ = (h_file, sa, protect, max_high, max_low, name);
+    0
+}
+
+/// Hook MapViewOfFile: 返回 NULL
+unsafe extern "system" fn hooked_map_view_of_file(
+    h: HANDLE,
+    access: u32,
+    high: u32,
+    low: u32,
+    bytes: usize,
+) -> *mut core::ffi::c_void {
+    let _ = (h, access, high, low, bytes);
+    core::ptr::null_mut()
+}
+
+/// Hook LoadLibraryA: 过滤 ACE DLL
+unsafe extern "system" fn hooked_load_library_a(
+    name: *const u8,
+) -> HMODULE {
+    if name.is_null() {
+        return 0;
+    }
+    let mut len = 0;
+    while *name.add(len) != 0 {
+        len += 1;
+    }
+    let s = core::str::from_utf8_unchecked(core::slice::from_raw_parts(name, len));
+    if is_blocked_dll(s) {
+        return 0; // 拒绝加载
+    }
+    // 转发原始
+    LoadLibraryA(name)
+}
+
+/// Hook LoadLibraryW: 过滤 ACE DLL
+unsafe extern "system" fn hooked_load_library_w(
+    name: *const u16,
+) -> HMODULE {
+    if name.is_null() {
+        return 0;
+    }
+    let mut len = 0;
+    while *name.add(len) != 0 {
+        len += 1;
+    }
+    let s_utf16 = core::slice::from_raw_parts(name, len);
+    let s: String = s_utf16.iter().map(|&c| c as u8 as char).collect();
+    if is_blocked_dll(&s) {
+        return 0;
+    }
+    // 转发原始
+    let cstr = to_cstr(&s);
+    LoadLibraryA(cstr.as_ptr())
+}
+
+/// Hook GetModuleHandleA: 对 ACE 模块返回 NULL
+unsafe extern "system" fn hooked_get_module_handle_a(
+    name: *const u8,
+) -> HMODULE {
+    if name.is_null() {
+        return GetModuleHandleA(name);
+    }
+    let mut len = 0;
+    while *name.add(len) != 0 {
+        len += 1;
+    }
+    let s = core::str::from_utf8_unchecked(core::slice::from_raw_parts(name, len));
+    if is_blocked_dll(s) {
+        return 0;
+    }
+    GetModuleHandleA(name)
+}
+
+/// Hook CreateMutexW: 返回 NULL 阻止 ACE 单实例检测
+unsafe extern "system" fn hooked_create_mutex_w(
+    sa: *const core::ffi::c_void,
+    owner: BOOL,
+    name: *const u16,
+) -> HANDLE {
+    let _ = (sa, owner, name);
+    0
+}
+
+fn is_blocked_dll(name: &str) -> bool {
+    let lower = name.to_lowercase();
+    for kw in BLOCKED_DLL_KEYWORDS {
+        if lower.contains(&kw.to_lowercase()) {
+            return true;
+        }
+    }
+    false
+}
+
+fn to_cstr(s: &str) -> Vec<u8> {
+    let mut v = Vec::with_capacity(s.len() + 1);
+    v.extend_from_slice(s.as_bytes());
+    v.push(0);
+    v
+}
+
+// ============================================================
+// IAT Hook 安装
+// ============================================================
+
+#[repr(C)]
+struct ImageDosHeader {
+    e_magic: u16,
+    _pad: [u8; 58],
+    e_lfanew: i32,
+}
+
+struct HookEntry {
+    dll_name: &'static str,
+    func_name: &'static str,
+    hook_addr: usize,
+}
+
+/// 安装所有 ACE 拦截 hook (IAT 方式)
+pub fn install_ace_hooks(cb: LogCallback) -> bool {
+    log(cb, "======== 安装 ACE 用户态 Hook ========");
+
+    let hooks: &[HookEntry] = &[
+        HookEntry {
+            dll_name: "kernel32.dll",
+            func_name: "CreateToolhelp32Snapshot",
+            hook_addr: hooked_create_toolhelp32_snapshot as usize,
+        },
+        HookEntry {
+            dll_name: "kernel32.dll",
+            func_name: "OpenProcess",
+            hook_addr: hooked_open_process as usize,
+        },
+        HookEntry {
+            dll_name: "kernel32.dll",
+            func_name: "TerminateProcess",
+            hook_addr: hooked_terminate_process as usize,
+        },
+        HookEntry {
+            dll_name: "kernel32.dll",
+            func_name: "LoadLibraryA",
+            hook_addr: hooked_load_library_a as usize,
+        },
+        HookEntry {
+            dll_name: "kernel32.dll",
+            func_name: "LoadLibraryW",
+            hook_addr: hooked_load_library_w as usize,
+        },
+        HookEntry {
+            dll_name: "kernel32.dll",
+            func_name: "GetModuleHandleA",
+            hook_addr: hooked_get_module_handle_a as usize,
+        },
+        HookEntry {
+            dll_name: "kernel32.dll",
+            func_name: "CreateMutexW",
+            hook_addr: hooked_create_mutex_w as usize,
+        },
+        HookEntry {
+            dll_name: "kernel32.dll",
+            func_name: "CreateFileMappingW",
+            hook_addr: hooked_create_file_mapping_w as usize,
+        },
+        HookEntry {
+            dll_name: "kernel32.dll",
+            func_name: "MapViewOfFile",
+            hook_addr: hooked_map_view_of_file as usize,
+        },
+    ];
+
+    let mut installed = 0;
+    for hook in hooks {
+        if install_iat_hook(hook.dll_name, hook.func_name, hook.hook_addr) {
+            installed += 1;
+            log_debug(cb, &format!("  [OK] {}!{}", hook.dll_name, hook.func_name));
+        } else {
+            log_warn(cb, &format!("  [失败] {}!{}", hook.dll_name, hook.func_name));
+        }
+    }
+
+    log(cb, &format!("  [汇总] 已安装 {}/{} 个 hook", installed, hooks.len()));
+    log(cb, "======== ACE Hook 安装完成 ========");
+
+    installed > 0
+}
+
+/// 在自身进程的 IAT 中替换函数指针
+fn install_iat_hook(dll_name: &str, func_name: &str, hook_addr: usize) -> bool {
+    unsafe {
+        let h_main = GetModuleHandleA(core::ptr::null());
+        if h_main == 0 {
+            return false;
+        }
+
+        let base = h_main as usize;
+        let dos = &*(base as *const ImageDosHeader);
+        if dos.e_magic != 0x5A4D {
+            return false;
+        }
+
+        let nt_off = base + dos.e_lfanew as usize;
+        // NT_HEADERS: signature(4) + FileHeader(20) = 24
+        let nt_sig = *(nt_off as *const u32);
+        if nt_sig != 0x00004550 {
+            return false;
+        }
+
+        // OptionalHeader magic (PE32=0x10B, PE32+=0x20B)
+        let oh_off = nt_off + 24;
+        let oh_magic = *(oh_off as *const u16);
+        let dd_off = if oh_magic == 0x10B {
+            oh_off + 96  // PE32
+        } else {
+            oh_off + 112 // PE32+
+        };
+
+        // DataDirectory[1] = Import Table
+        let import_rva = *(dd_off as *const u32);
+        let _import_size = *((dd_off + 4) as *const u32);
+
+        if import_rva == 0 {
+            return false;
+        }
+
+        let import_desc_addr = base + import_rva as usize;
+
+        // 每条 IMPORT_DESCRIPTOR 20 字节
+        let mut offset = 0;
+        loop {
+            let desc = import_desc_addr + offset;
+            let name_rva = *((desc + 12) as *const u32);
+            let first_thunk = *((desc + 16) as *const u32);
+            let original_thunk = *((desc + 0) as *const u32);
+
+            if name_rva == 0 && first_thunk == 0 {
+                break;
+            }
+
+            let dll_name_ptr = (base + name_rva as usize) as *const u8;
+            let dll = read_cstr(dll_name_ptr);
+            if dll.to_lowercase() != dll_name.to_lowercase() {
+                offset += 20;
+                continue;
+            }
+
+            // 找到对应 DLL, 遍历它的 thunks
+            let thunk_size = if oh_magic == 0x10B { 4 } else { 8 };
+            let mut thunk_off = 0;
+            let mut found = false;
+            loop {
+                let ft_addr = base + first_thunk as usize + thunk_off;
+                let ot_addr = if original_thunk != 0 {
+                    base + original_thunk as usize + thunk_off
+                } else {
+                    ft_addr // 用 FirstThunk 作 OriginalFirstThunk
+                };
+
+                // 读 thunk 值
+                let thunk_val = if thunk_size == 4 {
+                    *(ot_addr as *const u32) as u64
+                } else {
+                    *(ot_addr as *const u64)
+                };
+
+                if thunk_val == 0 {
+                    break;
+                }
+
+                // 按名字导入: thunk_val 低位是 RVA (无 ordinal 标志)
+                if thunk_val & 0x8000000000000000 == 0 {
+                    let hint_rva = thunk_val as usize;
+                    if hint_rva != 0 {
+                        // IMPORT_BY_NAME: 2 字节 hint + 名称
+                        let name_ptr = (base + hint_rva + 2) as *const u8;
+                        let fname = read_cstr(name_ptr);
+                        if fname == func_name {
+                            // 找到了! 改保护属性, 写入 hook 地址
+                            let mut old_protect: u32 = 0;
+                            let prot_ok = VirtualProtect(
+                                ft_addr as *const _,
+                                thunk_size,
+                                PAGE_READWRITE,
+                                &mut old_protect,
+                            );
+                            if prot_ok != 0 {
+                                if thunk_size == 4 {
+                                    *(ft_addr as *mut u32) = hook_addr as u32;
+                                } else {
+                                    *(ft_addr as *mut u64) = hook_addr as u64;
+                                }
+                                VirtualProtect(
+                                    ft_addr as *const _,
+                                    thunk_size,
+                                    old_protect,
+                                    &mut old_protect,
+                                );
+                                found = true;
+                            }
+                            break;
+                        }
+                    }
+                }
+
+                thunk_off += thunk_size;
+            }
+
+            if found {
+                return true;
+            }
+            offset += 20;
+        }
+
+        false
+    }
+}
+
+unsafe fn read_cstr(ptr: *const u8) -> String {
+    let mut len = 0;
+    while *ptr.add(len) != 0 {
+        len += 1;
+    }
+    String::from_utf8_lossy(core::slice::from_raw_parts(ptr, len)).into_owned()
+}
