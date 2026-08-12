@@ -504,6 +504,13 @@ VOID   KgPathNormalizeSeparators(char* s);
 VOID   ApplyEnvOverrides(VOID);
 
 /* ============================================================
+ * GUI 模块 (gui.c) - Win11 风格菜单
+ * ============================================================ */
+
+BOOL KgGuiInit(HINSTANCE hInstance);
+int  KgGuiRun(HINSTANCE hInstance, int nCmdShow);
+
+/* ============================================================
  * 内联辅助函数
  * ============================================================ */
 
