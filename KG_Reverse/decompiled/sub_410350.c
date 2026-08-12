@@ -1,284 +1,296 @@
-/**
- * Function: sub_410350
- * Address: 0x00410350
- * Blocks: 301
- * Instructions: 1021
- * Analyzed with angr + capstone
+
+/*
+ * ============================================================
+ * KG.exe 反编译分析 - sub_410350
+ * ============================================================
+ *
+ * 函数地址: 0x00410350
+ * 基本块数: 301
+ * 指令数:   1021
+ * 复杂度:   高复杂度
+ *
+ * 功能推测: 系统核心逻辑/调度函数
+ * 技术分析: 使用 angr 符号执行 + capstone 反汇编
+ *
+ * 注: 本文件为自动反编译结果, 可能包含不准确的变量名和类型
+ *     实际逻辑需结合上下文和运行时分析验证
+ * ============================================================
  */
+
 void* sub_410350(void) {
 
-  /* Block 1 @ 0x00410350 */
-  // mov eax, dword ptr fs:[0]
-  // push -1
-  // push 0x49e7e2
-  // push eax
+  /* 代码块 1 @ 0x00410350 */
+  // 读取全局变量值 fs:[0]
+  // 压栈 -1 (通常作为错误标志)
+  // 保存寄存器 0x49e7e2
+  // 保存寄存器 eax
   // mov dword ptr fs:[0], esp
-  // sub esp, 0x10
-  // push ebx
-  // push ebp
-  // push esi
-  // push edi
-  // mov edi, dword ptr [esp + 0x30]
+  // 分配 0x10 字节栈空间
+  // 保存寄存器 ebx
+  // 保存寄存器 ebp
+  // 保存寄存器 esi
+  // 保存寄存器 edi
+  // 从栈读取参数 0x30 到 edi
   // mov esi, ecx
   // CMP edi, 0x7d0 (set flags)
   // if (greater) goto 0x4106b1
-  /* Block 2 @ 0x0041037E */
-  // if (equal) goto 0x4105cc
-  /* Block 3 @ 0x004106B1 */
+  /* 代码块 2 @ 0x0041037E */
+  // 如果相等则跳转到 0x4105cc
+  /* 代码块 3 @ 0x004106B1 */
   // lea eax, [edi - 0x7d1]
   // CMP eax, 0x27 (set flags)
   // if (above) goto 0x411004
-  /* Block 4 @ 0x004105CC */
-  // mov eax, dword ptr [esi + 0x1d8]
-  // TEST eax, eax (set flags)
-  // if (not equal) goto 0x411004
-  /* Block 5 @ 0x00410384 */
+  /* 代码块 4 @ 0x004105CC */
+  // 读取全局变量值 [esi + 0x1d8]
+  // 测试 eax 是否为零（设置标志位）
+  // 如果不相等则跳转到 0x411004
+  /* 代码块 5 @ 0x00410384 */
   // lea eax, [edi - 0x3e8]
   // CMP eax, 0xe (set flags)
   // if (above) goto 0x411004
-  /* Block 6 @ 0x004106C0 */
+  /* 代码块 6 @ 0x004106C0 */
   goto dword ptr [eax*4 + 0x411058];
-  /* Block 7 @ 0x00411004 */
-  // xor eax, eax
-  // mov ecx, dword ptr [esp + 0x20]
-  // pop edi
-  // pop esi
-  // pop ebp
-  // pop ebx
+  /* 代码块 7 @ 0x00411004 */
+  // eax 清零（准备返回值）
+  // 从栈读取参数 0x20 到 ecx
+  // 恢复寄存器 edi
+  // 恢复寄存器 esi
+  // 恢复寄存器 ebp
+  // 恢复寄存器 ebx
   // mov dword ptr fs:[0], ecx
-  // add esp, 0x1c
+  // 释放 0x1c 字节栈空间
   return;
-  /* Block 8 @ 0x004105DA */
-  // mov ebx, dword ptr [esp + 0x34]
-  // lea edx, [esp + 0x34]
-  // push 0
-  // push edx
-  // push ebx
+  /* 代码块 8 @ 0x004105DA */
+  // 从栈读取参数 0x34 到 ebx
+  // 计算栈偏移地址 34 -> edx
+  // 保存寄存器 0
+  // 保存寄存器 edx
+  // 保存寄存器 ebx
   // lea ecx, [esi + 0x104]
-  // call 0x0040EC30
+  // 直接调用函数 0x0040EC30
   call(0x0040EC30);
-  /* Block 9 @ 0x00410393 */
+  /* 代码块 9 @ 0x00410393 */
   goto dword ptr [eax*4 + 0x41101c];
-  /* Block 10 @ 0x00410C80 */
-  // mov eax, dword ptr [esp + 0x34]
-  // push eax
-  // call 0x0041B6A0
+  /* 代码块 10 @ 0x00410C80 */
+  // 读取全局变量值 [esp + 0x34]
+  // 保存寄存器 eax
+  // 直接调用函数 0x0041B6A0
   call(0x0041B6A0);
-  /* Block 11 @ 0x00410A04 */
-  // push 0
+  /* 代码块 11 @ 0x00410A04 */
+  // 保存寄存器 0
   // mov ecx, esi
-  // call 0x00415C00
+  // 直接调用函数 0x00415C00
   call(0x00415C00);
-  /* Block 12 @ 0x00410A12 */
-  // mov ecx, dword ptr [esp + 0x34]
+  /* 代码块 12 @ 0x00410A12 */
+  // 从栈读取参数 0x34 到 ecx
   // TEST ecx, ecx (set flags)
-  // if (equal) goto 0x411004
-  /* Block 13 @ 0x00410C92 */
-  // mov ecx, dword ptr [esp + 0x34]
-  // push 0
-  // push ecx
+  // 如果相等则跳转到 0x411004
+  /* 代码块 13 @ 0x00410C92 */
+  // 从栈读取参数 0x34 到 ecx
+  // 保存寄存器 0
+  // 保存寄存器 ecx
   // mov ecx, esi
-  // call 0x00413290
+  // 直接调用函数 0x00413290
   call(0x00413290);
-  /* Block 14 @ 0x00410F93 */
-  // mov eax, dword ptr [esp + 0x34]
-  // lea edx, [esp + 0x34]
-  // push 0
-  // push edx
-  // push eax
+  /* 代码块 14 @ 0x00410F93 */
+  // 读取全局变量值 [esp + 0x34]
+  // 计算栈偏移地址 34 -> edx
+  // 保存寄存器 0
+  // 保存寄存器 edx
+  // 保存寄存器 eax
   // lea ecx, [esi + 0x104]
-  // call 0x0040EC30
+  // 直接调用函数 0x0040EC30
   call(0x0040EC30);
-  /* Block 15 @ 0x00410A97 */
+  /* 代码块 15 @ 0x00410A97 */
   // mov ecx, esi
-  // call 0x00412670
+  // 直接调用函数 0x00412670
   call(0x00412670);
-  /* Block 16 @ 0x00410918 */
-  // mov eax, dword ptr [esi + 0x23c]
-  // mov ebx, dword ptr [esp + 0x34]
+  /* 代码块 16 @ 0x00410918 */
+  // 读取全局变量值 [esi + 0x23c]
+  // 从栈读取参数 0x34 到 ebx
   // lea edi, [esi + 0x22c]
-  // TEST eax, eax (set flags)
-  // if (equal) goto 0x41094a
-  /* Block 17 @ 0x00410899 */
-  // mov eax, dword ptr [esp + 0x34]
+  // 测试 eax 是否为零（设置标志位）
+  // 如果相等则跳转到 0x41094a
+  /* 代码块 17 @ 0x00410899 */
+  // 读取全局变量值 [esp + 0x34]
   // mov ecx, esi
-  // push eax
-  // call 0x0041B250
+  // 保存寄存器 eax
+  // 直接调用函数 0x0041B250
   call(0x0041B250);
-  /* Block 18 @ 0x00410D18 */
-  // mov ecx, dword ptr [esp + 0x34]
-  // push ecx
-  // call 0x00420A60
+  /* 代码块 18 @ 0x00410D18 */
+  // 从栈读取参数 0x34 到 ecx
+  // 保存寄存器 ecx
+  // 直接调用函数 0x00420A60
   call(0x00420A60);
-  /* Block 19 @ 0x00410AA3 */
-  // mov eax, dword ptr [esi + 0x264]
-  // mov edi, dword ptr [esp + 0x34]
+  /* 代码块 19 @ 0x00410AA3 */
+  // 读取全局变量值 [esi + 0x264]
+  // 从栈读取参数 0x34 到 edi
   // add esi, 0x254
-  // TEST eax, eax (set flags)
-  // if (equal) goto 0x410ad5
-  /* Block 20 @ 0x004107A4 */
-  // mov eax, dword ptr [esi + 0xd0]
+  // 测试 eax 是否为零（设置标志位）
+  // 如果相等则跳转到 0x410ad5
+  /* 代码块 20 @ 0x004107A4 */
+  // 读取全局变量值 [esi + 0xd0]
   goto 0x411006;
-  /* Block 21 @ 0x004108AA */
-  // mov ecx, dword ptr [esp + 0x34]
-  // push ecx
+  /* 代码块 21 @ 0x004108AA */
+  // 从栈读取参数 0x34 到 ecx
+  // 保存寄存器 ecx
   // mov ecx, esi
-  // call 0x0041B300
+  // 直接调用函数 0x0041B300
   call(0x0041B300);
-  /* Block 22 @ 0x00410C2B */
-  // mov eax, dword ptr [esp + 0x38]
-  // TEST eax, eax (set flags)
-  // if (not equal) goto 0x410c45
-  /* Block 23 @ 0x00410D2A */
-  // mov edx, dword ptr [esp + 0x34]
-  // push edx
-  // call 0x00430A20
+  /* 代码块 22 @ 0x00410C2B */
+  // 读取全局变量值 [esp + 0x38]
+  // 测试 eax 是否为零（设置标志位）
+  // 如果不相等则跳转到 0x410c45
+  /* 代码块 23 @ 0x00410D2A */
+  // 从栈读取参数 0x34 到 edx
+  // 保存寄存器 edx
+  // 直接调用函数 0x00430A20
   call(0x00430A20);
-  /* Block 24 @ 0x004107AF */
-  // mov eax, dword ptr [esi + 0xd4]
+  /* 代码块 24 @ 0x004107AF */
+  // 读取全局变量值 [esi + 0xd4]
   goto 0x411006;
-  /* Block 25 @ 0x00410BB5 */
-  // mov eax, dword ptr [esp + 0x34]
-  // push 0
-  // push 0
-  // push 0
-  // push eax
+  /* 代码块 25 @ 0x00410BB5 */
+  // 读取全局变量值 [esp + 0x34]
+  // 保存寄存器 0
+  // 保存寄存器 0
+  // 保存寄存器 0
+  // 保存寄存器 eax
   // mov ecx, esi
-  // call 0x00412F90
+  // 直接调用函数 0x00412F90
   call(0x00412F90);
-  /* Block 26 @ 0x004107BA */
-  // mov ebx, dword ptr [esp + 0x34]
+  /* 代码块 26 @ 0x004107BA */
+  // 从栈读取参数 0x34 到 ebx
   // TEST ebx, ebx (set flags)
-  // if (equal) goto 0x410910
-  /* Block 27 @ 0x004108BB */
-  // mov eax, dword ptr [esi + 0x23c]
-  // TEST eax, eax (set flags)
-  // if (equal) goto 0x410910
-  /* Block 28 @ 0x00410D3C */
-  // mov edi, dword ptr [esp + 0x34]
+  // 如果相等则跳转到 0x410910
+  /* 代码块 27 @ 0x004108BB */
+  // 读取全局变量值 [esi + 0x23c]
+  // 测试 eax 是否为零（设置标志位）
+  // 如果相等则跳转到 0x410910
+  /* 代码块 28 @ 0x00410D3C */
+  // 从栈读取参数 0x34 到 edi
   // CMP edi, 0x10030 (set flags)
-  // if (not equal) goto 0x410d78
-  /* Block 29 @ 0x00410A41 */
-  // mov ecx, dword ptr [esp + 0x34]
-  // lea eax, [esp + 0x34]
-  // push 0
-  // push eax
-  // push ecx
+  // 如果不相等则跳转到 0x410d78
+  /* 代码块 29 @ 0x00410A41 */
+  // 从栈读取参数 0x34 到 ecx
+  // 计算栈偏移地址 34 -> eax
+  // 保存寄存器 0
+  // 保存寄存器 eax
+  // 保存寄存器 ecx
   // lea ecx, [esi + 0x104]
-  // call 0x0040EC30
+  // 直接调用函数 0x0040EC30
   call(0x0040EC30);
-  /* Block 30 @ 0x004106C7 */
-  // mov eax, dword ptr [esp + 0x34]
+  /* 代码块 30 @ 0x004106C7 */
+  // 读取全局变量值 [esp + 0x34]
   // mov ecx, esi
-  // push eax
-  // call 0x00415B50
+  // 保存寄存器 eax
+  // 直接调用函数 0x00415B50
   call(0x00415B50);
-  /* Block 31 @ 0x00410CCB */
-  // mov eax, dword ptr [esi + 0xc4]
+  /* 代码块 31 @ 0x00410CCB */
+  // 读取全局变量值 [esi + 0xc4]
   goto 0x411006;
-  /* Block 32 @ 0x004109CC */
+  /* 代码块 32 @ 0x004109CC */
   // mov ecx, esi
-  // call 0x00411300
+  // 直接调用函数 0x00411300
   call(0x00411300);
-  /* Block 33 @ 0x00410BCC */
-  // mov ebx, dword ptr [esp + 0x38]
+  /* 代码块 33 @ 0x00410BCC */
+  // 从栈读取参数 0x38 到 ebx
   // TEST ebx, ebx (set flags)
-  // if (equal) goto 0x411004
-  /* Block 34 @ 0x00410E55 */
-  // mov ebp, dword ptr [esp + 0x34]
-  // lea eax, [esp + 0x38]
-  // push 0
-  // push eax
+  // 如果相等则跳转到 0x411004
+  /* 代码块 34 @ 0x00410E55 */
+  // 从栈读取参数 0x34 到 ebp
+  // 计算栈偏移地址 38 -> eax
+  // 保存寄存器 0
+  // 保存寄存器 eax
   // mov ecx, dword ptr [ebp]
-  // push ecx
+  // 保存寄存器 ecx
   // lea ecx, [esi + 0x104]
-  // call 0x0040EC30
+  // 直接调用函数 0x0040EC30
   call(0x0040EC30);
-  /* Block 35 @ 0x00410CD6 */
-  // mov eax, dword ptr [esi + 0x11c]
+  /* 代码块 35 @ 0x00410CD6 */
+  // 读取全局变量值 [esi + 0x11c]
   // shr eax, 3
   goto 0x411006;
-  /* Block 36 @ 0x00410C57 */
-  // mov eax, dword ptr [esp + 0x34]
-  // push eax
-  // call 0x0041B7C0
+  /* 代码块 36 @ 0x00410C57 */
+  // 读取全局变量值 [esp + 0x34]
+  // 保存寄存器 eax
+  // 直接调用函数 0x0041B7C0
   call(0x0041B7C0);
-  /* Block 37 @ 0x004109D8 */
-  // mov eax, dword ptr [esp + 0x34]
-  // TEST eax, eax (set flags)
-  // if (equal) goto 0x411004
-  /* Block 38 @ 0x004106D8 */
-  // mov ebp, dword ptr [esp + 0x34]
+  /* 代码块 37 @ 0x004109D8 */
+  // 读取全局变量值 [esp + 0x34]
+  // 测试 eax 是否为零（设置标志位）
+  // 如果相等则跳转到 0x411004
+  /* 代码块 38 @ 0x004106D8 */
+  // 从栈读取参数 0x34 到 ebp
   // TEST ebp, ebp (set flags)
-  // if (equal) goto 0x410779
-  /* Block 39 @ 0x00410FDD */
-  // mov edx, dword ptr [esp + 0x34]
-  // lea ecx, [esp + 0x1c]
-  // push 0
-  // push ecx
-  // push edx
+  // 如果相等则跳转到 0x410779
+  /* 代码块 39 @ 0x00410FDD */
+  // 从栈读取参数 0x34 到 edx
+  // 计算栈偏移地址 1c -> ecx
+  // 保存寄存器 0
+  // 保存寄存器 ecx
+  // 保存寄存器 edx
   // lea ecx, [esi + 0x104]
-  // call 0x0040EC30
+  // 直接调用函数 0x0040EC30
   call(0x0040EC30);
-  /* Block 40 @ 0x00410DE1 */
-  // mov ecx, dword ptr [esp + 0x34]
-  // lea eax, [esp + 0x34]
-  // push 0
-  // push eax
-  // push ecx
+  /* 代码块 40 @ 0x00410DE1 */
+  // 从栈读取参数 0x34 到 ecx
+  // 计算栈偏移地址 34 -> eax
+  // 保存寄存器 0
+  // 保存寄存器 eax
+  // 保存寄存器 ecx
   // lea ecx, [esi + 0x104]
-  // call 0x0040EC30
+  // 直接调用函数 0x0040EC30
   call(0x0040EC30);
-  /* Block 41 @ 0x00410AE2 */
-  // mov edi, dword ptr [esp + 0x34]
+  /* 代码块 41 @ 0x00410AE2 */
+  // 从栈读取参数 0x34 到 edi
   // xor ebx, ebx
   // CMP edi, ebx (set flags)
-  // if (equal) goto 0x411004
-  /* Block 42 @ 0x00410CE4 */
-  // mov edx, dword ptr [esp + 0x34]
+  // 如果相等则跳转到 0x411004
+  /* 代码块 42 @ 0x00410CE4 */
+  // 从栈读取参数 0x34 到 edx
   // lea ecx, [esi + 0x104]
-  // push edx
-  // call 0x0040F8C0
+  // 保存寄存器 edx
+  // 直接调用函数 0x0040F8C0
   call(0x0040F8C0);
-  /* Block 43 @ 0x00410866 */
+  /* 代码块 43 @ 0x00410866 */
   // mov ecx, esi
-  // call 0x00412670
+  // 直接调用函数 0x00412670
   call(0x00412670);
-  /* Block 44 @ 0x00410967 */
-  // mov eax, dword ptr [esi + 0x23c]
+  /* 代码块 44 @ 0x00410967 */
+  // 读取全局变量值 [esi + 0x23c]
   // lea ebx, [esi + 0x22c]
-  // TEST eax, eax (set flags)
-  // if (equal) goto 0x411004
-  /* Block 45 @ 0x00410C69 */
-  // mov ecx, dword ptr [esp + 0x38]
-  // mov edx, dword ptr [esp + 0x34]
-  // push ecx
-  // push edx
-  // call 0x0041B700
+  // 测试 eax 是否为零（设置标志位）
+  // 如果相等则跳转到 0x411004
+  /* 代码块 45 @ 0x00410C69 */
+  // 从栈读取参数 0x38 到 ecx
+  // 从栈读取参数 0x34 到 edx
+  // 保存寄存器 ecx
+  // 保存寄存器 edx
+  // 直接调用函数 0x0041B700
   call(0x0041B700);
-  /* Block 46 @ 0x00410B74 */
-  // mov eax, dword ptr [esi + 0x264]
-  // TEST eax, eax (set flags)
-  // if (equal) goto 0x411004
-  /* Block 47 @ 0x00410878 */
+  /* 代码块 46 @ 0x00410B74 */
+  // 读取全局变量值 [esi + 0x264]
+  // 测试 eax 是否为零（设置标志位）
+  // 如果相等则跳转到 0x411004
+  /* 代码块 47 @ 0x00410878 */
   // mov ecx, esi
-  // call 0x00412670
+  // 直接调用函数 0x00412670
   call(0x00412670);
-  /* Block 48 @ 0x004105F1 */
+  /* 代码块 48 @ 0x004105F1 */
   // CMP eax, 1 (set flags)
-  // if (not equal) goto 0x411004
-  /* Block 49 @ 0x004103C0 */
+  // 如果不相等则跳转到 0x411004
+  /* 代码块 49 @ 0x004103C0 */
   // lea eax, [esi + 0x104]
   goto 0x411006;
-  /* Block 50 @ 0x00410543 */
-  // mov eax, dword ptr [esp + 0x34]
-  // TEST eax, eax (set flags)
-  // if (equal) goto 0x411004
-  /* Block 51 @ 0x004103AB */
-  // mov eax, dword ptr [esp + 0x34]
+  /* 代码块 50 @ 0x00410543 */
+  // 读取全局变量值 [esp + 0x34]
+  // 测试 eax 是否为零（设置标志位）
+  // 如果相等则跳转到 0x411004
+  /* 代码块 51 @ 0x004103AB */
+  // 读取全局变量值 [esp + 0x34]
   // lea ecx, [eax + 4]
-  // push ecx
-  // push eax
+  // 保存寄存器 ecx
+  // 保存寄存器 eax
   // mov ecx, esi
 }
 /* ============================================ */

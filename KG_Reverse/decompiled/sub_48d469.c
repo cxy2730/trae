@@ -1,94 +1,106 @@
-/**
- * Function: sub_48d469
- * Address: 0x0048D469
- * Blocks: 310
- * Instructions: 1071
- * Analyzed with angr + capstone
+
+/*
+ * ============================================================
+ * KG.exe 反编译分析 - sub_48d469
+ * ============================================================
+ *
+ * 函数地址: 0x0048D469
+ * 基本块数: 310
+ * 指令数:   1071
+ * 复杂度:   高复杂度
+ *
+ * 功能推测: 系统核心逻辑/调度函数
+ * 技术分析: 使用 angr 符号执行 + capstone 反汇编
+ *
+ * 注: 本文件为自动反编译结果, 可能包含不准确的变量名和类型
+ *     实际逻辑需结合上下文和运行时分析验证
+ * ============================================================
  */
+
 void* sub_48d469(void) {
 
-  /* Block 1 @ 0x0048D469 */
-  // push ebp
+  /* 代码块 1 @ 0x0048D469 */
+  // 保存寄存器 ebp
   // mov ebp, esp
-  // sub esp, 0x1c4
+  // 分配 0x1c4 字节栈空间
   // and byte ptr [ebp - 0x15], 0
-  // push ebx
-  // push esi
+  // 保存寄存器 ebx
+  // 保存寄存器 esi
   // mov esi, dword ptr [ebp + 0xc]
   // xor ebx, ebx
-  // push edi
+  // 保存寄存器 edi
   // mov al, byte ptr [esi]
   // mov dword ptr [ebp - 4], ebx
   // TEST al, al (set flags)
   // mov dword ptr [ebp - 0x34], ebx
-  // if (equal) goto 0x48de6f
-  /* Block 2 @ 0x0048DE6F */
+  // 如果相等则跳转到 0x48de6f
+  /* 代码块 2 @ 0x0048DE6F */
   // CMP dword ptr [ebp - 0x14], -1 (set flags)
-  // if (not equal) goto 0x48de86
-  /* Block 3 @ 0x0048D48E */
+  // 如果不相等则跳转到 0x48de86
+  /* 代码块 3 @ 0x0048D48E */
   // mov edi, dword ptr [ebp + 8]
   goto 0x48d498;
-  /* Block 4 @ 0x0048DE75 */
-  // mov eax, dword ptr [ebp - 0x34]
-  // TEST eax, eax (set flags)
-  // if (not equal) goto 0x48de89
-  /* Block 5 @ 0x0048DE86 */
-  // mov eax, dword ptr [ebp - 0x34]
-  // pop edi
-  // pop esi
-  // pop ebx
+  /* 代码块 4 @ 0x0048DE75 */
+  // 读取全局变量值 [ebp - 0x34]
+  // 测试 eax 是否为零（设置标志位）
+  // 如果不相等则跳转到 0x48de89
+  /* 代码块 5 @ 0x0048DE86 */
+  // 读取全局变量值 [ebp - 0x34]
+  // 恢复寄存器 edi
+  // 恢复寄存器 esi
+  // 恢复寄存器 ebx
   // leave 
   return;
-  /* Block 6 @ 0x0048D498 */
+  /* 代码块 6 @ 0x0048D498 */
   // CMP dword ptr [0x2fd9ac0], 1 (set flags)
   // if (less or equal) goto 0x48d4b0
-  /* Block 7 @ 0x0048DE7C */
+  /* 代码块 7 @ 0x0048DE7C */
   // CMP byte ptr [ebp - 0x15], al (set flags)
-  // if (not equal) goto 0x48de89
-  // pop edi
-  // pop esi
-  // pop ebx
+  // 如果不相等则跳转到 0x48de89
+  // 恢复寄存器 edi
+  // 恢复寄存器 esi
+  // 恢复寄存器 ebx
   // leave 
   return;
-  /* Block 8 @ 0x0048D4B0 */
+  /* 代码块 8 @ 0x0048D4B0 */
   // mov ecx, dword ptr [0x2fd98b4]
   // movzx eax, al
   // mov al, byte ptr [ecx + eax*2]
   // and eax, 8
   // CMP eax, ebx (set flags)
-  // if (equal) goto 0x48d4f9
-  /* Block 9 @ 0x0048D4A1 */
+  // 如果相等则跳转到 0x48d4f9
+  /* 代码块 9 @ 0x0048D4A1 */
   // movzx eax, al
-  // push 8
-  // push eax
-  // call 0x0048A852
+  // 保存寄存器 8
+  // 保存寄存器 eax
+  // 直接调用函数 0x0048A852
   call(0x0048A852);
-  /* Block 10 @ 0x0048DE81 */
+  /* 代码块 10 @ 0x0048DE81 */
   // or eax, 0xffffffff
   goto 0x48de89;
-  /* Block 11 @ 0x0048D4F9 */
+  /* 代码块 11 @ 0x0048D4F9 */
   // CMP byte ptr [esi], 0x25 (set flags)
-  // if (not equal) goto 0x48dddb
-  /* Block 12 @ 0x0048D4C3 */
+  // 如果不相等则跳转到 0x48dddb
+  /* 代码块 12 @ 0x0048D4C3 */
   // dec dword ptr [ebp - 4]
-  // push edi
+  // 保存寄存器 edi
   // lea eax, [ebp - 4]
-  // push edi
-  // push eax
-  // call 0x0048DEF6
+  // 保存寄存器 edi
+  // 保存寄存器 eax
+  // 直接调用函数 0x0048DEF6
   call(0x0048DEF6);
-  /* Block 13 @ 0x0048D4AC */
-  // pop ecx
-  // pop ecx
+  /* 代码块 13 @ 0x0048D4AC */
+  // 恢复寄存器 ecx
+  // 恢复寄存器 ecx
   goto 0x48d4bf;
-  /* Block 14 @ 0x0048D502 */
+  /* 代码块 14 @ 0x0048D502 */
   // and byte ptr [ebp - 0x35], 0
   // and byte ptr [ebp - 0x18], 0
   // and byte ptr [ebp - 0x17], 0
   // and byte ptr [ebp - 0xe], 0
   // and byte ptr [ebp - 0xf], 0
   // and byte ptr [ebp - 0x16], 0
-  // xor edi, edi
+  // edi 清零
   // and byte ptr [ebp - 5], 0
   // mov dword ptr [ebp - 0x1c], ebx
   // mov dword ptr [ebp - 0x20], ebx
@@ -99,170 +111,170 @@ void* sub_48d469(void) {
   // inc esi
   // CMP dword ptr [0x2fd9ac0], 1 (set flags)
   // if (less or equal) goto 0x48d54d
-  /* Block 15 @ 0x0048DDDB */
+  /* 代码块 15 @ 0x0048DDDB */
   // inc dword ptr [ebp - 4]
-  // push edi
-  // call 0x0048DEC5
+  // 保存寄存器 edi
+  // 直接调用函数 0x0048DEC5
   call(0x0048DEC5);
-  /* Block 16 @ 0x0048D4D1 */
-  // pop ecx
-  // pop ecx
-  // push eax
-  // call 0x0048DEDF
+  /* 代码块 16 @ 0x0048D4D1 */
+  // 恢复寄存器 ecx
+  // 恢复寄存器 ecx
+  // 保存寄存器 eax
+  // 直接调用函数 0x0048DEDF
   call(0x0048DEDF);
   // CMP eax, ebx (set flags)
-  // if (equal) goto 0x48d4f9
-  /* Block 17 @ 0x0048D54D */
+  // 如果相等则跳转到 0x48d4f9
+  /* 代码块 17 @ 0x0048D54D */
   // mov ecx, dword ptr [0x2fd98b4]
   // movzx eax, bl
   // mov al, byte ptr [ecx + eax*2]
   // and eax, 4
-  // TEST eax, eax (set flags)
-  // if (equal) goto 0x48d572
-  /* Block 18 @ 0x0048D53E */
+  // 测试 eax 是否为零（设置标志位）
+  // 如果相等则跳转到 0x48d572
+  /* 代码块 18 @ 0x0048D53E */
   // movzx eax, bl
-  // push 4
-  // push eax
-  // call 0x0048A852
+  // 保存寄存器 4
+  // 保存寄存器 eax
+  // 直接调用函数 0x0048A852
   call(0x0048A852);
-  /* Block 19 @ 0x0048DDE4 */
+  /* 代码块 19 @ 0x0048DDE4 */
   // mov ebx, eax
-  // pop ecx
+  // 恢复寄存器 ecx
   // movzx eax, byte ptr [esi]
   // inc esi
   // CMP eax, ebx (set flags)
   // mov dword ptr [ebp - 0x14], ebx
   // mov dword ptr [ebp + 0xc], esi
-  // if (not equal) goto 0x48de4a
-  /* Block 20 @ 0x0048D4D9 */
+  // 如果不相等则跳转到 0x48de4a
+  /* 代码块 20 @ 0x0048D4D9 */
   // movzx eax, byte ptr [esi + 1]
   // inc esi
-  // push eax
-  // call 0x00482D59
+  // 保存寄存器 eax
+  // 直接调用函数 0x00482D59
   call(0x00482D59);
-  /* Block 21 @ 0x0048D572 */
+  /* 代码块 21 @ 0x0048D572 */
   // CMP ebx, 0x4e (set flags)
   // if (greater) goto 0x48d5b5
-  /* Block 22 @ 0x0048D560 */
-  // mov eax, dword ptr [ebp - 0xc]
+  /* 代码块 22 @ 0x0048D560 */
+  // 读取全局变量值 [ebp - 0xc]
   // inc dword ptr [ebp - 0x20]
   // lea eax, [eax + eax*4]
   // lea eax, [ebx + eax*2 - 0x30]
   // mov dword ptr [ebp - 0xc], eax
   goto 0x48d5d7;
-  /* Block 23 @ 0x0048D549 */
-  // pop ecx
-  // pop ecx
+  /* 代码块 23 @ 0x0048D549 */
+  // 恢复寄存器 ecx
+  // 恢复寄存器 ecx
   goto 0x48d55c;
-  /* Block 24 @ 0x0048DDF5 */
+  /* 代码块 24 @ 0x0048DDF5 */
   // mov ecx, dword ptr [0x2fd98b4]
   // movzx eax, bl
   // TEST byte ptr [ecx + eax*2 + 1], 0x80 (set flags)
-  // if (equal) goto 0x48de1d
-  /* Block 25 @ 0x0048DE4A */
+  // 如果相等则跳转到 0x48de1d
+  /* 代码块 25 @ 0x0048DE4A */
   // dec dword ptr [ebp - 4]
-  // push edi
-  // push ebx
-  // call 0x0048DEDF
+  // 保存寄存器 edi
+  // 保存寄存器 ebx
+  // 直接调用函数 0x0048DEDF
   call(0x0048DEDF);
-  /* Block 26 @ 0x0048D4E4 */
-  // add esp, 0xc
-  // TEST eax, eax (set flags)
-  // if (equal) goto 0x48d4f9
-  /* Block 27 @ 0x0048D577 */
-  // if (equal) goto 0x48d5d7
-  /* Block 28 @ 0x0048D5B5 */
+  /* 代码块 26 @ 0x0048D4E4 */
+  // 释放 0xc 字节栈空间
+  // 测试 eax 是否为零（设置标志位）
+  // 如果相等则跳转到 0x48d4f9
+  /* 代码块 27 @ 0x0048D577 */
+  // 如果相等则跳转到 0x48d5d7
+  /* 代码块 28 @ 0x0048D5B5 */
   // CMP ebx, 0x68 (set flags)
-  // if (equal) goto 0x48d5d1
-  /* Block 29 @ 0x0048D5D7 */
+  // 如果相等则跳转到 0x48d5d1
+  /* 代码块 29 @ 0x0048D5D7 */
   // CMP byte ptr [ebp - 0xf], 0 (set flags)
-  // if (equal) goto 0x48d530
-  // TEST eax, eax (set flags)
-  // if (equal) goto 0x48d572
-  /* Block 30 @ 0x0048DE1D */
+  // 如果相等则跳转到 0x48d530
+  // 测试 eax 是否为零（设置标志位）
+  // 如果相等则跳转到 0x48d572
+  /* 代码块 30 @ 0x0048DE1D */
   // CMP dword ptr [ebp - 0x14], -1 (set flags)
-  // if (not equal) goto 0x48de33
-  /* Block 31 @ 0x0048DE05 */
+  // 如果不相等则跳转到 0x48de33
+  /* 代码块 31 @ 0x0048DE05 */
   // inc dword ptr [ebp - 4]
-  // push edi
-  // call 0x0048DEC5
+  // 保存寄存器 edi
+  // 直接调用函数 0x0048DEC5
   call(0x0048DEC5);
-  /* Block 32 @ 0x0048DE54 */
-  // pop ecx
-  // pop ecx
+  /* 代码块 32 @ 0x0048DE54 */
+  // 恢复寄存器 ecx
+  // 恢复寄存器 ecx
   goto 0x48de6f;
-  /* Block 33 @ 0x0048D4EB */
+  /* 代码块 33 @ 0x0048D4EB */
   // movzx eax, byte ptr [esi + 1]
   // inc esi
-  // push eax
-  // call 0x00482D59
+  // 保存寄存器 eax
+  // 直接调用函数 0x00482D59
   call(0x00482D59);
-  /* Block 34 @ 0x0048D579 */
+  /* 代码块 34 @ 0x0048D579 */
   // CMP ebx, 0x2a (set flags)
-  // if (equal) goto 0x48d5b0
-  /* Block 35 @ 0x0048D5D1 */
+  // 如果相等则跳转到 0x48d5b0
+  /* 代码块 35 @ 0x0048D5D1 */
   // dec byte ptr [ebp - 0xd]
   // dec byte ptr [ebp - 5]
   // CMP byte ptr [ebp - 0xf], 0 (set flags)
-  // if (equal) goto 0x48d530
-  /* Block 36 @ 0x0048D5BA */
+  // 如果相等则跳转到 0x48d530
+  /* 代码块 36 @ 0x0048D5BA */
   // CMP ebx, 0x6c (set flags)
-  // if (equal) goto 0x48d5c9
+  // 如果相等则跳转到 0x48d5c9
   // movzx ebx, byte ptr [esi + 1]
   // inc esi
   // CMP dword ptr [0x2fd9ac0], 1 (set flags)
   // if (less or equal) goto 0x48d54d
-  /* Block 37 @ 0x0048D5E1 */
+  /* 代码块 37 @ 0x0048D5E1 */
   // CMP byte ptr [ebp - 0xe], 0 (set flags)
   // mov dword ptr [ebp + 0xc], esi
-  // if (not equal) goto 0x48d5fc
-  /* Block 38 @ 0x0048DE23 */
+  // 如果不相等则跳转到 0x48d5fc
+  /* 代码块 38 @ 0x0048DE23 */
   // CMP byte ptr [esi], 0x25 (set flags)
-  // if (not equal) goto 0x48de75
-  /* Block 39 @ 0x0048DE33 */
+  // 如果不相等则跳转到 0x48de75
+  /* 代码块 39 @ 0x0048DE33 */
   // mov al, byte ptr [esi]
   // TEST al, al (set flags)
-  // if (not equal) goto 0x48d493
-  /* Block 40 @ 0x0048DE0E */
-  // pop ecx
-  // movzx ecx, byte ptr [esi]
+  // 如果不相等则跳转到 0x48d493
+  /* 代码块 40 @ 0x0048DE0E */
+  // 恢复寄存器 ecx
+  // 读取字节并零扩展到 ecx [esi]
   // inc esi
   // CMP ecx, eax (set flags)
   // mov dword ptr [ebp + 0xc], esi
-  // if (not equal) goto 0x48de58
-  /* Block 41 @ 0x0048D4F6 */
-  // pop ecx
+  // 如果不相等则跳转到 0x48de58
+  /* 代码块 41 @ 0x0048D4F6 */
+  // 恢复寄存器 ecx
   goto 0x48d4e7;
-  /* Block 42 @ 0x0048D5B0 */
+  /* 代码块 42 @ 0x0048D5B0 */
   // inc byte ptr [ebp - 0xe]
   goto 0x48d5d7;
-  /* Block 43 @ 0x0048D57E */
+  /* 代码块 43 @ 0x0048D57E */
   // CMP ebx, 0x46 (set flags)
-  // if (equal) goto 0x48d5d7
-  /* Block 44 @ 0x0048D5C9 */
+  // 如果相等则跳转到 0x48d5d7
+  /* 代码块 44 @ 0x0048D5C9 */
   // inc byte ptr [ebp - 0xd]
   // inc byte ptr [ebp - 5]
   goto 0x48d5d7;
-  /* Block 45 @ 0x0048D5BF */
+  /* 代码块 45 @ 0x0048D5BF */
   // CMP ebx, 0x77 (set flags)
-  // if (equal) goto 0x48d5cc
-  /* Block 46 @ 0x0048D5EA */
-  // mov eax, dword ptr [ebp + 0x10]
+  // 如果相等则跳转到 0x48d5cc
+  /* 代码块 46 @ 0x0048D5EA */
+  // 读取全局变量值 [ebp + 0x10]
   // mov dword ptr [ebp - 0x44], eax
   // add eax, 4
   // mov dword ptr [ebp + 0x10], eax
-  // mov eax, dword ptr [eax - 4]
+  // 读取全局变量值 [eax - 4]
   // mov dword ptr [ebp - 0x2c], eax
   // and byte ptr [ebp - 0xf], 0
   // CMP byte ptr [ebp - 5], 0 (set flags)
-  // if (not equal) goto 0x48d61a
+  // 如果不相等则跳转到 0x48d61a
   // and byte ptr [ebp - 0xf], 0
   // CMP byte ptr [ebp - 5], 0 (set flags)
-  // if (not equal) goto 0x48d61a
-  /* Block 47 @ 0x0048DE28 */
-  // mov eax, dword ptr [ebp + 0xc]
+  // 如果不相等则跳转到 0x48d61a
+  /* 代码块 47 @ 0x0048DE28 */
+  // 读取全局变量值 [ebp + 0xc]
   // CMP byte ptr [eax + 1], 0x6e (set flags)
-  // if (not equal) goto 0x48de75
+  // 如果不相等则跳转到 0x48de75
 }
 /* ============================================ */
 /*           FULL ASSEMBLY LISTING              */

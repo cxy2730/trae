@@ -58,9 +58,9 @@
     "www.exuik.com"
   ],
   "bypass": [
-    "Hook IsDebuggerPresent",
-    "Intercept mbNetSendWsText",
-    "Use mbSetProxy for MITM",
-    "Patch ACE loading"
+    "Hook IsDebuggerPresent 返回 FALSE 绕过反调试",
+    "拦截 mbNetSendWsText 卡密验证消息",
+    "使用 mbSetProxy 设置 MITM 代理拦截请求",
+    "Patch ACE 反作弊组件加载检查"
   ]
 }

@@ -1,303 +1,315 @@
-/**
- * Function: sub_461930
- * Address: 0x00461930
- * Blocks: 128
- * Instructions: 298
- * Analyzed with angr + capstone
+
+/*
+ * ============================================================
+ * KG.exe 反编译分析 - sub_461930
+ * ============================================================
+ *
+ * 函数地址: 0x00461930
+ * 基本块数: 128
+ * 指令数:   298
+ * 复杂度:   中复杂度
+ *
+ * 功能推测: 系统核心逻辑/调度函数
+ * 技术分析: 使用 angr 符号执行 + capstone 反汇编
+ *
+ * 注: 本文件为自动反编译结果, 可能包含不准确的变量名和类型
+ *     实际逻辑需结合上下文和运行时分析验证
+ * ============================================================
  */
+
 void* sub_461930(void) {
 
-  /* Block 1 @ 0x00461930 */
+  /* 代码块 1 @ 0x00461930 */
   // mov ecx, dword ptr [esp + 4]
-  // mov eax, dword ptr [ecx + 8]
+  // 读取全局变量值 [ecx + 8]
   // CMP eax, 0xed8 (set flags)
   // if (greater) goto 0x461ea6
-  /* Block 2 @ 0x00461942 */
-  // if (equal) goto 0x461e80
-  /* Block 3 @ 0x00461EA6 */
+  /* 代码块 2 @ 0x00461942 */
+  // 如果相等则跳转到 0x461e80
+  /* 代码块 3 @ 0x00461EA6 */
   // CMP eax, 0x1450 (set flags)
   // if (greater) goto 0x462148
-  /* Block 4 @ 0x00461E80 */
-  // mov eax, dword ptr [esp + 8]
+  /* 代码块 4 @ 0x00461E80 */
+  // 读取全局变量值 [esp + 8]
   // mov edx, dword ptr [eax*4 + 0x2fb9d88]
-  // mov eax, dword ptr [eax*4 + 0x2fb9dec]
-  /* Block 5 @ 0x00461948 */
+  // 读取全局变量值 [eax*4 + 0x2fb9dec]
+  /* 代码块 5 @ 0x00461948 */
   // CMP eax, 0x960 (set flags)
   // if (greater) goto 0x461c15
-  /* Block 6 @ 0x00461EB1 */
-  // if (equal) goto 0x462122
-  /* Block 7 @ 0x00462148 */
+  /* 代码块 6 @ 0x00461EB1 */
+  // 如果相等则跳转到 0x462122
+  /* 代码块 7 @ 0x00462148 */
   // CMP eax, 0x170c (set flags)
   // if (greater) goto 0x462299
-  /* Block 8 @ 0x00461953 */
-  // if (equal) goto 0x461bef
-  /* Block 9 @ 0x00461C15 */
+  /* 代码块 8 @ 0x00461953 */
+  // 如果相等则跳转到 0x461bef
+  /* 代码块 9 @ 0x00461C15 */
   // CMP eax, 0xc1c (set flags)
   // if (greater) goto 0x461d66
-  /* Block 10 @ 0x00462122 */
-  // mov eax, dword ptr [esp + 8]
+  /* 代码块 10 @ 0x00462122 */
+  // 读取全局变量值 [esp + 8]
   // mov edx, dword ptr [eax*4 + 0x2fba738]
-  // mov eax, dword ptr [eax*4 + 0x2fba788]
-  /* Block 11 @ 0x00461EB7 */
+  // 读取全局变量值 [eax*4 + 0x2fba788]
+  /* 代码块 11 @ 0x00461EB7 */
   // CMP eax, 0x1194 (set flags)
   // if (greater) goto 0x462008
-  /* Block 12 @ 0x00462153 */
-  // if (equal) goto 0x462273
-  /* Block 13 @ 0x00462299 */
+  /* 代码块 12 @ 0x00462153 */
+  // 如果相等则跳转到 0x462273
+  /* 代码块 13 @ 0x00462299 */
   // CMP eax, 0x189c (set flags)
   // if (greater) goto 0x462357
-  /* Block 14 @ 0x00461BEF */
-  // mov eax, dword ptr [esp + 8]
+  /* 代码块 14 @ 0x00461BEF */
+  // 读取全局变量值 [esp + 8]
   // mov edx, dword ptr [eax*4 + 0x2fb9310]
-  // mov eax, dword ptr [eax*4 + 0x2fb935c]
-  /* Block 15 @ 0x00461959 */
+  // 读取全局变量值 [eax*4 + 0x2fb935c]
+  /* 代码块 15 @ 0x00461959 */
   // CMP eax, 0x6a4 (set flags)
   // if (greater) goto 0x461ad5
-  /* Block 16 @ 0x00461C20 */
-  // if (equal) goto 0x461d40
-  /* Block 17 @ 0x00461D66 */
+  /* 代码块 16 @ 0x00461C20 */
+  // 如果相等则跳转到 0x461d40
+  /* 代码块 17 @ 0x00461D66 */
   // CMP eax, 0xdac (set flags)
   // if (greater) goto 0x461e24
-  /* Block 18 @ 0x00461EC2 */
-  // if (equal) goto 0x461fe2
-  /* Block 19 @ 0x00462008 */
+  /* 代码块 18 @ 0x00461EC2 */
+  // 如果相等则跳转到 0x461fe2
+  /* 代码块 19 @ 0x00462008 */
   // CMP eax, 0x1324 (set flags)
   // if (greater) goto 0x4620c6
-  /* Block 20 @ 0x00462273 */
-  // mov eax, dword ptr [esp + 8]
+  /* 代码块 20 @ 0x00462273 */
+  // 读取全局变量值 [esp + 8]
   // mov edx, dword ptr [eax*4 + 0x2fbab20]
-  // mov eax, dword ptr [eax*4 + 0x2fbab4c]
-  /* Block 21 @ 0x00462159 */
+  // 读取全局变量值 [eax*4 + 0x2fbab4c]
+  /* 代码块 21 @ 0x00462159 */
   // CMP eax, 0x15e0 (set flags)
   // if (greater) goto 0x462217
-  /* Block 22 @ 0x004622A4 */
-  // if (equal) goto 0x462331
-  /* Block 23 @ 0x00462357 */
+  /* 代码块 22 @ 0x004622A4 */
+  // 如果相等则跳转到 0x462331
+  /* 代码块 23 @ 0x00462357 */
   // sub eax, 0x1900
-  // if (equal) goto 0x462389
-  /* Block 24 @ 0x00461964 */
-  // if (equal) goto 0x461aaf
-  /* Block 25 @ 0x00461AD5 */
+  // 如果相等则跳转到 0x462389
+  /* 代码块 24 @ 0x00461964 */
+  // 如果相等则跳转到 0x461aaf
+  /* 代码块 25 @ 0x00461AD5 */
   // CMP eax, 0x834 (set flags)
   // if (greater) goto 0x461b93
-  /* Block 26 @ 0x00461D40 */
-  // mov eax, dword ptr [esp + 8]
+  /* 代码块 26 @ 0x00461D40 */
+  // 读取全局变量值 [esp + 8]
   // mov edx, dword ptr [eax*4 + 0x2fb9880]
-  // mov eax, dword ptr [eax*4 + 0x2fb98e0]
-  /* Block 27 @ 0x00461C26 */
+  // 读取全局变量值 [eax*4 + 0x2fb98e0]
+  /* 代码块 27 @ 0x00461C26 */
   // CMP eax, 0xaf0 (set flags)
   // if (greater) goto 0x461ce4
-  /* Block 28 @ 0x00461D71 */
-  // if (equal) goto 0x461dfe
-  /* Block 29 @ 0x00461E24 */
+  /* 代码块 28 @ 0x00461D71 */
+  // 如果相等则跳转到 0x461dfe
+  /* 代码块 29 @ 0x00461E24 */
   // sub eax, 0xe10
-  // if (equal) goto 0x461e5a
-  /* Block 30 @ 0x00461FE2 */
-  // mov eax, dword ptr [esp + 8]
+  // 如果相等则跳转到 0x461e5a
+  /* 代码块 30 @ 0x00461FE2 */
+  // 读取全局变量值 [esp + 8]
   // mov edx, dword ptr [eax*4 + 0x2fba2e8]
-  // mov eax, dword ptr [eax*4 + 0x2fba340]
-  /* Block 31 @ 0x00461EC8 */
+  // 读取全局变量值 [eax*4 + 0x2fba340]
+  /* 代码块 31 @ 0x00461EC8 */
   // CMP eax, 0x1068 (set flags)
   // if (greater) goto 0x461f86
-  /* Block 32 @ 0x00462013 */
-  // if (equal) goto 0x4620a0
-  /* Block 33 @ 0x004620C6 */
+  /* 代码块 32 @ 0x00462013 */
+  // 如果相等则跳转到 0x4620a0
+  /* 代码块 33 @ 0x004620C6 */
   // sub eax, 0x1388
-  // if (equal) goto 0x4620fc
-  /* Block 34 @ 0x00462164 */
-  // if (equal) goto 0x4621f1
-  /* Block 35 @ 0x00462217 */
+  // 如果相等则跳转到 0x4620fc
+  /* 代码块 34 @ 0x00462164 */
+  // 如果相等则跳转到 0x4621f1
+  /* 代码块 35 @ 0x00462217 */
   // sub eax, 0x1644
-  // if (equal) goto 0x46224d
-  /* Block 36 @ 0x00462331 */
-  // mov eax, dword ptr [esp + 8]
+  // 如果相等则跳转到 0x46224d
+  /* 代码块 36 @ 0x00462331 */
+  // 读取全局变量值 [esp + 8]
   // mov edx, dword ptr [eax*4 + 0x2fbac80]
-  // mov eax, dword ptr [eax*4 + 0x2fbacac]
-  /* Block 37 @ 0x004622AA */
+  // 读取全局变量值 [eax*4 + 0x2fbacac]
+  /* 代码块 37 @ 0x004622AA */
   // sub eax, 0x1770
-  // if (equal) goto 0x46230b
-  /* Block 38 @ 0x00462389 */
-  // mov eax, dword ptr [esp + 8]
+  // 如果相等则跳转到 0x46230b
+  /* 代码块 38 @ 0x00462389 */
+  // 读取全局变量值 [esp + 8]
   // mov edx, dword ptr [eax*4 + 0x2fbacd8]
-  // mov eax, dword ptr [eax*4 + 0x2fbad04]
-  /* Block 39 @ 0x0046235E */
+  // 读取全局变量值 [eax*4 + 0x2fbad04]
+  /* 代码块 39 @ 0x0046235E */
   // sub eax, 0x64
-  // if (not equal) goto 0x4623ae
-  /* Block 40 @ 0x00461AAF */
-  // mov eax, dword ptr [esp + 8]
+  // 如果不相等则跳转到 0x4623ae
+  /* 代码块 40 @ 0x00461AAF */
+  // 读取全局变量值 [esp + 8]
   // mov edx, dword ptr [eax*4 + 0x2fb8f50]
-  // mov eax, dword ptr [eax*4 + 0x2fb8f80]
-  /* Block 41 @ 0x0046196A */
+  // 读取全局变量值 [eax*4 + 0x2fb8f80]
+  /* 代码块 41 @ 0x0046196A */
   // CMP eax, 0x514 (set flags)
   // if (greater) goto 0x461a28
-  /* Block 42 @ 0x00461AE0 */
-  // if (equal) goto 0x461b6d
-  /* Block 43 @ 0x00461B93 */
+  /* 代码块 42 @ 0x00461AE0 */
+  // 如果相等则跳转到 0x461b6d
+  /* 代码块 43 @ 0x00461B93 */
   // sub eax, 0x898
-  // if (equal) goto 0x461bc9
-  /* Block 44 @ 0x00461C31 */
-  // if (equal) goto 0x461cbe
-  /* Block 45 @ 0x00461CE4 */
+  // 如果相等则跳转到 0x461bc9
+  /* 代码块 44 @ 0x00461C31 */
+  // 如果相等则跳转到 0x461cbe
+  /* 代码块 45 @ 0x00461CE4 */
   // sub eax, 0xb54
-  // if (equal) goto 0x461d1a
-  /* Block 46 @ 0x00461DFE */
-  // mov eax, dword ptr [esp + 8]
+  // 如果相等则跳转到 0x461d1a
+  /* 代码块 46 @ 0x00461DFE */
+  // 读取全局变量值 [esp + 8]
   // mov edx, dword ptr [eax*4 + 0x2fb9ba0]
-  // mov eax, dword ptr [eax*4 + 0x2fb9c20]
-  /* Block 47 @ 0x00461D77 */
+  // 读取全局变量值 [eax*4 + 0x2fb9c20]
+  /* 代码块 47 @ 0x00461D77 */
   // sub eax, 0xc80
-  // if (equal) goto 0x461dd8
-  /* Block 48 @ 0x00461E5A */
-  // mov eax, dword ptr [esp + 8]
+  // 如果相等则跳转到 0x461dd8
+  /* 代码块 48 @ 0x00461E5A */
+  // 读取全局变量值 [esp + 8]
   // mov edx, dword ptr [eax*4 + 0x2fb9ca0]
-  // mov eax, dword ptr [eax*4 + 0x2fb9cc8]
-  /* Block 49 @ 0x00461E2B */
+  // 读取全局变量值 [eax*4 + 0x2fb9cc8]
+  /* 代码块 49 @ 0x00461E2B */
   // sub eax, 0x64
-  // if (not equal) goto 0x4623ae
-  /* Block 50 @ 0x00461ED3 */
-  // if (equal) goto 0x461f60
-  /* Block 51 @ 0x00461F86 */
+  // 如果不相等则跳转到 0x4623ae
+  /* 代码块 50 @ 0x00461ED3 */
+  // 如果相等则跳转到 0x461f60
+  /* 代码块 51 @ 0x00461F86 */
   // sub eax, 0x10cc
-  // if (equal) goto 0x461fbc
-  /* Block 52 @ 0x004620A0 */
-  // mov eax, dword ptr [esp + 8]
+  // 如果相等则跳转到 0x461fbc
+  /* 代码块 52 @ 0x004620A0 */
+  // 读取全局变量值 [esp + 8]
   // mov edx, dword ptr [eax*4 + 0x2fba5b8]
-  // mov eax, dword ptr [eax*4 + 0x2fba5f8]
-  /* Block 53 @ 0x00462019 */
+  // 读取全局变量值 [eax*4 + 0x2fba5f8]
+  /* 代码块 53 @ 0x00462019 */
   // sub eax, 0x11f8
-  // if (equal) goto 0x46207a
-  /* Block 54 @ 0x004620FC */
-  // mov eax, dword ptr [esp + 8]
+  // 如果相等则跳转到 0x46207a
+  /* 代码块 54 @ 0x004620FC */
+  // 读取全局变量值 [esp + 8]
   // mov edx, dword ptr [eax*4 + 0x2fba638]
-  // mov eax, dword ptr [eax*4 + 0x2fba678]
-  /* Block 55 @ 0x004620CD */
+  // 读取全局变量值 [eax*4 + 0x2fba678]
+  /* 代码块 55 @ 0x004620CD */
   // sub eax, 0x64
-  // if (not equal) goto 0x4623ae
-  /* Block 56 @ 0x004621F1 */
-  // mov eax, dword ptr [esp + 8]
+  // 如果不相等则跳转到 0x4623ae
+  /* 代码块 56 @ 0x004621F1 */
+  // 读取全局变量值 [esp + 8]
   // mov edx, dword ptr [eax*4 + 0x2fbaa18]
-  // mov eax, dword ptr [eax*4 + 0x2fbaa44]
-  /* Block 57 @ 0x0046216A */
+  // 读取全局变量值 [eax*4 + 0x2fbaa44]
+  /* 代码块 57 @ 0x0046216A */
   // sub eax, 0x14b4
-  // if (equal) goto 0x4621cb
-  /* Block 58 @ 0x0046224D */
-  // mov eax, dword ptr [esp + 8]
+  // 如果相等则跳转到 0x4621cb
+  /* 代码块 58 @ 0x0046224D */
+  // 读取全局变量值 [esp + 8]
   // mov edx, dword ptr [eax*4 + 0x2fbaa70]
-  // mov eax, dword ptr [eax*4 + 0x2fbaa9c]
-  /* Block 59 @ 0x0046221E */
+  // 读取全局变量值 [eax*4 + 0x2fbaa9c]
+  /* 代码块 59 @ 0x0046221E */
   // sub eax, 0x64
-  // if (not equal) goto 0x4623ae
-  /* Block 60 @ 0x0046230B */
-  // mov eax, dword ptr [esp + 8]
+  // 如果不相等则跳转到 0x4623ae
+  /* 代码块 60 @ 0x0046230B */
+  // 读取全局变量值 [esp + 8]
   // mov edx, dword ptr [eax*4 + 0x2fbab78]
-  // mov eax, dword ptr [eax*4 + 0x2fbaba4]
-  /* Block 61 @ 0x004622B1 */
+  // 读取全局变量值 [eax*4 + 0x2fbaba4]
+  /* 代码块 61 @ 0x004622B1 */
   // sub eax, 0x64
-  // if (equal) goto 0x4622e5
-  /* Block 62 @ 0x00462363 */
-  // mov eax, dword ptr [esp + 8]
+  // 如果相等则跳转到 0x4622e5
+  /* 代码块 62 @ 0x00462363 */
+  // 读取全局变量值 [esp + 8]
   // mov edx, dword ptr [eax*4 + 0x2fbad30]
-  // mov eax, dword ptr [eax*4 + 0x2fbad5c]
-  /* Block 63 @ 0x004623AE */
+  // 读取全局变量值 [eax*4 + 0x2fbad5c]
+  /* 代码块 63 @ 0x004623AE */
   return;
-  /* Block 64 @ 0x00461975 */
-  // if (equal) goto 0x461a02
-  /* Block 65 @ 0x00461A28 */
+  /* 代码块 64 @ 0x00461975 */
+  // 如果相等则跳转到 0x461a02
+  /* 代码块 65 @ 0x00461A28 */
   // sub eax, 0x578
-  // if (equal) goto 0x461a89
-  /* Block 66 @ 0x00461B6D */
-  // mov eax, dword ptr [esp + 8]
+  // 如果相等则跳转到 0x461a89
+  /* 代码块 66 @ 0x00461B6D */
+  // 读取全局变量值 [esp + 8]
   // mov edx, dword ptr [eax*4 + 0x2fb9178]
-  // mov eax, dword ptr [eax*4 + 0x2fb91c0]
-  /* Block 67 @ 0x00461AE6 */
+  // 读取全局变量值 [eax*4 + 0x2fb91c0]
+  /* 代码块 67 @ 0x00461AE6 */
   // sub eax, 0x708
-  // if (equal) goto 0x461b47
-  /* Block 68 @ 0x00461BC9 */
-  // mov eax, dword ptr [esp + 8]
+  // 如果相等则跳转到 0x461b47
+  /* 代码块 68 @ 0x00461BC9 */
+  // 读取全局变量值 [esp + 8]
   // mov edx, dword ptr [eax*4 + 0x2fb9208]
-  // mov eax, dword ptr [eax*4 + 0x2fb9244]
-  /* Block 69 @ 0x00461B9A */
+  // 读取全局变量值 [eax*4 + 0x2fb9244]
+  /* 代码块 69 @ 0x00461B9A */
   // sub eax, 0x64
-  // if (not equal) goto 0x4623ae
-  /* Block 70 @ 0x00461CBE */
-  // mov eax, dword ptr [esp + 8]
+  // 如果不相等则跳转到 0x4623ae
+  /* 代码块 70 @ 0x00461CBE */
+  // 读取全局变量值 [esp + 8]
   // mov edx, dword ptr [eax*4 + 0x2fb9688]
-  // mov eax, dword ptr [eax*4 + 0x2fb96d0]
-  /* Block 71 @ 0x00461C37 */
+  // 读取全局变量值 [eax*4 + 0x2fb96d0]
+  /* 代码块 71 @ 0x00461C37 */
   // sub eax, 0x9c4
-  // if (equal) goto 0x461c98
-  /* Block 72 @ 0x00461D1A */
-  // mov eax, dword ptr [esp + 8]
+  // 如果相等则跳转到 0x461c98
+  /* 代码块 72 @ 0x00461D1A */
+  // 读取全局变量值 [esp + 8]
   // mov edx, dword ptr [eax*4 + 0x2fb9718]
-  // mov eax, dword ptr [eax*4 + 0x2fb9774]
-  /* Block 73 @ 0x00461CEB */
+  // 读取全局变量值 [eax*4 + 0x2fb9774]
+  /* 代码块 73 @ 0x00461CEB */
   // sub eax, 0x64
-  // if (not equal) goto 0x4623ae
-  /* Block 74 @ 0x00461DD8 */
-  // mov eax, dword ptr [esp + 8]
+  // 如果不相等则跳转到 0x4623ae
+  /* 代码块 74 @ 0x00461DD8 */
+  // 读取全局变量值 [esp + 8]
   // mov edx, dword ptr [eax*4 + 0x2fb9940]
-  // mov eax, dword ptr [eax*4 + 0x2fb9990]
-  /* Block 75 @ 0x00461D7E */
+  // 读取全局变量值 [eax*4 + 0x2fb9990]
+  /* 代码块 75 @ 0x00461D7E */
   // sub eax, 0x64
-  // if (equal) goto 0x461db2
-  /* Block 76 @ 0x00461E34 */
-  // mov eax, dword ptr [esp + 8]
+  // 如果相等则跳转到 0x461db2
+  /* 代码块 76 @ 0x00461E34 */
+  // 读取全局变量值 [esp + 8]
   // mov edx, dword ptr [eax*4 + 0x2fb9cf0]
-  // mov eax, dword ptr [eax*4 + 0x2fb9d3c]
-  /* Block 77 @ 0x00461F60 */
-  // mov eax, dword ptr [esp + 8]
+  // 读取全局变量值 [eax*4 + 0x2fb9d3c]
+  /* 代码块 77 @ 0x00461F60 */
+  // 读取全局变量值 [esp + 8]
   // mov edx, dword ptr [eax*4 + 0x2fba058]
-  // mov eax, dword ptr [eax*4 + 0x2fba0dc]
-  /* Block 78 @ 0x00461ED9 */
+  // 读取全局变量值 [eax*4 + 0x2fba0dc]
+  /* 代码块 78 @ 0x00461ED9 */
   // sub eax, 0xf3c
-  // if (equal) goto 0x461f3a
-  /* Block 79 @ 0x00461FBC */
-  // mov eax, dword ptr [esp + 8]
+  // 如果相等则跳转到 0x461f3a
+  /* 代码块 79 @ 0x00461FBC */
+  // 读取全局变量值 [esp + 8]
   // mov edx, dword ptr [eax*4 + 0x2fba160]
-  // mov eax, dword ptr [eax*4 + 0x2fba1f8]
-  /* Block 80 @ 0x00461F8D */
+  // 读取全局变量值 [eax*4 + 0x2fba1f8]
+  /* 代码块 80 @ 0x00461F8D */
   // sub eax, 0x64
-  // if (not equal) goto 0x4623ae
-  /* Block 81 @ 0x0046207A */
-  // mov eax, dword ptr [esp + 8]
+  // 如果不相等则跳转到 0x4623ae
+  /* 代码块 81 @ 0x0046207A */
+  // 读取全局变量值 [esp + 8]
   // mov edx, dword ptr [eax*4 + 0x2fba398]
-  // mov eax, dword ptr [eax*4 + 0x2fba408]
-  /* Block 82 @ 0x00462020 */
+  // 读取全局变量值 [eax*4 + 0x2fba408]
+  /* 代码块 82 @ 0x00462020 */
   // sub eax, 0x64
-  // if (equal) goto 0x462054
-  /* Block 83 @ 0x004620D6 */
-  // mov eax, dword ptr [esp + 8]
+  // 如果相等则跳转到 0x462054
+  /* 代码块 83 @ 0x004620D6 */
+  // 读取全局变量值 [esp + 8]
   // mov edx, dword ptr [eax*4 + 0x2fba6b8]
-  // mov eax, dword ptr [eax*4 + 0x2fba6f8]
-  /* Block 84 @ 0x004621CB */
-  // mov eax, dword ptr [esp + 8]
+  // 读取全局变量值 [eax*4 + 0x2fba6f8]
+  /* 代码块 84 @ 0x004621CB */
+  // 读取全局变量值 [esp + 8]
   // mov edx, dword ptr [eax*4 + 0x2fba7d8]
-  // mov eax, dword ptr [eax*4 + 0x2fba824]
-  /* Block 85 @ 0x00462171 */
+  // 读取全局变量值 [eax*4 + 0x2fba824]
+  /* 代码块 85 @ 0x00462171 */
   // sub eax, 0x64
-  // if (equal) goto 0x4621a5
-  /* Block 86 @ 0x00462227 */
-  // mov eax, dword ptr [esp + 8]
+  // 如果相等则跳转到 0x4621a5
+  /* 代码块 86 @ 0x00462227 */
+  // 读取全局变量值 [esp + 8]
   // mov edx, dword ptr [eax*4 + 0x2fbaac8]
-  // mov eax, dword ptr [eax*4 + 0x2fbaaf4]
-  /* Block 87 @ 0x004622E5 */
-  // mov eax, dword ptr [esp + 8]
+  // 读取全局变量值 [eax*4 + 0x2fbaaf4]
+  /* 代码块 87 @ 0x004622E5 */
+  // 读取全局变量值 [esp + 8]
   // mov edx, dword ptr [eax*4 + 0x2fbabd0]
-  // mov eax, dword ptr [eax*4 + 0x2fbabfc]
-  /* Block 88 @ 0x004622B6 */
+  // 读取全局变量值 [eax*4 + 0x2fbabfc]
+  /* 代码块 88 @ 0x004622B6 */
   // sub eax, 0x64
-  // if (not equal) goto 0x4623ae
-  /* Block 89 @ 0x00461A02 */
-  // mov eax, dword ptr [esp + 8]
+  // 如果不相等则跳转到 0x4623ae
+  /* 代码块 89 @ 0x00461A02 */
+  // 读取全局变量值 [esp + 8]
   // mov edx, dword ptr [eax*4 + 0x2fb8d30]
-  // mov eax, dword ptr [eax*4 + 0x2fb8d80]
-  /* Block 90 @ 0x0046197B */
+  // 读取全局变量值 [eax*4 + 0x2fb8d80]
+  /* 代码块 90 @ 0x0046197B */
   // sub eax, 0x3e8
-  // if (equal) goto 0x4619dc
-  /* Block 91 @ 0x00461A89 */
-  // mov eax, dword ptr [esp + 8]
+  // 如果相等则跳转到 0x4619dc
+  /* 代码块 91 @ 0x00461A89 */
+  // 读取全局变量值 [esp + 8]
   // mov edx, dword ptr [eax*4 + 0x2fb8dd0]
-  // mov eax, dword ptr [eax*4 + 0x2fb8e14]
+  // 读取全局变量值 [eax*4 + 0x2fb8e14]
 }
 /* ============================================ */
 /*           FULL ASSEMBLY LISTING              */

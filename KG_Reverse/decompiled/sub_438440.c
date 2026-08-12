@@ -1,23 +1,35 @@
-/**
- * Function: sub_438440
- * Address: 0x00438440
- * Blocks: 188
- * Instructions: 1311
- * Analyzed with angr + capstone
+
+/*
+ * ============================================================
+ * KG.exe 反编译分析 - sub_438440
+ * ============================================================
+ *
+ * 函数地址: 0x00438440
+ * 基本块数: 188
+ * 指令数:   1311
+ * 复杂度:   中复杂度
+ *
+ * 功能推测: 系统核心逻辑/调度函数
+ * 技术分析: 使用 angr 符号执行 + capstone 反汇编
+ *
+ * 注: 本文件为自动反编译结果, 可能包含不准确的变量名和类型
+ *     实际逻辑需结合上下文和运行时分析验证
+ * ============================================================
  */
+
 void* sub_438440(void) {
 
-  /* Block 1 @ 0x00438440 */
-  // sub esp, 0x34
-  // push ebx
-  // push ebp
-  // push esi
+  /* 代码块 1 @ 0x00438440 */
+  // 分配 0x34 字节栈空间
+  // 保存寄存器 ebx
+  // 保存寄存器 ebp
+  // 保存寄存器 esi
   // mov esi, ecx
-  // xor ecx, ecx
-  // xor edx, edx
-  // mov eax, dword ptr [esi + 0xb4]
+  // ecx 清零
+  // edx 清零
+  // 读取全局变量值 [esi + 0xb4]
   // mov ebp, dword ptr [esi + 0x94]
-  // push edi
+  // 保存寄存器 edi
   // add ebp, 9
   // mov cx, word ptr [eax]
   // add eax, 2
@@ -25,7 +37,7 @@ void* sub_438440(void) {
   // mov dword ptr [esi + 0xb4], eax
   // mov dx, word ptr [eax]
   // add eax, 2
-  // xor ecx, ecx
+  // ecx 清零
   // mov dword ptr [esi + 0x5c], edx
   // mov dword ptr [esi + 0xb4], eax
   // mov cx, word ptr [eax]
@@ -37,7 +49,7 @@ void* sub_438440(void) {
   // mov dword ptr [esi + 0xb4], eax
   // add eax, 2
   // lea ecx, [edx + 1]
-  // xor edx, edx
+  // edx 清零
   // mov dword ptr [esi + 0x6c], ecx
   // mov dx, word ptr [eax - 2]
   // mov dword ptr [esi + 0x58], edx
@@ -45,25 +57,25 @@ void* sub_438440(void) {
   // mov dl, byte ptr [eax]
   // inc eax
   // mov dword ptr [esi + 0xb4], eax
-  // mov eax, dword ptr [esi + 0x58]
+  // 读取全局变量值 [esi + 0x58]
   // imul eax, ecx
   // mov dword ptr [esi + 0x98], eax
   // add eax, 0x6428
-  // push eax
+  // 保存寄存器 eax
   // mov byte ptr [esi + 0x3d], dl
   // mov dword ptr [esi + 0x94], ebp
-  // call 0x00492F17
+  // 直接调用函数 0x00492F17
   call(0x00492F17);
-  /* Block 2 @ 0x004384D2 */
+  /* 代码块 2 @ 0x004384D2 */
   // mov edx, dword ptr [esi + 0x98]
   // mov edi, eax
   // add esp, 4
-  // mov dword ptr [esp + 0x24], edi
+  // 写入栈变量 [esp+0x24] = edi
   // lea eax, [edi + 0x28]
   // lea ecx, [eax + 0x400]
   // mov dword ptr [esi + 0xac], ecx
   // add ecx, edx
-  // mov dword ptr [esp + 0x30], ecx
+  // 写入栈变量 [esp+0x30] = ecx
   // add ecx, 2
   // mov edx, 0x1000
   // xor ebx, ebx
@@ -71,14 +83,14 @@ void* sub_438440(void) {
   // mov word ptr [ecx], bx
   // add ecx, 6
   // dec edx
-  // if (not equal) goto 0x438500
-  /* Block 3 @ 0x0043850D */
+  // 如果不相等则跳转到 0x438500
+  /* 代码块 3 @ 0x0043850D */
   // mov dword ptr [edi], 0x28
   // mov ecx, dword ptr [esi + 0x54]
   // mov dword ptr [edi + 4], ecx
   // mov edx, dword ptr [esi + 0x58]
   // neg edx
-  // mov ecx, 0x100
+  // 加载常量 0x100
   // mov dword ptr [edi + 8], edx
   // mov word ptr [edi + 0xc], 1
   // mov word ptr [edi + 0xe], 8
@@ -90,35 +102,35 @@ void* sub_438440(void) {
   // mov dword ptr [edi + 0x24], ecx
   // mov cl, byte ptr [esi + 0x3d]
   // TEST cl, 0x80 (set flags)
-  // if (equal) goto 0x4385f0
+  // 如果相等则跳转到 0x4385f0
   // mov word ptr [ecx + 2], bx
   // mov word ptr [ecx], bx
   // add ecx, 6
   // dec edx
-  // if (not equal) goto 0x438500
-  /* Block 4 @ 0x004385F0 */
+  // 如果不相等则跳转到 0x438500
+  /* 代码块 4 @ 0x004385F0 */
   // mov ecx, dword ptr [esi + 0x88]
   // mov edi, dword ptr [esi + 0xa8]
   // CMP ecx, ebx (set flags)
-  // if (equal) goto 0x438623
-  /* Block 5 @ 0x00438550 */
+  // 如果相等则跳转到 0x438623
+  /* 代码块 5 @ 0x00438550 */
   // and ecx, 7
   // mov edi, 1
   // inc ecx
   // shl edi, cl
   // CMP dword ptr [esi + 0x88], ebx (set flags)
-  // if (equal) goto 0x43858d
-  /* Block 6 @ 0x00438623 */
+  // 如果相等则跳转到 0x43858d
+  /* 代码块 6 @ 0x00438623 */
   // mov edx, dword ptr [esi + 0x80]
-  // xor ecx, ecx
+  // ecx 清零
   // CMP edx, ebx (set flags)
   // if (less or equal) goto 0x438653
-  /* Block 7 @ 0x00438600 */
+  /* 代码块 7 @ 0x00438600 */
   // mov ebp, dword ptr [esi + 0x8c]
-  // xor ecx, ecx
+  // ecx 清零
   // lea edx, [edi + ebp*2]
   // add ebp, edx
-  // xor edx, edx
+  // edx 清零
   // mov ch, byte ptr [ebp + 2]
   // mov dl, byte ptr [ebp]
   // mov cl, byte ptr [ebp + 1]
@@ -126,23 +138,23 @@ void* sub_438440(void) {
   // or ecx, edx
   // mov dword ptr [esi + 0xa0], ecx
   // mov edx, dword ptr [esi + 0x80]
-  // xor ecx, ecx
+  // ecx 清零
   // CMP edx, ebx (set flags)
   // if (less or equal) goto 0x438653
-  /* Block 8 @ 0x0043858D */
+  /* 代码块 8 @ 0x0043858D */
   // mov edx, dword ptr [esi + 0x94]
   // lea ecx, [edi + edi*2]
   // add edx, ecx
   // CMP edi, ebx (set flags)
   // mov dword ptr [esi + 0x94], edx
   // if (below or equal) goto 0x438653
-  /* Block 9 @ 0x00438563 */
+  /* 代码块 9 @ 0x00438563 */
   // mov ecx, dword ptr [esi + 0x8c]
   // mov edx, dword ptr [esi + 0xb4]
   // lea ecx, [ecx + ecx*2]
   // lea ebp, [ecx + edx]
-  // xor ecx, ecx
-  // xor edx, edx
+  // ecx 清零
+  // edx 清零
   // mov ch, byte ptr [ebp + 2]
   // mov dl, byte ptr [ebp]
   // mov cl, byte ptr [ebp + 1]
@@ -155,14 +167,14 @@ void* sub_438440(void) {
   // CMP edi, ebx (set flags)
   // mov dword ptr [esi + 0x94], edx
   // if (below or equal) goto 0x438653
-  /* Block 10 @ 0x00438653 */
-  // mov eax, dword ptr [esi + 0xb4]
-  // xor ecx, ecx
+  /* 代码块 10 @ 0x00438653 */
+  // 读取全局变量值 [esi + 0xb4]
+  // ecx 清零
   // mov edx, 1
   // mov cl, byte ptr [eax]
   // inc eax
   // mov dword ptr [esi + 0xb4], eax
-  // mov eax, dword ptr [esi + 0x94]
+  // 读取全局变量值 [esi + 0x94]
   // inc eax
   // mov dword ptr [esi + 0x40], ecx
   // mov dword ptr [esi + 0x94], eax
@@ -176,22 +188,22 @@ void* sub_438440(void) {
   // mov dword ptr [esi + 0x7c], ebx
   // add eax, 2
   // mov dword ptr [esi + 0x78], ebx
-  // mov dword ptr [esp + 0x18], eax
-  // mov dword ptr [esp + 0x14], eax
+  // 写入栈变量 [esp+0x18] = eax
+  // 写入栈变量 [esp+0x14] = eax
   // dec eax
   // inc ecx
-  // mov dword ptr [esp + 0x40], eax
-  // mov eax, dword ptr [esi + 0x40]
+  // 写入栈变量 [esp+0x40] = eax
+  // 读取全局变量值 [esi + 0x40]
   // inc eax
   // mov dword ptr [esi + 0x44], ecx
   // mov dword ptr [esi + 0x40], eax
   // mov dword ptr [esi + 0x64], edx
   // mov dword ptr [esi + 0x68], ebx
-  // mov eax, dword ptr [esi + 0x48]
+  // 读取全局变量值 [esi + 0x48]
   // mov ecx, dword ptr [esi + 0x40]
   // CMP eax, ecx (set flags)
   // if (below) goto 0x4386ef
-  /* Block 11 @ 0x0043862F */
+  /* 代码块 11 @ 0x0043862F */
   // mov dl, byte ptr [edi]
   // inc edi
   // mov byte ptr [eax + 2], dl
@@ -207,7 +219,7 @@ void* sub_438440(void) {
   // inc ecx
   // CMP ecx, edx (set flags)
   // if (less) goto 0x43862f
-  /* Block 12 @ 0x004385A6 */
+  /* 代码块 12 @ 0x004385A6 */
   // mov edx, dword ptr [esi + 0xb4]
   // add eax, 4
   // mov cl, byte ptr [edx]

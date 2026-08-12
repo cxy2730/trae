@@ -1,66 +1,78 @@
-/**
- * Function: sub_472280
- * Address: 0x00472280
- * Blocks: 204
- * Instructions: 2344
- * Analyzed with angr + capstone
+
+/*
+ * ============================================================
+ * KG.exe 反编译分析 - sub_472280
+ * ============================================================
+ *
+ * 函数地址: 0x00472280
+ * 基本块数: 204
+ * 指令数:   2344
+ * 复杂度:   高复杂度
+ *
+ * 功能推测: 系统核心逻辑/调度函数
+ * 技术分析: 使用 angr 符号执行 + capstone 反汇编
+ *
+ * 注: 本文件为自动反编译结果, 可能包含不准确的变量名和类型
+ *     实际逻辑需结合上下文和运行时分析验证
+ * ============================================================
  */
+
 void* sub_472280(void) {
 
-  /* Block 1 @ 0x00472280 */
-  // sub esp, 0xc
-  // push ebx
-  // push ebp
-  // push esi
-  // push edi
+  /* 代码块 1 @ 0x00472280 */
+  // 分配 0xc 字节栈空间
+  // 保存寄存器 ebx
+  // 保存寄存器 ebp
+  // 保存寄存器 esi
+  // 保存寄存器 edi
   // mov edi, 0x3012a80
   // xor ebx, ebx
-  // mov dword ptr [esp + 0x14], 0
-  // mov eax, dword ptr [0x3008f8c]
-  // xor esi, esi
+  // 写入栈变量 [esp+0x14] = 0
+  // 读取全局变量值 [0x3008f8c]
+  // esi 清零
   // CMP eax, 0x25 (set flags)
   // if (above) goto 0x473b0f
-  /* Block 2 @ 0x004722A6 */
+  /* 代码块 2 @ 0x004722A6 */
   goto dword ptr [eax*4 + 0x473b34];
-  /* Block 3 @ 0x00473B0F */
-  // mov eax, dword ptr [esp + 0x14]
+  /* 代码块 3 @ 0x00473B0F */
+  // 读取全局变量值 [esp + 0x14]
   // inc eax
   // CMP eax, 4 (set flags)
-  // mov dword ptr [esp + 0x14], eax
+  // 写入栈变量 [esp+0x14] = eax
   // if (less) goto 0x472296
-  /* Block 4 @ 0x00473800 */
-  // push 0xb
-  // call 0x00471D10
+  /* 代码块 4 @ 0x00473800 */
+  // 保存寄存器 0xb
+  // 直接调用函数 0x00471D10
   call(0x00471D10);
-  /* Block 5 @ 0x00472386 */
+  /* 代码块 5 @ 0x00472386 */
   // mov ecx, dword ptr [0x3008d74]
   // CMP ecx, 7 (set flags)
   // if (greater or equal) goto 0x4723c9
-  /* Block 6 @ 0x00473789 */
-  // push 0xa
-  // call 0x00471D10
+  /* 代码块 6 @ 0x00473789 */
+  // 保存寄存器 0xa
+  // 直接调用函数 0x00471D10
   call(0x00471D10);
-  /* Block 7 @ 0x00473B09 */
+  /* 代码块 7 @ 0x00473B09 */
   // add edi, 0x300
-  // mov eax, dword ptr [esp + 0x14]
+  // 读取全局变量值 [esp + 0x14]
   // inc eax
   // CMP eax, 4 (set flags)
-  // mov dword ptr [esp + 0x14], eax
+  // 写入栈变量 [esp+0x14] = eax
   // if (less) goto 0x472296
-  /* Block 8 @ 0x00472611 */
+  /* 代码块 8 @ 0x00472611 */
   // mov ecx, dword ptr [0x3008d74]
   // CMP ecx, 0xc (set flags)
   // if (greater or equal) goto 0x472654
-  /* Block 9 @ 0x00473712 */
-  // push 9
-  // call 0x00471D10
+  /* 代码块 9 @ 0x00473712 */
+  // 保存寄存器 9
+  // 直接调用函数 0x00471D10
   call(0x00471D10);
-  /* Block 10 @ 0x00472718 */
+  /* 代码块 10 @ 0x00472718 */
   // mov ecx, dword ptr [0x3008d74]
   // CMP ecx, 0xf (set flags)
   // if (greater or equal) goto 0x47275b
-  /* Block 11 @ 0x0047321E */
-  // xor eax, eax
+  /* 代码块 11 @ 0x0047321E */
+  // eax 清零（准备返回值）
   // mov dword ptr [edi + esi*4], eax
   // mov dword ptr [edi + esi*4 + 4], eax
   // mov dword ptr [edi + esi*4 + 0x100], eax
@@ -68,196 +80,196 @@ void* sub_472280(void) {
   // mov dword ptr [edi + esi*4 + 0x200], eax
   // mov dword ptr [edi + esi*4 + 0x204], eax
   goto 0x473ae6;
-  /* Block 12 @ 0x0047281F */
+  /* 代码块 12 @ 0x0047281F */
   // mov ecx, dword ptr [0x3008d74]
   // CMP ecx, 0x12 (set flags)
   // if (greater or equal) goto 0x472862
-  /* Block 13 @ 0x004736A1 */
-  // push 8
-  // call 0x00471D10
+  /* 代码块 13 @ 0x004736A1 */
+  // 保存寄存器 8
+  // 直接调用函数 0x00471D10
   call(0x00471D10);
-  /* Block 14 @ 0x00473425 */
-  // push 0xa
-  // call 0x00471D10
+  /* 代码块 14 @ 0x00473425 */
+  // 保存寄存器 0xa
+  // 直接调用函数 0x00471D10
   call(0x00471D10);
-  /* Block 15 @ 0x00472926 */
+  /* 代码块 15 @ 0x00472926 */
   // mov ecx, dword ptr [0x3008d74]
   // CMP ecx, 0x15 (set flags)
   // if (greater or equal) goto 0x472969
-  /* Block 16 @ 0x00472B27 */
+  /* 代码块 16 @ 0x00472B27 */
   // mov ecx, dword ptr [0x3008d74]
   // CMP ecx, 0x12 (set flags)
   // if (greater or equal) goto 0x472b6a
-  /* Block 17 @ 0x00472F26 */
+  /* 代码块 17 @ 0x00472F26 */
   // mov ecx, dword ptr [0x3008d74]
   // mov edx, dword ptr [0x3008b64]
   // CMP ecx, 0x18 (set flags)
   // if (greater or equal) goto 0x472f62
-  /* Block 18 @ 0x004722AD */
-  // xor eax, eax
+  /* 代码块 18 @ 0x004722AD */
+  // eax 清零（准备返回值）
   // mov dword ptr [edi + esi*4], eax
   // mov dword ptr [edi + esi*4 + 0x100], eax
   // mov dword ptr [edi + esi*4 + 0x200], eax
   goto 0x473ae7;
-  /* Block 19 @ 0x00472A2D */
+  /* 代码块 19 @ 0x00472A2D */
   // mov ecx, dword ptr [0x3008d74]
   // mov edx, dword ptr [0x3008b64]
   // CMP ecx, 0x18 (set flags)
   // if (greater or equal) goto 0x472a69
-  /* Block 20 @ 0x00473630 */
-  // push 7
-  // call 0x00471D10
+  /* 代码块 20 @ 0x00473630 */
+  // 保存寄存器 7
+  // 直接调用函数 0x00471D10
   call(0x00471D10);
-  /* Block 21 @ 0x004731B2 */
+  /* 代码块 21 @ 0x004731B2 */
   // mov eax, ebx
-  // push 0x10
+  // 保存寄存器 0x10
   // shl eax, 6
   // add eax, esi
   // lea ebp, [eax*4 + 0x3007064]
-  // call 0x00471D10
+  // 直接调用函数 0x00471D10
   call(0x00471D10);
-  /* Block 22 @ 0x004733B4 */
-  // push 3
-  // call 0x00471D10
+  /* 代码块 22 @ 0x004733B4 */
+  // 保存寄存器 3
+  // 直接调用函数 0x00471D10
   call(0x00471D10);
-  /* Block 23 @ 0x004735BF */
-  // push 6
-  // call 0x00471D10
+  /* 代码块 23 @ 0x004735BF */
+  // 保存寄存器 6
+  // 直接调用函数 0x00471D10
   call(0x00471D10);
-  /* Block 24 @ 0x004722C5 */
+  /* 代码块 24 @ 0x004722C5 */
   // mov ecx, dword ptr [0x3008d74]
   // CMP ecx, 5 (set flags)
   // if (greater or equal) goto 0x472308
-  /* Block 25 @ 0x00473146 */
+  /* 代码块 25 @ 0x00473146 */
   // mov edx, ebx
-  // push 0xf
+  // 保存寄存器 0xf
   // shl edx, 6
   // add edx, esi
   // lea ebp, [edx*4 + 0x3007064]
-  // call 0x00471D10
+  // 直接调用函数 0x00471D10
   call(0x00471D10);
-  /* Block 26 @ 0x00472447 */
+  /* 代码块 26 @ 0x00472447 */
   // mov ecx, dword ptr [0x3008d74]
   // CMP ecx, 9 (set flags)
   // if (greater or equal) goto 0x47248a
-  /* Block 27 @ 0x00473248 */
-  // push 5
-  // call 0x00471D10
+  /* 代码块 27 @ 0x00473248 */
+  // 保存寄存器 5
+  // 直接调用函数 0x00471D10
   call(0x00471D10);
-  /* Block 28 @ 0x0047254E */
+  /* 代码块 28 @ 0x0047254E */
   // mov ecx, dword ptr [0x3008d74]
   // CMP ecx, 0xa (set flags)
   // if (greater or equal) goto 0x472591
-  /* Block 29 @ 0x0047354E */
-  // push 5
-  // call 0x00471D10
+  /* 代码块 29 @ 0x0047354E */
+  // 保存寄存器 5
+  // 直接调用函数 0x00471D10
   call(0x00471D10);
-  /* Block 30 @ 0x00473A50 */
-  // push 0x10
-  // call 0x00471D10
+  /* 代码块 30 @ 0x00473A50 */
+  // 保存寄存器 0x10
+  // 直接调用函数 0x00471D10
   call(0x00471D10);
-  /* Block 31 @ 0x00472DD1 */
+  /* 代码块 31 @ 0x00472DD1 */
   // mov ecx, dword ptr [0x3008d74]
   // CMP ecx, 0x16 (set flags)
   // if (greater or equal) goto 0x472e14
-  /* Block 32 @ 0x004730DA */
+  /* 代码块 32 @ 0x004730DA */
   // mov ecx, ebx
-  // push 0xe
+  // 保存寄存器 0xe
   // shl ecx, 6
   // add ecx, esi
   // lea ebp, [ecx*4 + 0x3007064]
-  // call 0x00471D10
+  // 直接调用函数 0x00471D10
   call(0x00471D10);
-  /* Block 33 @ 0x004739DC */
-  // push 0xf
-  // call 0x00471D10
+  /* 代码块 33 @ 0x004739DC */
+  // 保存寄存器 0xf
+  // 直接调用函数 0x00471D10
   call(0x00471D10);
-  /* Block 34 @ 0x004734DD */
-  // push 4
-  // call 0x00471D10
+  /* 代码块 34 @ 0x004734DD */
+  // 保存寄存器 4
+  // 直接调用函数 0x00471D10
   call(0x00471D10);
-  /* Block 35 @ 0x00473965 */
-  // push 0xe
-  // call 0x00471D10
+  /* 代码块 35 @ 0x00473965 */
+  // 保存寄存器 0xe
+  // 直接调用函数 0x00471D10
   call(0x00471D10);
-  /* Block 36 @ 0x0047306E */
+  /* 代码块 36 @ 0x0047306E */
   // mov eax, ebx
-  // push 0xd
+  // 保存寄存器 0xd
   // shl eax, 6
   // add eax, esi
   // lea ebp, [eax*4 + 0x3007064]
-  // call 0x00471D10
+  // 直接调用函数 0x00471D10
   call(0x00471D10);
-  /* Block 37 @ 0x004738EE */
-  // push 0xd
-  // call 0x00471D10
+  /* 代码块 37 @ 0x004738EE */
+  // 保存寄存器 0xd
+  // 直接调用函数 0x00471D10
   call(0x00471D10);
-  /* Block 38 @ 0x00473877 */
-  // push 0xc
-  // call 0x00471D10
+  /* 代码块 38 @ 0x00473877 */
+  // 保存寄存器 0xc
+  // 直接调用函数 0x00471D10
   call(0x00471D10);
-  /* Block 39 @ 0x00473AFA */
+  /* 代码块 39 @ 0x00473AFA */
   // mov ecx, dword ptr [0x3008f44]
-  // push ecx
-  // call 0x00473BD0
+  // 保存寄存器 ecx
+  // 直接调用函数 0x00473BD0
   call(0x00473BD0);
-  /* Block 40 @ 0x00472C7C */
+  /* 代码块 40 @ 0x00472C7C */
   // mov ecx, dword ptr [0x3008d74]
   // CMP ecx, 0x14 (set flags)
   // if (greater or equal) goto 0x472cbf
-  /* Block 41 @ 0x004732FE */
-  // push 7
-  // call 0x00471D10
+  /* 代码块 41 @ 0x004732FE */
+  // 保存寄存器 7
+  // 直接调用函数 0x00471D10
   call(0x00471D10);
-  // mov eax, dword ptr [0x3008f8c]
-  // xor esi, esi
+  // 读取全局变量值 [0x3008f8c]
+  // esi 清零
   // CMP eax, 0x25 (set flags)
   // if (above) goto 0x473b0f
-  /* Block 42 @ 0x00473B21 */
+  /* 代码块 42 @ 0x00473B21 */
   // inc ebx
   // CMP ebx, 3 (set flags)
   // if (less) goto 0x47228e
-  /* Block 43 @ 0x00473807 */
+  /* 代码块 43 @ 0x00473807 */
   // sub eax, 0x3ff
   // mov ebp, ebx
-  // mov dword ptr [esp + 0x14], eax
-  // push 0xb
+  // 写入栈变量 [esp+0x14] = eax
+  // 保存寄存器 0xb
   // shl ebp, 6
   // add ebp, esi
   // shl ebp, 2
-  // call 0x00471D10
+  // 直接调用函数 0x00471D10
   call(0x00471D10);
-  /* Block 44 @ 0x00472391 */
+  /* 代码块 44 @ 0x00472391 */
   // CMP ecx, 0x18 (set flags)
   // if (greater) goto 0x4723c9
-  /* Block 45 @ 0x004723C9 */
+  /* 代码块 45 @ 0x004723C9 */
   // mov edx, dword ptr [0x3008b64]
   // sub ecx, 7
   // mov eax, edx
   // shr eax, cl
-  // mov dword ptr [0x3008d74], ecx
+  // 写入全局变量 0x3008d74 = ecx
   // mov ebp, eax
-  // mov dword ptr [0x3008ef8], eax
+  // 写入全局变量 0x3008ef8 = eax
   // shl ebp, cl
   // lea eax, [eax + eax*2]
   // mov ecx, ebx
   // shl ecx, 6
   // sub edx, ebp
   // add ecx, esi
-  // mov dword ptr [0x3008b64], edx
+  // 写入全局变量 0x3008b64 = edx
   // movsx edx, byte ptr [eax + 0x3008d78]
-  // mov dword ptr [esp + 0x10], edx
+  // 写入栈变量 [esp+0x10] = edx
   // lea ecx, [ecx*4 + 0x3007064]
   // movsx edx, byte ptr [eax + 0x3008d79]
-  // mov dword ptr [esp + 0x10], edx
+  // 写入栈变量 [esp+0x10] = edx
   // movsx eax, byte ptr [eax + 0x3008d7a]
-  // mov dword ptr [esp + 0x10], eax
+  // 写入栈变量 [esp+0x10] = eax
   goto 0x473ae7;
-  /* Block 46 @ 0x00473790 */
+  /* 代码块 46 @ 0x00473790 */
   // sub eax, 0x1ff
   // mov ebp, ebx
-  // mov dword ptr [esp + 0x14], eax
-  // push 0xa
+  // 写入栈变量 [esp+0x14] = eax
+  // 保存寄存器 0xa
   // shl ebp, 6
   // add ebp, esi
 }

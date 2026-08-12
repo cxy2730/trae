@@ -1,254 +1,266 @@
-/**
- * Function: sub_46a6d0
- * Address: 0x0046A6D0
- * Blocks: 148
- * Instructions: 617
- * Analyzed with angr + capstone
+
+/*
+ * ============================================================
+ * KG.exe 反编译分析 - sub_46a6d0
+ * ============================================================
+ *
+ * 函数地址: 0x0046A6D0
+ * 基本块数: 148
+ * 指令数:   617
+ * 复杂度:   中复杂度
+ *
+ * 功能推测: 系统核心逻辑/调度函数
+ * 技术分析: 使用 angr 符号执行 + capstone 反汇编
+ *
+ * 注: 本文件为自动反编译结果, 可能包含不准确的变量名和类型
+ *     实际逻辑需结合上下文和运行时分析验证
+ * ============================================================
  */
+
 void* sub_46a6d0(void) {
 
-  /* Block 1 @ 0x0046A6D0 */
-  // mov eax, dword ptr fs:[0]
-  // push -1
-  // push 0x4a11a7
-  // push eax
+  /* 代码块 1 @ 0x0046A6D0 */
+  // 读取全局变量值 fs:[0]
+  // 压栈 -1 (通常作为错误标志)
+  // 保存寄存器 0x4a11a7
+  // 保存寄存器 eax
   // mov dword ptr fs:[0], esp
-  // sub esp, 0x118
-  // push ebx
-  // mov ebx, dword ptr [esp + 0x12c]
-  // push esi
-  // push edi
-  // xor edi, edi
-  // push edi
-  // push ebx
-  // call 0x00480FA8
+  // 分配 0x118 字节栈空间
+  // 保存寄存器 ebx
+  // 从栈读取参数 0x12c 到 ebx
+  // 保存寄存器 esi
+  // 保存寄存器 edi
+  // edi 清零
+  // 保存寄存器 edi
+  // 保存寄存器 ebx
+  // 直接调用函数 0x00480FA8
   call(0x00480FA8);
-  /* Block 2 @ 0x0046A6FE */
+  /* 代码块 2 @ 0x0046A6FE */
   // mov esi, eax
   // CMP esi, edi (set flags)
-  // if (not equal) goto 0x46a70b
-  /* Block 3 @ 0x0046A704 */
-  // xor eax, eax
+  // 如果不相等则跳转到 0x46a70b
+  /* 代码块 3 @ 0x0046A704 */
+  // eax 清零（准备返回值）
   goto 0x46adbf;
-  /* Block 4 @ 0x0046A70B */
-  // push ebp
-  // push esi
-  // call 0x004838E7
+  /* 代码块 4 @ 0x0046A70B */
+  // 保存寄存器 ebp
+  // 保存寄存器 esi
+  // 直接调用函数 0x004838E7
   call(0x004838E7);
-  /* Block 5 @ 0x0046ADBF */
-  // mov ecx, dword ptr [esp + 0x124]
-  // pop edi
-  // pop esi
-  // pop ebx
+  /* 代码块 5 @ 0x0046ADBF */
+  // 从栈读取参数 0x124 到 ecx
+  // 恢复寄存器 edi
+  // 恢复寄存器 esi
+  // 恢复寄存器 ebx
   // mov dword ptr fs:[0], ecx
-  // add esp, 0x124
+  // 释放 0x124 字节栈空间
   return;
-  /* Block 6 @ 0x0046A712 */
+  /* 代码块 6 @ 0x0046A712 */
   // add esp, 4
   // mov ebp, eax
-  // push ebp
-  // push esi
-  // push edi
-  // push ebx
-  // call 0x00480FA2
+  // 保存寄存器 ebp
+  // 保存寄存器 esi
+  // 保存寄存器 edi
+  // 保存寄存器 ebx
+  // 直接调用函数 0x00480FA2
   call(0x00480FA2);
-  /* Block 7 @ 0x0046A720 */
-  // lea eax, [esp + 0x20]
-  // lea ecx, [esp + 0x18]
-  // push eax
-  // push ecx
-  // push 0x2fd25d4
-  // push ebp
-  // mov dword ptr [esp + 0x28], edi
-  // mov dword ptr [esp + 0x30], edi
-  // call 0x00480F9C
+  /* 代码块 7 @ 0x0046A720 */
+  // 计算栈偏移地址 20 -> eax
+  // 计算栈偏移地址 18 -> ecx
+  // 保存寄存器 eax
+  // 保存寄存器 ecx
+  // 保存寄存器 0x2fd25d4
+  // 保存寄存器 ebp
+  // 写入栈变量 [esp+0x28] = edi
+  // 写入栈变量 [esp+0x30] = edi
+  // 直接调用函数 0x00480F9C
   call(0x00480F9C);
-  /* Block 8 @ 0x0046A73D */
-  // mov eax, dword ptr [0x2fd8088]
-  // mov dword ptr [esp + 0x10], eax
-  // mov dword ptr [esp + 0x130], edi
-  // mov dword ptr [esp + 0x1c], eax
-  // mov dword ptr [esp + 0x14], eax
-  // mov eax, dword ptr [esp + 0x20]
+  /* 代码块 8 @ 0x0046A73D */
+  // 读取全局变量值 [0x2fd8088]
+  // 写入栈变量 [esp+0x10] = eax
+  // 写入栈变量 [esp+0x130] = edi
+  // 写入栈变量 [esp+0x1c] = eax
+  // 写入栈变量 [esp+0x14] = eax
+  // 读取全局变量值 [esp + 0x20]
   // mov byte ptr [esp + 0x130], 2
   // CMP eax, edi (set flags)
   // if (below or equal) goto 0x46a884
-  /* Block 9 @ 0x0046A884 */
-  // push 0x2fd25bc
-  // lea ecx, [esp + 0x20]
-  // call 0x00493313
+  /* 代码块 9 @ 0x0046A884 */
+  // 保存寄存器 0x2fd25bc
+  // 计算栈偏移地址 20 -> ecx
+  // 直接调用函数 0x00493313
   call(0x00493313);
-  /* Block 10 @ 0x0046A769 */
+  /* 代码块 10 @ 0x0046A769 */
   // shr eax, 2
   // mov ebx, eax
-  // xor esi, esi
+  // esi 清零
   // CMP ebx, edi (set flags)
   // if (less or equal) goto 0x46a7b5
-  /* Block 11 @ 0x0046A892 */
-  // mov ebx, dword ptr [esp + 0x13c]
-  // mov ecx, 0x40
-  // xor eax, eax
+  /* 代码块 11 @ 0x0046A892 */
+  // 从栈读取参数 0x13c 到 ebx
+  // 加载常量 0x40
+  // eax 清零（准备返回值）
   // lea edi, [ebx + 0x900]
-  /* Block 12 @ 0x0046A7B5 */
-  // mov edi, dword ptr [esp + 0x14]
+  /* 代码块 12 @ 0x0046A7B5 */
+  // 从栈读取参数 0x14 到 edi
   // or ecx, 0xffffffff
-  // xor eax, eax
-  // mov ebx, dword ptr [esp + 0x13c]
-  /* Block 13 @ 0x0046A774 */
-  // mov edi, dword ptr [esp + 0x18]
-  // mov eax, dword ptr [edi]
-  // lea edx, [esp + 0x28]
-  // push 0x100
-  // push edx
-  // push eax
-  // call 0x00480F96
+  // eax 清零（准备返回值）
+  // 从栈读取参数 0x13c 到 ebx
+  /* 代码块 13 @ 0x0046A774 */
+  // 从栈读取参数 0x18 到 edi
+  // 读取全局变量值 [edi]
+  // 计算栈偏移地址 28 -> edx
+  // 保存寄存器 0x100
+  // 保存寄存器 edx
+  // 保存寄存器 eax
+  // 直接调用函数 0x00480F96
   call(0x00480F96);
-  /* Block 14 @ 0x0046A8A8 */
-  // mov eax, dword ptr [esp + 0x1c]
-  // lea ecx, [esp + 0x10]
-  // push eax
-  // push 0x2fd259c
-  // push ecx
-  // call 0x004912AB
+  /* 代码块 14 @ 0x0046A8A8 */
+  // 读取全局变量值 [esp + 0x1c]
+  // 计算栈偏移地址 10 -> ecx
+  // 保存寄存器 eax
+  // 保存寄存器 0x2fd259c
+  // 保存寄存器 ecx
+  // 直接调用函数 0x004912AB
   call(0x004912AB);
-  /* Block 15 @ 0x0046A7C7 */
+  /* 代码块 15 @ 0x0046A7C7 */
   // not ecx
   // sub edi, ecx
   // lea edx, [ebx + 0x900]
   // mov eax, ecx
   // mov esi, edi
   // mov edi, edx
-  // mov edx, dword ptr [esp + 0x18]
+  // 从栈读取参数 0x18 到 edx
   // shr ecx, 2
-  /* Block 16 @ 0x0046A78A */
-  // lea ecx, [esp + 0x28]
-  // push ecx
-  // lea ecx, [esp + 0x18]
-  // call 0x00493566
+  /* 代码块 16 @ 0x0046A78A */
+  // 计算栈偏移地址 28 -> ecx
+  // 保存寄存器 ecx
+  // 计算栈偏移地址 18 -> ecx
+  // 直接调用函数 0x00493566
   call(0x00493566);
-  /* Block 17 @ 0x0046A8BC */
-  // add esp, 0xc
-  // lea edx, [esp + 0x20]
-  // lea eax, [esp + 0x18]
-  // lea ecx, [esp + 0x10]
-  // push edx
-  // push eax
-  // push 0x100
-  // call 0x00493631
+  /* 代码块 17 @ 0x0046A8BC */
+  // 释放 0xc 字节栈空间
+  // 计算栈偏移地址 20 -> edx
+  // 计算栈偏移地址 18 -> eax
+  // 计算栈偏移地址 10 -> ecx
+  // 保存寄存器 edx
+  // 保存寄存器 eax
+  // 保存寄存器 0x100
+  // 直接调用函数 0x00493631
   call(0x00493631);
-  /* Block 18 @ 0x0046A7E0 */
+  /* 代码块 18 @ 0x0046A7E0 */
   // mov ecx, eax
-  // lea eax, [esp + 0x14]
+  // 计算栈偏移地址 14 -> eax
   // and ecx, 3
-  /* Block 19 @ 0x0046A798 */
+  /* 代码块 19 @ 0x0046A798 */
   // lea eax, [ebx - 1]
   // CMP esi, eax (set flags)
-  // if (equal) goto 0x46a7ad
-  /* Block 20 @ 0x0046A8D7 */
-  // push eax
-  // push ebp
-  // call 0x00480F9C
+  // 如果相等则跳转到 0x46a7ad
+  /* 代码块 20 @ 0x0046A8D7 */
+  // 保存寄存器 eax
+  // 保存寄存器 ebp
+  // 直接调用函数 0x00480F9C
   call(0x00480F9C);
-  /* Block 21 @ 0x0046A7EB */
-  // xor ecx, ecx
+  /* 代码块 21 @ 0x0046A7EB */
+  // ecx 清零
   // mov cx, word ptr [edx]
-  // push ecx
-  // push 0x2fd25c8
-  // push eax
-  // call 0x004912AB
+  // 保存寄存器 ecx
+  // 保存寄存器 0x2fd25c8
+  // 保存寄存器 eax
+  // 直接调用函数 0x004912AB
   call(0x004912AB);
-  /* Block 22 @ 0x0046A7AD */
+  /* 代码块 22 @ 0x0046A7AD */
   // inc esi
   // add edi, 4
   // CMP esi, ebx (set flags)
   // if (less) goto 0x46a778
-  /* Block 23 @ 0x0046A79F */
-  // push 0x2fd25d0
-  // lea ecx, [esp + 0x18]
-  // call 0x00493566
+  /* 代码块 23 @ 0x0046A79F */
+  // 保存寄存器 0x2fd25d0
+  // 计算栈偏移地址 18 -> ecx
+  // 直接调用函数 0x00493566
   call(0x00493566);
-  /* Block 24 @ 0x0046A8DE */
-  // push -1
-  // lea ecx, [esp + 0x14]
-  // call 0x00493609
+  /* 代码块 24 @ 0x0046A8DE */
+  // 压栈 -1 (通常作为错误标志)
+  // 计算栈偏移地址 14 -> ecx
+  // 直接调用函数 0x00493609
   call(0x00493609);
-  /* Block 25 @ 0x0046A7FC */
-  // add esp, 0xc
-  // lea ecx, [esp + 0x24]
-  // push 4
-  // push ecx
-  // lea ecx, [esp + 0x1c]
-  // call 0x00490E31
+  /* 代码块 25 @ 0x0046A7FC */
+  // 释放 0xc 字节栈空间
+  // 计算栈偏移地址 24 -> ecx
+  // 保存寄存器 4
+  // 保存寄存器 ecx
+  // 计算栈偏移地址 1c -> ecx
+  // 直接调用函数 0x00490E31
   call(0x00490E31);
-  // mov eax, dword ptr [edi]
-  // lea edx, [esp + 0x28]
-  // push 0x100
-  // push edx
-  // push eax
-  // call 0x00480F96
+  // 读取全局变量值 [edi]
+  // 计算栈偏移地址 28 -> edx
+  // 保存寄存器 0x100
+  // 保存寄存器 edx
+  // 保存寄存器 eax
+  // 直接调用函数 0x00480F96
   call(0x00480F96);
-  /* Block 26 @ 0x0046A8E9 */
-  // mov ecx, dword ptr [esp + 0x18]
-  // lea edx, [esp + 0x14]
-  // push ecx
-  // push 0x2fd2598
-  // push edx
-  // call 0x004912AB
+  /* 代码块 26 @ 0x0046A8E9 */
+  // 从栈读取参数 0x18 到 ecx
+  // 计算栈偏移地址 14 -> edx
+  // 保存寄存器 ecx
+  // 保存寄存器 0x2fd2598
+  // 保存寄存器 edx
+  // 直接调用函数 0x004912AB
   call(0x004912AB);
-  /* Block 27 @ 0x0046A80F */
-  // push eax
-  // lea ecx, [esp + 0x20]
+  /* 代码块 27 @ 0x0046A80F */
+  // 保存寄存器 eax
+  // 计算栈偏移地址 20 -> ecx
   // mov byte ptr [esp + 0x134], 3
-  // call 0x004932C3
+  // 直接调用函数 0x004932C3
   call(0x004932C3);
-  /* Block 28 @ 0x0046A8FD */
-  // mov edi, dword ptr [esp + 0x20]
+  /* 代码块 28 @ 0x0046A8FD */
+  // 从栈读取参数 0x20 到 edi
   // or ecx, 0xffffffff
-  // xor eax, eax
-  // lea edx, [esp + 0x1c]
-  /* Block 29 @ 0x0046A821 */
-  // lea ecx, [esp + 0x24]
+  // eax 清零（准备返回值）
+  // 计算栈偏移地址 1c -> edx
+  /* 代码块 29 @ 0x0046A821 */
+  // 计算栈偏移地址 24 -> ecx
   // mov byte ptr [esp + 0x130], 2
-  // call 0x004931D6
+  // 直接调用函数 0x004931D6
   call(0x004931D6);
-  /* Block 30 @ 0x0046A90C */
+  /* 代码块 30 @ 0x0046A90C */
   // not ecx
   // sub edi, ecx
   // mov eax, ecx
   // mov esi, edi
   // mov edi, ebx
   // shr ecx, 2
-  /* Block 31 @ 0x0046A832 */
-  // mov eax, dword ptr [esp + 0x18]
-  // xor edx, edx
-  // lea ecx, [esp + 0x14]
+  /* 代码块 31 @ 0x0046A832 */
+  // 读取全局变量值 [esp + 0x18]
+  // edx 清零
+  // 计算栈偏移地址 14 -> ecx
   // mov dx, word ptr [eax + 2]
-  // push edx
-  // push 0x2fd25c8
-  // push ecx
-  // call 0x004912AB
+  // 保存寄存器 edx
+  // 保存寄存器 0x2fd25c8
+  // 保存寄存器 ecx
+  // 直接调用函数 0x004912AB
   call(0x004912AB);
-  /* Block 32 @ 0x0046A91B */
+  /* 代码块 32 @ 0x0046A91B */
   // mov ecx, eax
   // and ecx, 3
-  /* Block 33 @ 0x0046A84C */
-  // add esp, 0xc
-  // lea edx, [esp + 0x24]
-  // lea ecx, [esp + 0x14]
-  // push 4
-  // push edx
-  // call 0x00490E31
+  /* 代码块 33 @ 0x0046A84C */
+  // 释放 0xc 字节栈空间
+  // 计算栈偏移地址 24 -> edx
+  // 计算栈偏移地址 14 -> ecx
+  // 保存寄存器 4
+  // 保存寄存器 edx
+  // 直接调用函数 0x00490E31
   call(0x00490E31);
-  /* Block 34 @ 0x0046A922 */
-  // mov ecx, dword ptr [esp + 0x28]
-  // push ecx
-  // push 0x2fd2578
-  // push edx
-  // call 0x004912AB
+  /* 代码块 34 @ 0x0046A922 */
+  // 从栈读取参数 0x28 到 ecx
+  // 保存寄存器 ecx
+  // 保存寄存器 0x2fd2578
+  // 保存寄存器 edx
+  // 直接调用函数 0x004912AB
   call(0x004912AB);
-  /* Block 35 @ 0x0046A85F */
-  // push eax
-  // lea ecx, [esp + 0x20]
+  /* 代码块 35 @ 0x0046A85F */
+  // 保存寄存器 eax
+  // 计算栈偏移地址 20 -> ecx
 }
 /* ============================================ */
 /*           FULL ASSEMBLY LISTING              */
