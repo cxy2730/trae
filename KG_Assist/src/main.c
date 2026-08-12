@@ -1,378 +1,284 @@
 /**
- * KG Assist - 入口点
- * 功能: 初始化、目标进程查找、注入、辅助启动
+ * KG Assist - GUI 入口
  *
- * 使用方法:
- *   KG_Assist.exe [选项]
+ * WinMain 模式, 无控制台窗口, 启动后:
+ *   1. 初始化路径 / 日志 / API / 防封
+ *   2. 创建一个隐藏主窗口作为消息循环宿主
+ *   3. 在系统托盘添加图标, 右键菜单提供:
+ *        - 状态
+ *        - 打开日志
+ *        - 退出
  *
- * 选项:
- *   --target <进程名>  目标进程 (默认: League of Legends.exe)
- *   --inject <dll路径> 注入指定 DLL
- *   --attach           附加到已运行的目标进程
- *   --cheat            直接启动辅助 (需要注入到游戏进程)
- *   --daemon           后台守护模式 (自动检测并注入)
- *   --config <文件>    指定配置文件
- *   --help             显示帮助
+ * 双击托盘图标显示一个小信息窗口 (状态).
  */
 
 #include "../include/common.h"
+#include "../include/paths.h"
+#include <shellapi.h>
+
+#define WM_TRAYICON   (WM_USER + 1)
+#define ID_TRAYICON   1001
+#define IDM_STATUS    2001
+#define IDM_OPENLOG   2002
+#define IDM_ABOUT     2003
+#define IDM_QUIT      2004
+
+static HWND  g_hWnd     = NULL;
+static HMENU g_hMenu    = NULL;
+static BOOL  g_Running  = TRUE;
+static HICON g_hIcon    = NULL;
+static NOTIFYICONDATAA g_Nid = {0};
 
 /* ============================================================
- * 全局状态
+ * 托盘
  * ============================================================ */
 
-static BOOL g_Running = TRUE;
-static KgProcessInfo g_TargetProcess = {0};
-static char g_ConfigPath[KG_MAX_PATH] = "";  /* 由 paths.c 解析, 不再硬编码 */
+static VOID TrayInit(HWND hwnd) {
+    g_hIcon = LoadIconA(NULL, IDI_APPLICATION);
 
-/* ============================================================
- * 信号处理 (Ctrl+C 优雅退出)
- * ============================================================ */
+    ZeroMemory(&g_Nid, sizeof(g_Nid));
+    g_Nid.cbSize           = sizeof(g_Nid);
+    g_Nid.hWnd             = hwnd;
+    g_Nid.uID              = ID_TRAYICON;
+    g_Nid.uFlags           = NIF_ICON | NIF_MESSAGE | NIF_TIP;
+    g_Nid.uCallbackMessage = WM_TRAYICON;
+    g_Nid.hIcon            = g_hIcon;
+    strncpy(g_Nid.szTip, "KG Assist", sizeof(g_Nid.szTip) - 1);
+    strncpy(g_Nid.szInfo, "KG Assist 已启动", sizeof(g_Nid.szInfo) - 1);
+    g_Nid.dwInfoFlags = NIIF_INFO;
+    Shell_NotifyIconA(NIM_ADD, &g_Nid);
+}
 
-static BOOL WINAPI ConsoleHandler(DWORD signal) {
-    if (signal == CTRL_C_EVENT || signal == CTRL_BREAK_EVENT ||
-        signal == CTRL_CLOSE_EVENT) {
-        KG_INFO("收到退出信号, 正在清理...");
-        g_Running = FALSE;
-        return TRUE;
+static VOID TrayRemove(VOID) {
+    Shell_NotifyIconA(NIM_DELETE, &g_Nid);
+    if (g_hIcon) DestroyIcon(g_hIcon);
+}
+
+static VOID TrayShowBalloon(const char* title, const char* msg) {
+    g_Nid.uFlags = NIF_INFO;
+    strncpy(g_Nid.szInfoTitle, title, sizeof(g_Nid.szInfoTitle) - 1);
+    strncpy(g_Nid.szInfo, msg, sizeof(g_Nid.szInfo) - 1);
+    g_Nid.dwInfoFlags = NIIF_INFO;
+    Shell_NotifyIconA(NIM_MODIFY, &g_Nid);
+}
+
+static VOID ShowContextMenu(HWND hwnd) {
+    POINT pt;
+    GetCursorPos(&pt);
+    if (!g_hMenu) {
+        g_hMenu = CreatePopupMenu();
+        AppendMenuA(g_hMenu, MF_STRING, IDM_STATUS,  "状态");
+        AppendMenuA(g_hMenu, MF_STRING, IDM_OPENLOG, "打开日志");
+        AppendMenuA(g_hMenu, MF_SEPARATOR, 0, NULL);
+        AppendMenuA(g_hMenu, MF_STRING, IDM_ABOUT,   "关于");
+        AppendMenuA(g_hMenu, MF_STRING, IDM_QUIT,    "退出");
     }
-    return FALSE;
+    SetForegroundWindow(hwnd);
+    TrackPopupMenu(g_hMenu, TPM_RIGHTBUTTON, pt.x, pt.y, 0, hwnd, NULL);
 }
 
 /* ============================================================
- * 打印帮助信息
+ * 状态 / 打开日志
  * ============================================================ */
 
-static VOID PrintHelp(VOID) {
-    printf("KG Assist v1.0 - 全新辅助工具\n");
-    printf("================================\n\n");
-    printf("用法: KG_Assist.exe [选项]\n\n");
-    printf("选项:\n");
-    printf("  --target <名称>    目标进程名 (默认: League of Legends.exe)\n");
-    printf("  --inject <路径>    注入 DLL 到目标进程\n");
-    printf("  --attach           附加到已运行的目标进程\n");
-    printf("  --cheat            直接启动辅助功能\n");
-    printf("  --daemon           后台守护模式 (自动检测注入)\n");
-    printf("  --config <文件>    指定配置文件路径 (绝对或相对)\n");
-    printf("  --root <目录>      覆盖根目录 (默认: EXE 所在目录)\n");
-    printf("  --pid <PID>        指定目标进程 ID\n");
-    printf("  --list             列出所有运行中进程\n");
-    printf("  --help             显示此帮助信息\n\n");
-    printf("环境变量:\n");
-    printf("  KG_ASSIST_HOME     等价于 --root\n");
-    printf("  KG_ASSIST_LOG      自定义日志文件名 (默认 kg_assist.log)\n");
-    printf("  KG_ASSIST_CONFIG   自定义配置文件名 (默认 kg_assist.ini)\n");
-    printf("  KG_ASSIST_SPOOF_TITLE  自定义窗口伪装标题\n");
-    printf("  KG_ASSIST_SPOOF_CLASS  自定义窗口伪装类名\n\n");
-    printf("示例:\n");
-    printf("  KG_Assist.exe --target \"League of Legends.exe\" --attach\n");
-    printf("  KG_Assist.exe --inject cheat.dll\n");
-    printf("  KG_Assist.exe --daemon\n");
-    printf("  KG_Assist.exe --list\n");
+static VOID ShowStatus(VOID) {
+    const KgCheatConfig* cfg = KgGetConfig();
+    char buf[512];
+    snprintf(buf, sizeof(buf),
+        "KG Assist 已运行\r\n\r\n"
+        "日志文件:\r\n%s\r\n\r\n"
+        "ESP:       %s\r\n"
+        "自瞄:      %s (%.0f%%)\r\n"
+        "加速:      %s\r\n",
+        KgPathGetLogFile() ? KgPathGetLogFile() : "(无)",
+        cfg->espEnabled      ? "开" : "关",
+        cfg->aimbotEnabled   ? "开" : "关",
+        cfg->aimbotSpeed * 100,
+        cfg->speedHackEnabled? "开" : "关");
+    MessageBoxA(g_hWnd, buf, "KG Assist - 状态", MB_ICONINFORMATION | MB_OK);
 }
 
-/* ============================================================
- * 列出所有进程
- * ============================================================ */
-
-static VOID ListAllProcesses(VOID) {
-    KgProcessInfo processes[256];
-    s32 count = KgEnumAllProcesses(processes, 256);
-    
-    printf("%-8s %-8s %s\n", "PID", "父PID", "进程名");
-    printf("----------------------------------------\n");
-    
-    for (s32 i = 0; i < count; i++) {
-        printf("%-8lu %-8lu ", processes[i].pid, processes[i].parentPid);
-        wprintf(L"%s\n", processes[i].name);
+static VOID OpenLogFile(VOID) {
+    const char* path = KgPathGetLogFile();
+    if (!path) {
+        MessageBoxA(g_hWnd, "日志路径无效", "KG Assist", MB_ICONWARNING);
+        return;
     }
-    
-    printf("\n共 %d 个进程\n", count);
+    HINSTANCE rc = ShellExecuteA(g_hWnd, "open", path, NULL, NULL, SW_SHOWNORMAL);
+    if ((INT_PTR)rc <= 32) {
+        /* 兜底: 用 notepad 打开 */
+        ShellExecuteA(g_hWnd, "open", "notepad.exe", path, NULL, SW_SHOWNORMAL);
+    }
 }
 
 /* ============================================================
- * 守护模式 (自动检测并注入)
+ * 窗口过程
  * ============================================================ */
 
-static VOID DaemonMode(const char* targetName, const char* dllPath) {
-    KG_INFO("守护模式启动, 目标: %s", targetName);
-    KG_INFO("按 Ctrl+C 退出");
-    
+static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
+    switch (msg) {
+        case WM_CREATE:
+            TrayInit(hwnd);
+            return 0;
+
+        case WM_TRAYICON:
+            if (lp == WM_RBUTTONUP) ShowContextMenu(hwnd);
+            else if (lp == WM_LBUTTONDBLCLK) ShowStatus();
+            return 0;
+
+        case WM_COMMAND:
+            switch (LOWORD(wp)) {
+                case IDM_STATUS:  ShowStatus();     return 0;
+                case IDM_OPENLOG: OpenLogFile();    return 0;
+                case IDM_ABOUT:
+                    MessageBoxA(hwnd,
+                        "KG Assist v2.0\r\n"
+                        "Game Anti-Detection Tool",
+                        "关于", MB_ICONINFORMATION | MB_OK);
+                    return 0;
+                case IDM_QUIT:
+                    g_Running = FALSE;
+                    PostQuitMessage(0);
+                    return 0;
+            }
+            break;
+
+        case WM_CLOSE:
+            g_Running = FALSE;
+            PostQuitMessage(0);
+            return 0;
+
+        case WM_DESTROY:
+            TrayRemove();
+            PostQuitMessage(0);
+            return 0;
+    }
+    return DefWindowProcA(hwnd, msg, wp, lp);
+}
+
+/* ============================================================
+ * 后台工作线程
+ * ============================================================ */
+
+static DWORD WINAPI WorkerThread(LPVOID param) {
+    (void)param;
+    KG_INFO("工作线程启动, 等待目标进程...");
+
+    /* 简单示例: 每 5 秒扫一次, 找到 LoL 就尝试注入 cheat.dll (若同目录存在) */
+    char dllPath[KG_MAX_PATH];
+    {
+        const char* logPath = KgPathGetLogFile();
+        if (logPath) {
+            strncpy(dllPath, logPath, sizeof(dllPath) - 1);
+            char* p = strrchr(dllPath, '\\');
+            if (p) *p = '\0';
+            strncat(dllPath, "\\cheat.dll", sizeof(dllPath) - strlen(dllPath) - 1);
+        } else {
+            dllPath[0] = '\0';
+        }
+    }
+
     while (g_Running) {
-        // 检查目标进程是否存在
-        if (KgFindProcess(targetName, &g_TargetProcess)) {
-            // 检查是否已经注入 (简化检查)
-            if (g_TargetProcess.handle == NULL || !KgEnumModules(&g_TargetProcess)) {
-                // 注入 DLL
-                if (dllPath) {
-                    KG_INFO("检测到目标进程, 准备注入...");
-                    
-                    if (KgOpenProcess(&g_TargetProcess, KG_PROCESS_ALL_ACCESS)) {
-                        if (KgAutoInject(g_TargetProcess.handle, dllPath)) {
-                            KG_INFO("注入成功");
-                        }
-                        KgCloseProcess(&g_TargetProcess);
+        KgProcessInfo info;
+        if (KgFindProcess(KG_LOL_PROCESS_NAME, &info)) {
+            KG_INFO("发现目标进程 PID=%lu", info.pid);
+            if (dllPath[0] && GetFileAttributesA(dllPath) != INVALID_FILE_ATTRIBUTES) {
+                if (KgOpenProcess(&info, 0x1F0FFF)) {
+                    if (KgAutoInject(info.handle, dllPath)) {
+                        KG_INFO("注入成功");
+                        TrayShowBalloon("KG Assist", "已注入到 LoL");
+                    } else {
+                        KG_WARN("注入失败");
                     }
+                    KgCloseProcess(&info);
                 }
+            } else {
+                KG_INFO("目标进程已就绪, 但 cheat.dll 不在同目录 (跳过注入)");
             }
         }
-        
-        // 等待 2 秒后重试
-        Sleep(2000);
+        Sleep(5000);
     }
-    
-    KG_INFO("守护模式退出");
+    KG_INFO("工作线程退出");
+    return 0;
 }
 
 /* ============================================================
- * 附加模式
+ * WinMain
  * ============================================================ */
 
-static BOOL AttachToTarget(const char* targetName) {
-    KG_INFO("正在附加到目标进程: %s", targetName);
-    
-    if (!KgFindProcess(targetName, &g_TargetProcess)) {
-        KG_ERROR("未找到目标进程: %s", targetName);
-        return FALSE;
-    }
-    
-    if (!KgOpenProcess(&g_TargetProcess, KG_PROCESS_ALL_ACCESS)) {
-        KG_ERROR("打开目标进程失败 (PID: %lu)", g_TargetProcess.pid);
-        return FALSE;
-    }
-    
-    // 枚举模块
-    if (KgEnumModules(&g_TargetProcess)) {
-        KG_INFO("附加成功, 进程 %lu 加载了 %u 个模块",
-                g_TargetProcess.pid, g_TargetProcess.moduleCount);
-        return TRUE;
-    }
-    
-    return FALSE;
-}
+int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR cmd, int show) {
+    (void)hPrev; (void)show;
 
-/* ============================================================
- * 注入模式
- * ============================================================ */
+    /* 1) 路径 (必须在日志之前) */
+    KgPathInit();
 
-static BOOL InjectDll(const char* targetName, const char* dllPath) {
-    if (!dllPath) {
-        KG_ERROR("未指定 DLL 路径");
-        return FALSE;
-    }
-    
-    // 检查 DLL 是否存在
-    if (GetFileAttributesA(dllPath) == INVALID_FILE_ATTRIBUTES) {
-        KG_ERROR("DLL 文件不存在: %s", dllPath);
-        return FALSE;
-    }
-    
-    // 查找目标进程
-    if (!KgFindProcess(targetName, &g_TargetProcess)) {
-        KG_ERROR("未找到目标进程: %s", targetName);
-        return FALSE;
-    }
-    
-    // 打开进程
-    if (!KgOpenProcess(&g_TargetProcess, KG_PROCESS_ALL_ACCESS)) {
-        KG_ERROR("打开目标进程失败");
-        return FALSE;
-    }
-    
-    // 执行注入
-    BOOL result = KgAutoInject(g_TargetProcess.handle, dllPath);
-    
-    KgCloseProcess(&g_TargetProcess);
-    return result;
-}
-
-/* ============================================================
- * 辅助模式 (直接启动)
- * ============================================================ */
-
-static VOID StartCheatMode(VOID) {
-    KG_INFO("辅助模式启动...");
-    
-    // 安装反检测
-    KgInstallAntiDetect();
-    
-    // 修改窗口标题 (伪装)
-    KgSpoofWindowTitle("System Process Monitor");
-    
-    // 启动主循环 (在新线程中)
-    // CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)KgCheatMainLoop, NULL, 0, NULL);
-    
-    // 简单的控制台循环
-    printf("辅助运行中...\n");
-    printf("输入命令: status, config, quit\n");
-    
-    char command[64];
-    while (g_Running) {
-        printf("> ");
-        if (fgets(command, sizeof(command), stdin) == NULL) break;
-        
-        // 去除换行符
-        size_t len = strlen(command);
-        if (len > 0 && command[len-1] == '\n') command[--len] = '\0';
-        
-        if (_stricmp(command, "quit") == 0 || _stricmp(command, "exit") == 0) {
-            break;
-        } else if (_stricmp(command, "status") == 0) {
-            const KgCheatConfig* cfg = KgGetConfig();
-            printf("ESP: %s\n", cfg->espEnabled ? "开" : "关");
-            printf("自瞄: %s (速度: %.0f%%)\n", cfg->aimbotEnabled ? "开" : "关", cfg->aimbotSpeed * 100);
-            printf("加速: %s\n", cfg->speedHackEnabled ? "开" : "关");
-        } else if (_stricmp(command, "config") == 0) {
-            // 交互式配置
-            char input[16];
-            printf("ESP (on/off): "); fgets(input, sizeof(input), stdin);
-            BOOL esp = (_stricmp(input, "on") == 0 || _stricmp(input, "1") == 0);
-            printf("Aimbot (on/off): "); fgets(input, sizeof(input), stdin);
-            BOOL aim = (_stricmp(input, "on") == 0 || _stricmp(input, "1") == 0);
-            KgSetConfig(esp, aim, FALSE, FALSE, FALSE);
-            printf("配置已更新\n");
-        } else if (_stricmp(command, "help") == 0) {
-            printf("命令: status, config, quit\n");
-        }
-    }
-    
-    KG_INFO("辅助模式退出");
-}
-
-/* ============================================================
- * 主函数
- * ============================================================ */
-
-int main(int argc, char* argv[]) {
-    /* --------------------------------------------------------
-     * 1) 解析路径 (必须在日志系统之前)
-     *    - 默认根目录: EXE 所在目录 (与 CWD 无关)
-     *    - 可被 KG_ASSIST_HOME 或 --root 覆盖
-     * -------------------------------------------------------- */
-    KgPathInit(argc > 0 ? argv[0] : NULL);
-
-    /* 1b) 处理只影响路径/伪装的早期选项 (不进入模式选择) */
-    for (int i = 1; i < argc; i++) {
-        if (i + 1 < argc && _stricmp(argv[i], "--root") == 0) {
-            /* 重新设置根目录: KgPathInit 已读 env, 此处只重写 */
-            _putenv_s("KG_ASSIST_HOME", argv[i + 1]);
-            KgPathInit(argc > 0 ? argv[0] : NULL);
-            break;
-        }
-    }
-    ApplyEnvOverrides();
-
-    /* 2) 初始化日志 (双输出: 终端 + <root>/logs/kg_assist.log) */
+    /* 2) 日志 */
     KgLogInit();
 
-    /* 3) 注册控制台信号处理 */
-    SetConsoleCtrlHandler(ConsoleHandler, TRUE);
+    KG_INFO("========================================");
+    KG_INFO("  KG Assist v2.0 (GUI mode)");
+    KG_INFO("  日志: %s", KgPathGetLogFile() ? KgPathGetLogFile() : "(无)");
+    KG_INFO("========================================");
 
-    KG_INFO("============================================");
-    KG_INFO("  KG Assist v2.0 (Game Anti-Detection)");
-    KG_INFO("  根目录: %s", KgPathGetRoot());
-    KG_INFO("============================================");
-
-    /* 4) 关键: 安装高级防封保护 (KG 核心能力) */
+    /* 3) 防封 (失败不阻塞) */
     if (!KgInstallFullProtection()) {
         KG_WARN("部分保护措施未能安装 (可能需要管理员权限)");
     }
 
-    /* 5) 解析命令行参数 */
-    const char* targetName = KG_LOL_PROCESS_NAME;
-    const char* dllPath = NULL;
-    int mode = 0;  // 0=帮助, 1=附加, 2=注入, 3=辅助, 4=守护, 5=列表
-
-    /* 默认配置路径: <root>/config/kg_assist.ini */
-    {
-        const char* def = KgPathGetConfigFile();
-        if (def) {
-            strncpy(g_ConfigPath, def, KG_MAX_PATH - 1);
-            g_ConfigPath[KG_MAX_PATH - 1] = '\0';
-        }
+    /* 4) 注册窗口类 */
+    WNDCLASSEXA wc = {0};
+    wc.cbSize        = sizeof(wc);
+    wc.lpfnWndProc   = WndProc;
+    wc.hInstance     = hInst;
+    wc.lpszClassName = "KGAssistMain";
+    wc.hIcon         = LoadIconA(NULL, IDI_APPLICATION);
+    if (!RegisterClassExA(&wc)) {
+        KG_ERROR("注册窗口类失败");
+        KgLogClose();
+        return 1;
     }
 
-    for (int i = 1; i < argc; i++) {
-        if (_stricmp(argv[i], "--help") == 0 || _stricmp(argv[i], "-h") == 0) {
-            PrintHelp();
-            return 0;
-        } else if (_stricmp(argv[i], "--target") == 0 && i + 1 < argc) {
-            targetName = argv[++i];
-        } else if (_stricmp(argv[i], "--inject") == 0 && i + 1 < argc) {
-            dllPath = argv[++i];
-            mode = 2;
-        } else if (_stricmp(argv[i], "--attach") == 0) {
-            mode = 1;
-        } else if (_stricmp(argv[i], "--cheat") == 0) {
-            mode = 3;
-        } else if (_stricmp(argv[i], "--daemon") == 0) {
-            mode = 4;
-        } else if (_stricmp(argv[i], "--list") == 0) {
-            mode = 5;
-        } else if (_stricmp(argv[i], "--config") == 0 && i + 1 < argc) {
-            /* 用户指定: 绝对路径直接用, 相对路径拼到根 */
-            const char* in = argv[++i];
-            if (in[0] == '/' || in[0] == '\\' ||
-                (in[0] && in[1] == ':')) {
-                strncpy(g_ConfigPath, in, KG_MAX_PATH - 1);
-            } else if (!KgPathResolve(in, g_ConfigPath, KG_MAX_PATH)) {
-                strncpy(g_ConfigPath, in, KG_MAX_PATH - 1);
-            }
-            g_ConfigPath[KG_MAX_PATH - 1] = '\0';
-        } else if (_stricmp(argv[i], "--root") == 0 && i + 1 < argc) {
-            /* 已在初始化前处理过, 此处跳过值 */
-            i++;
-        } else if (_stricmp(argv[i], "--pid") == 0 && i + 1 < argc) {
-            g_TargetProcess.pid = atoi(argv[++i]);
-        }
+    /* 5) 创建隐藏主窗口 (只作为消息循环宿主) */
+    g_hWnd = CreateWindowExA(
+        0, "KGAssistMain", "KG Assist",
+        WS_OVERLAPPEDWINDOW,
+        CW_USEDEFAULT, CW_USEDEFAULT, 320, 200,
+        NULL, NULL, hInst, NULL);
+    if (!g_hWnd) {
+        KG_ERROR("创建主窗口失败");
+        KgLogClose();
+        return 1;
     }
-    
-    // 执行对应模式
-    switch (mode) {
-        case 0:  // 帮助
-        case 5:  // 列表
-            ListAllProcesses();
-            return 0;
-            
-        case 1:  // 附加
-            if (AttachToTarget(targetName)) {
-                KgDumpProcessInfo(&g_TargetProcess);
-                // 保持运行
-                printf("附加成功, 按 Enter 退出\n");
-                getchar();
-                KgCloseProcess(&g_TargetProcess);
-            }
-            break;
-            
-        case 2:  // 注入
-            if (InjectDll(targetName, dllPath)) {
-                printf("注入成功\n");
-            } else {
-                printf("注入失败\n");
-                return 1;
-            }
-            break;
-            
-        case 3:  // 辅助
-            StartCheatMode();
-            break;
-            
-        case 4:  // 守护
-            DaemonMode(targetName, dllPath);
-            break;
-            
-        default:
-            // 默认: 显示帮助
-            PrintHelp();
-            break;
+
+    /* 6) 启动后台工作线程 */
+    CreateThread(NULL, 0, WorkerThread, NULL, 0, NULL);
+
+    /* 7) 启动提示 */
+    TrayShowBalloon("KG Assist 已启动", "右键托盘图标可打开菜单");
+
+    /* 8) 消息循环 */
+    MSG msg;
+    while (GetMessageA(&msg, NULL, 0, 0) > 0) {
+        TranslateMessage(&msg);
+        DispatchMessageA(&msg);
     }
-    
-    // 清理
-    KgCloseProcess(&g_TargetProcess);
-    KG_INFO("程序退出");
-    
-    // 关闭日志系统
+
+    /* 9) 清理 */
+    g_Running = FALSE;
+    KgCleanup();
     KgLogClose();
-    
     return 0;
+}
+
+/* ============================================================
+ * 桩 (供其他模块调用)
+ * ============================================================ */
+
+BOOL KgInit(VOID) {
+    if (!KgLoadApis()) return FALSE;
+    return TRUE;
+}
+
+VOID KgCleanup(VOID) {
+    /* 留空 - 子模块各自负责 */
 }

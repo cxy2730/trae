@@ -22,32 +22,21 @@ static const KgPattern LolEntityListPattern = {
     "LoL_EntityList",
     { 0x8B, 0x0D, 0x00, 0x00, 0x00, 0x00, 0x85, 0xC9, 0x74, 0x00, 0x8B, 0x01 },
     "xx????xxx?xx",
-    12,
-    0,
-    FALSE,
-    TRUE
+    12
 };
 
-// 本地玩家指针特征码
 static const KgPattern LolLocalPlayerPattern = {
     "LoL_LocalPlayer",
     { 0xA1, 0x00, 0x00, 0x00, 0x00, 0x85, 0xC0, 0x74, 0x00, 0x0F, 0xB6, 0x0D },
     "x????xx?xxx?",
-    12,
-    0,
-    FALSE,
-    TRUE
+    12
 };
 
-// 游戏状态特征码
 static const KgPattern LolGameStatePattern = {
     "LoL_GameState",
     { 0x68, 0x00, 0x00, 0x00, 0x00, 0x83, 0xEC, 0x00, 0xA1, 0x00, 0x00, 0x00 },
     "x??????x????",
-    12,
-    0,
-    TRUE,
-    TRUE
+    12
 };
 
 /* 已解析的特征码地址 (缓存) */

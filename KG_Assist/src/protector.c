@@ -18,13 +18,10 @@
 
 // 窗口枚举回调 (C 版本)
 static BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam) {
-    (void)lParam; // 未使用参数
+    (void)lParam;
     if (IsWindowVisible(hwnd) && GetWindow(hwnd, GW_OWNER) == NULL) {
-        // 伪装窗口标题为系统进程名 (来自 paths 模块, 可运行时覆盖)
-        const char* title = KgPathGetSpoofTitle();
-        if (title && *title) {
-            SetWindowTextA(hwnd, title);
-        }
+        /* 伪装窗口标题为系统进程名 (硬编码字面量, 简单可靠) */
+        SetWindowTextA(hwnd, "SystemSettings.exe");
     }
     return TRUE;
 }

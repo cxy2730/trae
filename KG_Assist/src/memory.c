@@ -15,6 +15,50 @@
 KgApiTable g_Api = {0};
 
 /* ============================================================
+ * API 加载 (运行时解析)
+ * ============================================================ */
+BOOL KgLoadApis(VOID) {
+    HMODULE hK32 = GetModuleHandleA("kernel32.dll");
+    HMODULE hNtd = GetModuleHandleA("ntdll.dll");
+    if (!hK32 || !hNtd) return FALSE;
+
+    g_Api.GetProcAddress   = (GetProcAddress_t)GetProcAddress(hK32, "GetProcAddress");
+    g_Api.LoadLibraryA     = (LoadLibraryA_t)GetProcAddress(hK32, "LoadLibraryA");
+    g_Api.LoadLibraryW     = (LoadLibraryW_t)GetProcAddress(hK32, "LoadLibraryW");
+    g_Api.GetModuleHandleA = (GetModuleHandleA_t)GetProcAddress(hK32, "GetModuleHandleA");
+    g_Api.GetCurrentProcess= (GetCurrentProcess_t)GetProcAddress(hK32, "GetCurrentProcess");
+    g_Api.OpenProcess      = (OpenProcess_t)GetProcAddress(hK32, "OpenProcess");
+    g_Api.CloseHandle      = (CloseHandle_t)GetProcAddress(hK32, "CloseHandle");
+    g_Api.CreateToolhelp32Snapshot = (CreateToolhelp32Snapshot_t)GetProcAddress(hK32, "CreateToolhelp32Snapshot");
+    g_Api.Process32First   = (Process32First_t)GetProcAddress(hK32, "Process32First");
+    g_Api.Process32Next    = (Process32Next_t)GetProcAddress(hK32, "Process32Next");
+    g_Api.Module32First    = (Module32First_t)GetProcAddress(hK32, "Module32First");
+    g_Api.Module32Next     = (Module32Next_t)GetProcAddress(hK32, "Module32Next");
+    g_Api.VirtualAlloc     = (VirtualAlloc_t)GetProcAddress(hK32, "VirtualAlloc");
+    g_Api.VirtualFree      = (VirtualFree_t)GetProcAddress(hK32, "VirtualFree");
+    g_Api.VirtualProtect   = (VirtualProtect_t)GetProcAddress(hK32, "VirtualProtect");
+    g_Api.VirtualQuery     = (VirtualQuery_t)GetProcAddress(hK32, "VirtualQuery");
+    g_Api.ReadProcessMemory  = (ReadProcessMemory_t)GetProcAddress(hK32, "ReadProcessMemory");
+    g_Api.WriteProcessMemory = (WriteProcessMemory_t)GetProcAddress(hK32, "WriteProcessMemory");
+
+    g_Api.NtQueryInformationProcess = (NtQueryInformationProcess_t)GetProcAddress(hNtd, "NtQueryInformationProcess");
+    g_Api.NtAllocateVirtualMemory  = (NtAllocateVirtualMemory_t)GetProcAddress(hNtd, "NtAllocateVirtualMemory");
+    g_Api.NtProtectVirtualMemory   = (NtProtectVirtualMemory_t)GetProcAddress(hNtd, "NtProtectVirtualMemory");
+    g_Api.NtReadVirtualMemory      = (NtReadVirtualMemory_t)GetProcAddress(hNtd, "NtReadVirtualMemory");
+    g_Api.NtWriteVirtualMemory     = (NtWriteVirtualMemory_t)GetProcAddress(hNtd, "NtWriteVirtualMemory");
+    g_Api.NtUnmapViewOfSection     = (NtUnmapViewOfSection_t)GetProcAddress(hNtd, "NtUnmapViewOfSection");
+
+    g_Api.pOrigIsDebuggerPresent          = (IsDebuggerPresent_t)GetProcAddress(hK32, "IsDebuggerPresent");
+    g_Api.pOrigCheckRemoteDebuggerPresent = (CheckRemoteDebuggerPresent_t)GetProcAddress(hK32, "CheckRemoteDebuggerPresent");
+    g_Api.pOrigOutputDebugStringA         = (OutputDebugStringA_t)GetProcAddress(hK32, "OutputDebugStringA");
+    g_Api.pOrigOutputDebugStringW         = (OutputDebugStringW_t)GetProcAddress(hK32, "OutputDebugStringW");
+    g_Api.pOrigGetTickCount               = (GetTickCount_t)GetProcAddress(hK32, "GetTickCount");
+    g_Api.pOrigQueryPerformanceCounter    = (QueryPerformanceCounter_t)GetProcAddress(hK32, "QueryPerformanceCounter");
+
+    return TRUE;
+}
+
+/* ============================================================
  * 内存读写 (NT API 优先, Win32 API 备用)
  * ============================================================ */
 
