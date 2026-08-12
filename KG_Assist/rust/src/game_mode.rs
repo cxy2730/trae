@@ -45,6 +45,21 @@ pub fn run(cb: LogCallback) -> i32 {
     // 1. 安装防护 (在大厅启动前完成)
     log(cb, "[1/5] 安装防护 (停 ACE + hook + DLL 劫持)...");
     protector::install_full(cb);
+    // —— 关键: 从这里开始, 任何 return 之前都要 uninstall_full 清残留 ——
+    //    不然 DLL 劫持 + IAT hook 残留在系统, 必须等关窗口才清
+    let installed = true;
+
+    // 在清理作用域里运行; 任何 return 都会经过下面的 RAII
+    struct Guard<'a> { active: bool, cb: LogCallback, _p: core::marker::PhantomData<&'a ()> }
+    impl<'a> Drop for Guard<'a> {
+        fn drop(&mut self) {
+            if self.active {
+                log(self.cb, "[清理] 线程退出, 还原 DLL 劫持 + Hook + PEB + 服务...");
+                protector::uninstall_full(self.cb);
+            }
+        }
+    }
+    let _guard = Guard { active: installed, cb, _p: core::marker::PhantomData };
 
     if check_stop() { return 1; }
 
@@ -63,7 +78,7 @@ pub fn run(cb: LogCallback) -> i32 {
     // 3. 查找游戏进程 (League of Legends.exe, 不是大厅)
     log(cb, "[3/5] 等待游戏进程启动 (League of Legends.exe)...");
     log(cb, "  [提示] 请在大厅点击开始游戏");
-    let mut proc = match find_game_process_with_wait(cb) {
+    let proc = match find_game_process_with_wait(cb) {
         Some(p) => p,
         None => {
             if check_stop() {
@@ -94,14 +109,15 @@ pub fn run(cb: LogCallback) -> i32 {
 
     // 5. 打开进程 + 注入
     log(cb, "[5/5] 进入泉水, 开始注入 bot 脚本...");
-    if !process::open_process(&mut proc, PROCESS_ALL_ACCESS) {
+    let mut proc_ = proc;
+    if !process::open_process(&mut proc_, PROCESS_ALL_ACCESS) {
         log_error(cb, "  [错误] 打开进程失败 (需要管理员权限)");
         return 1;
     }
     log(cb, "  [OK] 已获取进程句柄");
 
     log(cb, "  正在注入 bot.dll (NtCreateThreadEx + 自动回退)...");
-    let ok = injector::auto_inject(proc.handle, proc.pid, &bot_path, cb);
+    let ok = injector::auto_inject(proc_.handle, proc_.pid, &bot_path, cb);
 
     if ok {
         log(cb, "  [OK] bot 脚本注入成功!");
@@ -109,7 +125,7 @@ pub fn run(cb: LogCallback) -> i32 {
         log_error(cb, "  [错误] 注入失败");
     }
 
-    process::close_process(&mut proc);
+    process::close_process(&mut proc_);
 
     if ok {
         log(cb, "");

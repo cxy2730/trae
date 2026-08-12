@@ -47,6 +47,20 @@ pub fn run(cb: LogCallback) -> i32 {
     // 1. 安装防护
     log(cb, "[1/6] 安装防护...");
     protector::install_full(cb);
+    // —— 关键: 从这里开始, 任何 return 之前都要 uninstall_full 清残留 ——
+    let installed = true;
+
+    // RAII: 任何 return 路径都保证跑 protector::uninstall_full
+    struct Guard<'a> { active: bool, cb: LogCallback, _p: core::marker::PhantomData<&'a ()> }
+    impl<'a> Drop for Guard<'a> {
+        fn drop(&mut self) {
+            if self.active {
+                log(self.cb, "[清理] 线程退出, 还原 DLL 劫持 + Hook + PEB + 服务...");
+                protector::uninstall_full(self.cb);
+            }
+        }
+    }
+    let _guard = Guard { active: installed, cb, _p: core::marker::PhantomData };
 
     if check_stop() { return 1; }
 
@@ -78,7 +92,7 @@ pub fn run(cb: LogCallback) -> i32 {
     let modules = process::enum_modules(&proc);
     log(cb, &format!("  [OK] 加载了 {} 个模块", modules.len()));
 
-    if check_stop() { return 1; }
+    if check_stop() { process::close_process(&mut proc); return 1; }
 
     // 4. 提取游戏特征 (主模块)
     log(cb, "[4/6] 提取游戏特征...");
@@ -88,7 +102,7 @@ pub fn run(cb: LogCallback) -> i32 {
 
     if let Some(ref m) = main_mod {
         pe_timestamp = process::read_pe_timestamp(proc.handle, m.base);
-        let (size_of_image, entry_point) = process::read_pe_info(proc.handle, m.base);
+        let (size_of_image, _entry_point) = process::read_pe_info(proc.handle, m.base);
 
         log(cb, &format!("  游戏主模块: {} @ 0x{:08X} ({} bytes)  PE时间戳: 0x{:08X}",
             m.name, m.base, size_of_image, pe_timestamp));
@@ -97,7 +111,7 @@ pub fn run(cb: LogCallback) -> i32 {
         game_version_str = format!("0x{:08X}", pe_timestamp);
     }
 
-    if check_stop() { return 1; }
+    if check_stop() { process::close_process(&mut proc); return 1; }
 
     // 5. 提取反作弊特征
     log(cb, "[5/6] 提取反作弊特征...");
@@ -120,7 +134,7 @@ pub fn run(cb: LogCallback) -> i32 {
         log(cb, &format!("  [OK] 记录了 {} 个反作弊模块特征", ace_modules.len()));
     }
 
-    if check_stop() { return 1; }
+    if check_stop() { process::close_process(&mut proc); return 1; }
 
     // 6. 写入 sigdata.txt (exe 同级目录)
     log(cb, "[6/6] 保存特征数据...");

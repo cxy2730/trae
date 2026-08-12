@@ -361,21 +361,28 @@ unsafe extern "system" fn wnd_proc(
                     return 0;
                 }
                 IDC_BTN_STOP => {
-                    if G_RUNNING {
-                        append_log("正在停止 (完整还原过检测)...", LOG_WARN);
-                        // 1. 先让游戏/更新线程的循环退出检查 stop 标志
-                        crate::game_mode::stop();
-                        crate::update_mode::stop();
-                        if G_WORK_THREAD != 0 {
-                            WaitForSingleObject(G_WORK_THREAD, 3000);
-                            CloseHandle(G_WORK_THREAD);
-                            G_WORK_THREAD = 0;
-                        }
-                        // 2. 完整还原过检测: 逆序 restore hook/DLL/service/window
-                        let cb: LogCallback = core::mem::transmute(log_callback as usize);
-                        crate::protector::uninstall_full(cb);
-                        G_RUNNING = false;
+                    // 关键: 不管 G_RUNNING 状态都要清残留
+                    // G_RUNNING 只代表"工作线程运行中", 但 install_full 可能已经跑完、线程已失败退出
+                    // 这种情况下如果不调 uninstall_full, DLL 劫持 + IAT hook 会残留在系统里, 只有关窗口才清
+                    let was_running = unsafe { G_RUNNING };
+                    append_log("正在停止 (完整还原过检测)...", LOG_WARN);
+                    // 1. 先让游戏/更新线程的循环退出检查 stop 标志
+                    crate::game_mode::stop();
+                    crate::update_mode::stop();
+                    if unsafe { G_WORK_THREAD != 0 } {
+                        unsafe { WaitForSingleObject(G_WORK_THREAD, 3000); }
+                        unsafe { CloseHandle(G_WORK_THREAD); }
+                        unsafe { G_WORK_THREAD = 0; }
+                    }
+                    // 2. 完整还原过检测: 逆序 restore hook/DLL/service/window
+                    //    uninstall_full 内部有 PROTECTOR_INSTALLED 检查, 没装过会安全跳过
+                    let cb: LogCallback = unsafe { core::mem::transmute(log_callback as usize) };
+                    crate::protector::uninstall_full(cb);
+                    unsafe { G_RUNNING = false; }
+                    if was_running {
                         append_log("======== 已停止 (ACE 心跳保持) ========", LOG_INFO);
+                    } else {
+                        append_log("======== 已清理残留 ========", LOG_INFO);
                     }
                     return 0;
                 }
