@@ -172,12 +172,15 @@ static BOOL InstallIATHook(const char* dllName, const char* funcName, FARPROC ho
                     DWORD oldProtect;
                     VirtualProtect(&pThunk->u1.Function, sizeof(FARPROC),
                                    PAGE_READWRITE, &oldProtect);
-                    
-                    pThunk->u1.Function = (ULONGLONG)hookFunc;
-                    
+
+                    /* 32-bit PE: low 4 bytes hold the function pointer; on
+                     * x64 we use the full 8-byte pointer. Cast via uintptr_t
+                     * to avoid -Wpointer-to-int-cast on 32-bit builds. */
+                    pThunk->u1.Function = (ULONGLONG)(uintptr_t)hookFunc;
+
                     VirtualProtect(&pThunk->u1.Function, sizeof(FARPROC),
                                    oldProtect, &oldProtect);
-                    
+
                     KG_DEBUG("IAT Hook 成功: %s!%s -> %p",
                              dllName, funcName, hookFunc);
                     return TRUE;

@@ -23,7 +23,7 @@
 
 static BOOL g_Running = TRUE;
 static KgProcessInfo g_TargetProcess = {0};
-static char g_ConfigPath[KG_MAX_PATH] = "kg_assist.ini";
+static char g_ConfigPath[KG_MAX_PATH] = "";  /* 由 paths.c 解析, 不再硬编码 */
 
 /* ============================================================
  * 信号处理 (Ctrl+C 优雅退出)
@@ -53,10 +53,17 @@ static VOID PrintHelp(VOID) {
     printf("  --attach           附加到已运行的目标进程\n");
     printf("  --cheat            直接启动辅助功能\n");
     printf("  --daemon           后台守护模式 (自动检测注入)\n");
-    printf("  --config <文件>    指定配置文件路径\n");
+    printf("  --config <文件>    指定配置文件路径 (绝对或相对)\n");
+    printf("  --root <目录>      覆盖根目录 (默认: EXE 所在目录)\n");
     printf("  --pid <PID>        指定目标进程 ID\n");
     printf("  --list             列出所有运行中进程\n");
     printf("  --help             显示此帮助信息\n\n");
+    printf("环境变量:\n");
+    printf("  KG_ASSIST_HOME     等价于 --root\n");
+    printf("  KG_ASSIST_LOG      自定义日志文件名 (默认 kg_assist.log)\n");
+    printf("  KG_ASSIST_CONFIG   自定义配置文件名 (默认 kg_assist.ini)\n");
+    printf("  KG_ASSIST_SPOOF_TITLE  自定义窗口伪装标题\n");
+    printf("  KG_ASSIST_SPOOF_CLASS  自定义窗口伪装类名\n\n");
     printf("示例:\n");
     printf("  KG_Assist.exe --target \"League of Legends.exe\" --attach\n");
     printf("  KG_Assist.exe --inject cheat.dll\n");
@@ -237,28 +244,54 @@ static VOID StartCheatMode(VOID) {
  * ============================================================ */
 
 int main(int argc, char* argv[]) {
-    // 初始化日志系统 (终端 + 文件双输出)
+    /* --------------------------------------------------------
+     * 1) 解析路径 (必须在日志系统之前)
+     *    - 默认根目录: EXE 所在目录 (与 CWD 无关)
+     *    - 可被 KG_ASSIST_HOME 或 --root 覆盖
+     * -------------------------------------------------------- */
+    KgPathInit(argc > 0 ? argv[0] : NULL);
+
+    /* 1b) 处理只影响路径/伪装的早期选项 (不进入模式选择) */
+    for (int i = 1; i < argc; i++) {
+        if (i + 1 < argc && _stricmp(argv[i], "--root") == 0) {
+            /* 重新设置根目录: KgPathInit 已读 env, 此处只重写 */
+            _putenv_s("KG_ASSIST_HOME", argv[i + 1]);
+            KgPathInit(argc > 0 ? argv[0] : NULL);
+            break;
+        }
+    }
+    ApplyEnvOverrides();
+
+    /* 2) 初始化日志 (双输出: 终端 + <root>/logs/kg_assist.log) */
     KgLogInit();
-    
-    // 注册控制台信号处理
+
+    /* 3) 注册控制台信号处理 */
     SetConsoleCtrlHandler(ConsoleHandler, TRUE);
-    
+
     KG_INFO("============================================");
     KG_INFO("  KG Assist v2.0 (Game Anti-Detection)");
+    KG_INFO("  根目录: %s", KgPathGetRoot());
     KG_INFO("============================================");
-    
-    // 关键: 安装高级防封保护 (KG 核心能力)
-    // 这一步会: 伪装进程窗口、Hook 反调试检测、
-    //          启动完整性校验、混淆 API 调用、检测虚拟机环境
+
+    /* 4) 关键: 安装高级防封保护 (KG 核心能力) */
     if (!KgInstallFullProtection()) {
         KG_WARN("部分保护措施未能安装 (可能需要管理员权限)");
     }
-    
-    // 解析命令行参数
+
+    /* 5) 解析命令行参数 */
     const char* targetName = KG_LOL_PROCESS_NAME;
     const char* dllPath = NULL;
     int mode = 0;  // 0=帮助, 1=附加, 2=注入, 3=辅助, 4=守护, 5=列表
-    
+
+    /* 默认配置路径: <root>/config/kg_assist.ini */
+    {
+        const char* def = KgPathGetConfigFile();
+        if (def) {
+            strncpy(g_ConfigPath, def, KG_MAX_PATH - 1);
+            g_ConfigPath[KG_MAX_PATH - 1] = '\0';
+        }
+    }
+
     for (int i = 1; i < argc; i++) {
         if (_stricmp(argv[i], "--help") == 0 || _stricmp(argv[i], "-h") == 0) {
             PrintHelp();
@@ -277,7 +310,18 @@ int main(int argc, char* argv[]) {
         } else if (_stricmp(argv[i], "--list") == 0) {
             mode = 5;
         } else if (_stricmp(argv[i], "--config") == 0 && i + 1 < argc) {
-            strncpy_s(g_ConfigPath, KG_MAX_PATH, argv[++i], _TRUNCATE);
+            /* 用户指定: 绝对路径直接用, 相对路径拼到根 */
+            const char* in = argv[++i];
+            if (in[0] == '/' || in[0] == '\\' ||
+                (in[0] && in[1] == ':')) {
+                strncpy(g_ConfigPath, in, KG_MAX_PATH - 1);
+            } else if (!KgPathResolve(in, g_ConfigPath, KG_MAX_PATH)) {
+                strncpy(g_ConfigPath, in, KG_MAX_PATH - 1);
+            }
+            g_ConfigPath[KG_MAX_PATH - 1] = '\0';
+        } else if (_stricmp(argv[i], "--root") == 0 && i + 1 < argc) {
+            /* 已在初始化前处理过, 此处跳过值 */
+            i++;
         } else if (_stricmp(argv[i], "--pid") == 0 && i + 1 < argc) {
             g_TargetProcess.pid = atoi(argv[++i]);
         }

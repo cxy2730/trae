@@ -192,7 +192,7 @@ BOOL KgManualMap(HANDLE hProcess, const char* dllPath) {
                         FARPROC func = GetProcAddress(hModule,
                             (LPCSTR)thunk->u1.Ordinal);
                         if (func) {
-                            iat->u1.Function = (ULONGLONG)(ULONG)func;
+                            iat->u1.Function = (ULONGLONG)(uintptr_t)func;
                         }
                     } else {
                         // 按名称导入
@@ -200,7 +200,7 @@ BOOL KgManualMap(HANDLE hProcess, const char* dllPath) {
                             ((BYTE*)remoteBase + thunk->u1.AddressOfData);
                         FARPROC func = GetProcAddress(hModule, importByName->Name);
                         if (func) {
-                            iat->u1.Function = (ULONGLONG)(ULONG)func;
+                            iat->u1.Function = (ULONGLONG)(uintptr_t)func;
                         }
                     }
                     

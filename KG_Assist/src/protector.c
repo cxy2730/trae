@@ -16,16 +16,15 @@
  * 1. 进程伪装 (Process Masquerading)
  * ============================================================ */
 
-// 系统进程伪装名称
-static const char* g_SpoofWindowTitle = "SystemSettings.exe";
-static const char* g_SpoofWindowClass = "Progman";
-
 // 窗口枚举回调 (C 版本)
 static BOOL CALLBACK EnumWindowsProc(HWND hwnd, LPARAM lParam) {
     (void)lParam; // 未使用参数
     if (IsWindowVisible(hwnd) && GetWindow(hwnd, GW_OWNER) == NULL) {
-        // 伪装窗口标题为系统进程名
-        SetWindowTextA(hwnd, g_SpoofWindowTitle);
+        // 伪装窗口标题为系统进程名 (来自 paths 模块, 可运行时覆盖)
+        const char* title = KgPathGetSpoofTitle();
+        if (title && *title) {
+            SetWindowTextA(hwnd, title);
+        }
     }
     return TRUE;
 }

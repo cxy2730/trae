@@ -68,8 +68,11 @@ typedef void*           ptr;
  * 日志系统 (双输出: 终端 + 文件)
  * ============================================================ */
 
-// 日志文件名
-#define KG_LOG_FILE     "kg_assist.log"
+// 日志文件名 (运行时由 paths.c 解析, 此处仅作默认名)
+#define KG_LOG_FILE_DEFAULT  "kg_assist.log"
+
+// 配置文件名 (运行时由 paths.c 解析)
+#define KG_CONFIG_FILE_DEFAULT "kg_assist.ini"
 
 // 日志文件句柄 (在 logger.c 中定义)
 extern FILE* g_LogFile;
@@ -470,6 +473,35 @@ const KgCheatConfig* KgGetConfig(VOID);
 VOID KgSetConfig(BOOL esp, BOOL aimbot, BOOL speed, BOOL ammo, BOOL recoil);
 BOOL KgLoadConfig(const char* path);
 BOOL KgSaveConfig(const char* path);
+
+/* ============================================================
+ * 路径解析模块 (paths.c)
+ *   - 不依赖 CWD, 以 EXE 所在目录为根
+ *   - 支持 KG_ASSIST_HOME 环境变量和 --root 命令行覆盖
+ * ============================================================ */
+
+BOOL   KgPathInit(const char* argv0);
+const char* KgPathGetRoot(VOID);
+const char* KgPathGetLogsDir(VOID);
+const char* KgPathGetConfigDir(VOID);
+const char* KgPathGetLogFile(VOID);
+const char* KgPathGetLogBackupPrefix(VOID);
+const char* KgPathGetConfigFile(VOID);
+const char* KgPathGetSpoofTitle(VOID);
+const char* KgPathGetSpoofClass(VOID);
+VOID   KgPathSetLogFileName(const char* name);
+VOID   KgPathSetConfigFileName(const char* name);
+VOID   KgPathSetSpoofTitle(const char* t);
+VOID   KgPathSetSpoofClass(const char* c);
+BOOL   KgPathResolve(const char* rel, char* out, u32 outSize);
+BOOL   KgPathEnsureDir(const char* absPath);
+
+/* In-place path separator normalization ('/' -> '\\' on Windows). */
+VOID   KgPathNormalizeSeparators(char* s);
+
+/* Apply env-var overrides (KG_ASSIST_LOG/CONFIG/SPOOF_*) over the defaults.
+ * Must be called after KgPathInit(). */
+VOID   ApplyEnvOverrides(VOID);
 
 /* ============================================================
  * 内联辅助函数

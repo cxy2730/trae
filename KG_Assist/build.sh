@@ -63,6 +63,7 @@ mkdir -p "$OUT_DIR"
 SOURCES=(
     "$SRC_DIR/main.c"
     "$SRC_DIR/logger.c"
+    "$SRC_DIR/paths.c"
     "$SRC_DIR/protector.c"
     "$SRC_DIR/memory.c"
     "$SRC_DIR/antidetect.c"
@@ -88,7 +89,7 @@ done
 # 链接
 echo ""
 echo -e "${GREEN}链接目标文件...${NC}"
-$CC "${OBJECTS[@]}" -o "$OUT_DIR/$TARGET" -lws2_32 -lpsapi
+$CC "${OBJECTS[@]}" -o "$OUT_DIR/$TARGET" -lws2_32 -lpsapi -lshlwapi
 
 # 检查结果
 if [ -f "$OUT_DIR/$TARGET" ]; then

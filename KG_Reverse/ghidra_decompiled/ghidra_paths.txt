@@ -1,0 +1,607 @@
+# Ghidra 11.4.1 - suspicious path/registry/network strings in KG.exe
+# Total suspicious: 507
+# Total decompiled funcs: 6
+
+[004a27f4] (13 bytes) kernel32.dll
+[004a2801] (13 bytes) kernel32.dll
+[004a280e] (12 bytes) Shell32.dll
+[004a281a] (13 bytes) kernel32.dll
+[004a2827] (13 bytes) Kernel32.dll
+[004a2834] (13 bytes) kernel32.dll
+[004a2841] (11 bytes) msvcrt.dll
+[004a284c] (13 bytes) kernel32.dll
+[004a2859] (13 bytes) kernel32.dll
+[004a2866] (13 bytes) advapi32.dll
+[004a2873] (13 bytes) advapi32.dll
+[004a2880] (13 bytes) Advapi32.dll
+[004a288d] (13 bytes) kernel32.dll
+[004a289a] (13 bytes) kernel32.dll
+[004a28a7] (13 bytes) kernel32.dll
+[004a28b4] (13 bytes) kernel32.dll
+[004a28c1] (13 bytes) Kernel32.dll
+[004a28ce] (12 bytes) shlwapi.dll
+[004a5d49] (17 bytes) LeagueClient.exe
+[004a5d5a] (23 bytes) RiotClientServices.exe
+[004a5d79] (18 bytes) C:\Windows\DJ.dat
+[004a5d8b] (58 bytes) C:\Program Files\AntiCheatExpert\SGuard\x64\ACE-SSC64.dll
+[004a5dc5] (62 bytes) C:\Program Files\AntiCheatExpert\SGuard\x64\ACE-SSC-DRV64.sys
+[004a5e03] (52 bytes) C:\Program Files\AntiCheatExpert\SGuard\x64\123.dll
+[004a5e37] (55 bytes) C:\Program Files\AntiCheatExpert\SGuard\x64\sguard.dat
+[004a5e6e] (8 bytes) \LY.ini
+[004a5e76] (56 bytes) C:\Program Files\AntiCheatExpert\SGuard\x64\netbios.dll
+[004a5eae] (13 bytes) /version.dll
+[004a5ebb] (27 bytes) /League of Legends.exe.ini
+[004a5ed6] (27 bytes) /League of Legends.exe.lic
+[004a5ef9] (19 bytes) /SProtectSDK64.dll
+[004a5f0c] (54 bytes) \Program Files\AntiCheatExpert\SGuard\x64\netbios.dll
+[004a5f42] (50 bytes) \Program Files\AntiCheatExpert\SGuard\x64\123.dll
+[004a6036] (13 bytes) /TerSafe.dll
+[004a6ea8] (24 bytes) VERSION.dll
+[004a75cb] (12 bytes) VERSION.dll
+[004a82f6] (14 bytes) GetSystemInfo
+[004a837e] (26 bytes) GetSystemTimeAsFileTime
+[004a8a58] (20 bytes) GetSystemDirectoryW
+[004a8f3c] (13 bytes) KERNEL32.dll
+[004a8f49] (11 bytes) USER32.dll
+[004a8f54] (10 bytes) GDI32.dll
+[004a8f5e] (10 bytes) ole32.dll
+[004a8f68] (13 bytes) COMCTL32.dll
+[004a8f75] (10 bytes) ntdll.dll
+[004a8f7f] (12 bytes) gdiplus.dll
+[004a8f8b] (11 bytes) WS2_32.dll
+[00625088] (13 bytes) KERNEL32.dll
+[00625119] (14 bytes) GetSystemInfo
+[006251a4] (24 bytes) GetSystemTimeAsFileTime
+[006258ab] (20 bytes) GetSystemDirectoryW
+[006259b6] (11 bytes) USER32.dll
+[00625add] (10 bytes) GDI32.dll
+[00625b7c] (10 bytes) ole32.dll
+[00625bcf] (13 bytes) COMCTL32.dll
+[00625c28] (10 bytes) ntdll.dll
+[00625c59] (12 bytes) gdiplus.dll
+[00625e37] (11 bytes) WS2_32.dll
+[0062f90c] (62 bytes) \SystemRoot\system32\ntdll.dll
+[006a9354] (62 bytes) \SystemRoot\system32\ntdll.dll
+[006aeaa4] (62 bytes) \SystemRoot\system32\ntdll.dll
+[01204a6c] (57 bytes) \Program Files\AntiCheatExpert\SGuard\x64\Plugins\sg.dll
+[01204aa5] (12 bytes) netbios.dll
+[01204ab1] (15 bytes) Plugins\sg.dll
+[01204ac0] (25 bytes) LeagueClient\netbios.dll
+[01204ad9] (43 bytes) \AntiCheatExpert\SGuard\x64\Plugins\sg.dll
+[0124a51c] (24 bytes) dbghelp.dll
+[0124a5b4] (24 bytes) MSCOREE.DLL
+[0124a66c] (68 bytes) api-ms-win-core-synch-l1-2-0.dll
+[0124b28c] (28 bytes) `virtual displacement map'
+[0124b3bc] (28 bytes) `placement delete closure'
+[0124b3dc] (32 bytes) `placement delete[] closure'
+[0124b65c] (24 bytes) `anonymous namespace'
+[0124b804] (24 bytes) mscoree.dll
+[0124d90c] (64 bytes) api-ms-win-core-sysinfo-l1-2-1
+[0124da1c] (88 bytes) api-ms-win-security-systemfunctions-l1-1-0
+[01257d14] (20 bytes) ntdll.dll
+[01257e64] (28 bytes) kernel32.dll
+[01258054] (28 bytes) \version.dll
+[01258204] (36 bytes) C:\Windows\DJ.dat
+[01258254] (32 bytes) \ACE-SSC64.dll
+[012582c4] (28 bytes) KERNEL32.dll
+[01264344] (28 bytes) KERNEL32.DLL
+[01264364] (40 bytes) \ACE-SSC-DRV64.sys
+[012643a4] (28 bytes) ACE-SSC64.dll
+[012649cc] (48 bytes) GetSystemTimeAsFileTime
+[012649fc] (32 bytes) KERNELBase.dll
+[01265374] (16 bytes) LdrGetDllHandle
+[01265384] (12 bytes) LdrLoadDll
+[01265394] (16 bytes) LdrUnloadDll
+[012653a4] (28 bytes) Kernel32.dll
+[0126642c] (24 bytes) SHCore.dll
+[012692f8] (8 bytes) .data
+[0127120e] (12 bytes) VERSION.dll
+[01271a78] (20 bytes) GetSystemDirectoryW
+[01271d16] (14 bytes) GetSystemInfo
+[01271d8c] (24 bytes) GetSystemTimeAsFileTime
+[01271ec8] (13 bytes) KERNEL32.dll
+[01271fdc] (12 bytes) USER32.dll
+[01272070] (10 bytes) GDI32.dll
+[012720b6] (10 bytes) ole32.dll
+[012720fe] (14 bytes) COMCTL32.dll
+[012722ca] (12 bytes) gdiplus.dll
+[012722d6] (11 bytes) WS2_32.dll
+[0127ca0c] (24 bytes) VERSION.dll
+[01280436] (21 bytes) SystemTimeToFileTime
+[012805d2] (24 bytes) GetSystemTimeAsFileTime
+[0128d42a] (32 bytes) SystemTimeToTzSpecificLocalTime
+[012902c0] (11 bytes) LdrLoadDll
+[012959b4] (13 bytes) OLEAUT32.dll
+[0129c77e] (26 bytes) NtQuerySystemInformation
+[0129ce4a] (16 bytes) LdrGetDllHandle
+[012db798] (23 bytes) GetSystemFirmwareTable
+[012f1164] (10 bytes) ntdll.dll
+[0134602e] (32 bytes) TzSpecificLocalTimeToSystemTime
+[01351020] (20 bytes) EnumSystemLocalesW
+[01359e20] (31 bytes) GetSystemTimePreciseAsFileTime
+[013643e6] (21 bytes) FileTimeToSystemTime
+[013647a6] (13 bytes) LdrAddRefDll
+[0166aa96] (13 bytes) ADVAPI32.dll
+[0166af82] (14 bytes) GetSystemInfo
+[016766d6] (11 bytes) USER32.dll
+[01678286] (13 bytes) KERNEL32.dll
+[01712b2c] (132 bytes) \Registry\Machine\System\CurrentControlSet\Services\ACE-SSC-DRV64
+[01712d7c] (44 bytes) \Device\ACE-SSC-DRV64
+[01712dac] (52 bytes) \DosDevices\ACE-SSC-DRV64
+[01712de4] (44 bytes) IoGetIommuInterfaceEx
+[0171307c] (116 bytes) \Registry\Machine\System\CurrentControlSet\Control\Class
+[017133fc] (116 bytes) C:\data\landun\workspace\CommonComponent\ACE-SSC\1.compile_source\SOURCE\SscDrv\build64\Release\ACE-SSC-DRV64.pdb
+[01713550] (8 bytes) .data
+[0171979e] (26 bytes) ZwQuerySystemInformation
+[017199fa] (26 bytes) MmGetSystemRoutineAddress
+[01719e90] (20 bytes) MmSystemRangeStart
+[01719ebe] (14 bytes) MmMapIoSpace
+[01719ece] (15 bytes) MmUnmapIoSpace
+[01719f76] (22 bytes) IoGetDeviceInterfaces
+[0171a014] (32 bytes) KeSetSystemGroupAffinityThread
+[0171a1e2] (14 bytes) ntoskrnl.exe
+[0171a23c] (8 bytes) HAL.dll
+[0171a3a0] (24 bytes) RtlAddAccessAllowedAce
+[0171a5ec] (24 bytes) ACE-SSC-DRV
+[0171a660] (32 bytes) ACE-SSC-DRV.sys
+[0171a6a8] (32 bytes) ACE-SSC-DRV.sys
+[01ac1b24] (28 bytes) Kernel32.dll
+[01ac1b54] (28 bytes) kernel32.dll
+[01ac1bac] (16 bytes) kernel32.dll
+[01ac1bcc] (44 bytes) config\TenMacode.dat
+[01ac3584] (28 bytes) net interface init failed.
+[01ac3fba] (26 bytes) ltersafe.dll
+[01ac3fd4] (12 bytes) DllEntry20
+[01ac3fe4] (12 bytes) DllEntry
+[01ac4e5c] (12 bytes) Replaced
+[01ac4eec] (140 bytes) # Netscape HTTP Cookie File
+# https://curl.haxx.se/docs/http-cookies.html
+# This file was generated by libcurl! Edit at your own risk.
+
+
+[01ac5fa4] (32 bytes) Couldn't bind to interface '%s'
+[01ac5fc4] (56 bytes) Local Interface %s is ip %s using address family %i
+
+[01ac6304] (28 bytes) iphlpapi.dll
+[01ac634c] (16 bytes) AddDllDirectory
+[01acad44] (24 bytes) WS2_32.DLL
+[01acad5c] (32 bytes) failed to load WS2_32.DLL (%u)
+[01acc8e4] (16 bytes) No buffer space
+[01ace3b8] (8 bytes) space
+[01acebac] (28 bytes) ACE-SSC-DRV64
+[01acebcc] (36 bytes) ACE-SSC-DRV64.sys
+[01ad47a4] (12 bytes) space
+[01ad4ad4] (20 bytes) psapi.dll
+[01ad4e34] (24 bytes) shell32.dll
+[01ad5b34] (20 bytes) \drivers\
+[01ad5b5c] (24 bytes) \systemroot
+[01ad5b84] (20 bytes) system32
+[01ad634c] (60 bytes) SeSystemEnvironmentPrivilege
+[01ad6daa] (22 bytes) lntdll.dll
+[01ad9f9a] (26 bytes) l\SystemRoot
+[01ad9fb8] (8 bytes) .data
+[01ada62c] (24 bytes) nvapi_pepQueryInterface
+[01ada644] (24 bytes) nvapi_QueryInterface
+[01ada65c] (32 bytes) nvpowerapi.dll
+[01ada694] (24 bytes) nvldumd.dll
+[01ada74c] (28 bytes) cryptbase.dll
+[01ada76c] (28 bytes) cryptnet.dll
+[01ada7c4] (24 bytes) Shell32.dll
+[01ada814] (28 bytes) Advapi32.dll
+[01ada864] (20 bytes) gdi32.dll
+[01ada8dc] (92 bytes) SOFTWARE\Microsoft\Windows NT\CurrentVersion
+[01ada95c] (36 bytes) SetupDiGetDeviceInterfaceDetailW
+[01ada9dc] (28 bytes) Setupapi.dll
+[01adaa6c] (80 bytes) SYSTEM\CurrentControlSet\Control\Class\
+[01adab1c] (64 bytes) SOFTWARE\Khronos\OpenCL\Vendors
+[01adab5c] (64 bytes) SOFTWARE\Khronos\Vulkan\Drivers
+[01adacbc] (44 bytes) \SystemRoot\system32\
+[01adacec] (20 bytes) system32\
+[01adb02c] (72 bytes) regex_error(error_brace): The expression contained mismatched { and }.
+[01adb07c] (92 bytes) regex_error(error_badbrace): The expression contained an invalid range in a {} expression.
+[01adb14c] (112 bytes) regex_error(error_space): There was insufficient memory to convert the expression into a finite state machine.
+[01adbe44] (16 bytes) no buffer space
+[01adbecc] (20 bytes) no space on device
+[01adc08c] (24 bytes) read only file system
+[01adc144] (32 bytes) too many files open in system
+[01adee2c] (44 bytes) !x-sys-default-locale
+[01adef04] (32 bytes) GetSystemTimePreciseAsFileTime
+[01adfcdc] (28 bytes) `virtual displacement map'
+[01adfe0c] (28 bytes) `placement delete closure'
+[01adfe2c] (32 bytes) `placement delete[] closure'
+[01ae00ac] (24 bytes) `anonymous namespace'
+[01ae1684] (20 bytes) Not enough space
+[01ae173c] (32 bytes) Too many open files in system
+[01ae17ac] (24 bytes) No space left on device
+[01ae17d4] (24 bytes) Read-only file system
+[01ae2244] (24 bytes) mscoree.dll
+[01ae2ebc] (64 bytes) api-ms-win-core-sysinfo-l1-2-1
+[01ae2fcc] (88 bytes) api-ms-win-security-systemfunctions-l1-1-0
+[01ae31ac] (20 bytes) EnumSystemLocalesEx
+[01ae9a9c] (20 bytes) ACE-BOOT
+[01aed014] (8 bytes) system
+[01aefb9c] (112 bytes) C:\data\landun\workspace\CommonComponent\ACE-SSC\1.compile_source\SOURCE\AceSsc\build64\Release\ACE-SSC64.pdb
+[01aeff98] (8 bytes) .data
+[01b0f978] (14 bytes) ACE-SSC64.dll
+[01b1089c] (13 bytes) WTSAPI32.dll
+[01b10a1a] (14 bytes) GetSystemInfo
+[01b10a70] (21 bytes) FileTimeToSystemTime
+[01b10c18] (14 bytes) GetSystemTime
+[01b10c28] (20 bytes) GetSystemDirectoryW
+[01b10cec] (21 bytes) SystemTimeToFileTime
+[01b10f34] (20 bytes) GetNativeSystemInfo
+[01b11038] (24 bytes) GetSystemFirmwareTable
+[01b110e4] (20 bytes) GetSystemDirectoryA
+[01b1120e] (20 bytes) GetDiskFreeSpaceExA
+[01b11298] (13 bytes) KERNEL32.dll
+[01b114aa] (11 bytes) USER32.dll
+[01b114ca] (12 bytes) SHELL32.dll
+[01b1157e] (10 bytes) ole32.dll
+[01b11588] (13 bytes) OLEAUT32.dll
+[01b11742] (12 bytes) StartTraceW
+[01b11750] (14 bytes) ControlTraceW
+[01b11760] (16 bytes) EnableTraceEx2
+[01b11772] (11 bytes) OpenTraceW
+[01b11780] (13 bytes) ProcessTrace
+[01b11790] (12 bytes) CloseTrace
+[01b11852] (14 bytes) ADVAPI32.dll
+[01b118dc] (12 bytes) SHLWAPI.dll
+[01b119b6] (14 bytes) WINTRUST.dll
+[01b11ab0] (28 bytes) SetupDiEnumDeviceInterfaces
+[01b11ace] (34 bytes) SetupDiGetDeviceInterfaceDetailW
+[01b11b08] (13 bytes) SETUPAPI.dll
+[01b11bc8] (13 bytes) IPHLPAPI.DLL
+[01b11dd2] (12 bytes) VERSION.dll
+[01b11e36] (11 bytes) WS2_32.dll
+[01b11e42] (12 bytes) WLDAP32.dll
+[01b11f22] (12 bytes) WINHTTP.dll
+[01b11fde] (12 bytes) CRYPT32.dll
+[01b12102] (24 bytes) GetSystemTimeAsFileTime
+[01b122d8] (32 bytes) SystemTimeToTzSpecificLocalTime
+[01b1245a] (19 bytes) EnumSystemLocalesW
+[01b12592] (27 bytes) GetSystemWindowsDirectoryW
+[01b1f654] (24 bytes) .?AVsystem_error@std@@
+[01b1f67c] (24 bytes) .?AV_System_error@std@@
+[01b20dbc] (24 bytes) .?AV_Facet_base@std@@
+[01b20de4] (24 bytes) .?AVfacet@locale@std@@
+[01b2133c] (36 bytes) .?AV_System_error_category@std@@
+[01b368dc] (40 bytes) ACE-SSC Client DLL
+[01b36960] (24 bytes) ACE-SSC.DLL
+[01b369a0] (24 bytes) ACE-SSC.DLL
+[0201c980] (4 bytes) 004cace3
+[0229e0c7] (29 bytes) Kernel32.dll
+[0229e0f7] (29 bytes) kernel32.dll
+[0229e14f] (13 bytes) kernel32.dll
+[0229e16f] (42 bytes) config\TenMacode.dat
+[0229fb27] (29 bytes) net interface init failed.
+[022a055d] (26 bytes) ltersafe.dll
+[022a0577] (13 bytes) DllEntry20
+[022a0587] (9 bytes) DllEntry
+[022a13ff] (9 bytes) Replaced
+[022a148f] (137 bytes) # Netscape HTTP Cookie File
+# https://curl.haxx.se/docs/http-cookies.html
+# This file was generated by libcurl! Edit at your own risk.
+
+
+[022a2547] (32 bytes) Couldn't bind to interface '%s'
+[022a2567] (53 bytes) Local Interface %s is ip %s using address family %i
+
+[022a28a7] (29 bytes) iphlpapi.dll
+[022a28ef] (16 bytes) AddDllDirectory
+[022a72e7] (22 bytes) WS2_32.DLL
+[022a72ff] (31 bytes) failed to load WS2_32.DLL (%u)
+[022a8e87] (16 bytes) No buffer space
+[022aa95b] (6 bytes) space
+[022ab14f] (29 bytes) ACE-SSC-DRV64
+[022ab16f] (37 bytes) ACE-SSC-DRV64.sys
+[022b0d47] (12 bytes) space
+[022b1077] (21 bytes) psapi.dll
+[022b13d7] (24 bytes) shell32.dll
+[022b20d7] (21 bytes) \drivers\
+[022b20ff] (24 bytes) \systemroot
+[022b2127] (21 bytes) system32
+[022b28ef] (61 bytes) SeSystemEnvironmentPrivilege
+[022b334d] (23 bytes) lntdll.dll
+[022b653d] (26 bytes) l\SystemRoot
+[022b655b] (6 bytes) .data
+[022b6bcf] (24 bytes) nvapi_pepQueryInterface
+[022b6be7] (21 bytes) nvapi_QueryInterface
+[022b6bff] (30 bytes) nvpowerapi.dll
+[022b6c37] (24 bytes) nvldumd.dll
+[022b6cef] (29 bytes) cryptbase.dll
+[022b6d0f] (29 bytes) cryptnet.dll
+[022b6d67] (24 bytes) Shell32.dll
+[022b6db7] (29 bytes) Advapi32.dll
+[022b6e07] (21 bytes) gdi32.dll
+[022b6e7f] (93 bytes) SOFTWARE\Microsoft\Windows NT\CurrentVersion
+[022b6eff] (33 bytes) SetupDiGetDeviceInterfaceDetailW
+[022b6f7f] (29 bytes) Setupapi.dll
+[022b700f] (80 bytes) SYSTEM\CurrentControlSet\Control\Class\
+[022b70bf] (64 bytes) SOFTWARE\Khronos\OpenCL\Vendors
+[022b70ff] (64 bytes) SOFTWARE\Khronos\Vulkan\Drivers
+[022b725f] (45 bytes) \SystemRoot\system32\
+[022b728f] (20 bytes) system32\
+[022b75cf] (73 bytes) regex_error(error_brace): The expression contained mismatched { and }.
+[022b761f] (93 bytes) regex_error(error_badbrace): The expression contained an invalid range in a {} expression.
+[022b76ef] (111 bytes) regex_error(error_space): There was insufficient memory to convert the expression into a finite state machine.
+[022b83e7] (16 bytes) no buffer space
+[022b846f] (21 bytes) no space on device
+[022b862f] (22 bytes) read only file system
+[022b86e7] (30 bytes) too many files open in system
+[022bb3cf] (45 bytes) !x-sys-default-locale
+[022bb4a7] (31 bytes) GetSystemTimePreciseAsFileTime
+[022bc27f] (29 bytes) `virtual displacement map'
+[022bc3af] (29 bytes) `placement delete closure'
+[022bc3cf] (29 bytes) `placement delete[] closure'
+[022bc64f] (22 bytes) `anonymous namespace'
+[022bdc27] (17 bytes) Not enough space
+[022bdcdf] (30 bytes) Too many open files in system
+[022bdd4f] (24 bytes) No space left on device
+[022bdd77] (22 bytes) Read-only file system
+[022be7e7] (24 bytes) mscoree.dll
+[022bf45f] (62 bytes) api-ms-win-core-sysinfo-l1-2-1
+[022bf56f] (89 bytes) api-ms-win-security-systemfunctions-l1-1-0
+[022bf74f] (21 bytes) EnumSystemLocalesEx
+[022c603f] (21 bytes) ACE-BOOT
+[022c95b7] (7 bytes) system
+[022cc13f] (113 bytes) C:\data\landun\workspace\CommonComponent\ACE-SSC\1.compile_source\SOURCE\AceSsc\build64\Release\ACE-SSC64.pdb
+[022cc53b] (6 bytes) .data
+[022ebf1b] (14 bytes) ACE-SSC64.dll
+[022ece3f] (13 bytes) WTSAPI32.dll
+[022ecfbd] (14 bytes) GetSystemInfo
+[022ed013] (21 bytes) FileTimeToSystemTime
+[022ed1bb] (14 bytes) GetSystemTime
+[022ed1cb] (20 bytes) GetSystemDirectoryW
+[022ed28f] (21 bytes) SystemTimeToFileTime
+[022ed4d7] (20 bytes) GetNativeSystemInfo
+[022ed5db] (23 bytes) GetSystemFirmwareTable
+[022ed687] (20 bytes) GetSystemDirectoryA
+[022ed7b1] (20 bytes) GetDiskFreeSpaceExA
+[022ed83b] (13 bytes) KERNEL32.dll
+[022eda4d] (11 bytes) USER32.dll
+[022eda6d] (12 bytes) SHELL32.dll
+[022edb21] (10 bytes) ole32.dll
+[022edb2b] (13 bytes) OLEAUT32.dll
+[022edce5] (12 bytes) StartTraceW
+[022edcf3] (14 bytes) ControlTraceW
+[022edd03] (15 bytes) EnableTraceEx2
+[022edd15] (11 bytes) OpenTraceW
+[022edd23] (13 bytes) ProcessTrace
+[022edd33] (11 bytes) CloseTrace
+[022eddf5] (13 bytes) ADVAPI32.dll
+[022ede7f] (12 bytes) SHLWAPI.dll
+[022edf59] (13 bytes) WINTRUST.dll
+[022ee053] (28 bytes) SetupDiEnumDeviceInterfaces
+[022ee071] (33 bytes) SetupDiGetDeviceInterfaceDetailW
+[022ee0ab] (13 bytes) SETUPAPI.dll
+[022ee16b] (13 bytes) IPHLPAPI.DLL
+[022ee375] (12 bytes) VERSION.dll
+[022ee3d9] (11 bytes) WS2_32.dll
+[022ee3e5] (12 bytes) WLDAP32.dll
+[022ee4c5] (12 bytes) WINHTTP.dll
+[022ee581] (12 bytes) CRYPT32.dll
+[022ee6a5] (24 bytes) GetSystemTimeAsFileTime
+[022ee87b] (32 bytes) SystemTimeToTzSpecificLocalTime
+[022ee9fd] (19 bytes) EnumSystemLocalesW
+[022eeb35] (27 bytes) GetSystemWindowsDirectoryW
+[022fbbf7] (23 bytes) .?AVsystem_error@std@@
+[022fbc1f] (24 bytes) .?AV_System_error@std@@
+[022fd35f] (22 bytes) .?AV_Facet_base@std@@
+[022fd387] (23 bytes) .?AVfacet@locale@std@@
+[022fd8df] (33 bytes) .?AV_System_error_category@std@@
+[02312e7f] (38 bytes) ACE-SSC Client DLL
+[02312f03] (24 bytes) ACE-SSC.DLL
+[02312f43] (24 bytes) ACE-SSC.DLL
+[028a855f] (133 bytes) \Registry\Machine\System\CurrentControlSet\Services\ACE-SSC-DRV64
+[028a87af] (45 bytes) \Device\ACE-SSC-DRV64
+[028a87df] (53 bytes) \DosDevices\ACE-SSC-DRV64
+[028a8817] (45 bytes) IoGetIommuInterfaceEx
+[028a8aaf] (117 bytes) \Registry\Machine\System\CurrentControlSet\Control\Class
+[028a8e2f] (117 bytes) C:\data\landun\workspace\CommonComponent\ACE-SSC\1.compile_source\SOURCE\SscDrv\build64\Release\ACE-SSC-DRV64.pdb
+[028a8f83] (6 bytes) .data
+[028af1d1] (25 bytes) ZwQuerySystemInformation
+[028af42d] (26 bytes) MmGetSystemRoutineAddress
+[028af8c3] (19 bytes) MmSystemRangeStart
+[028af8f1] (13 bytes) MmMapIoSpace
+[028af901] (15 bytes) MmUnmapIoSpace
+[028af9a9] (22 bytes) IoGetDeviceInterfaces
+[028afa47] (31 bytes) KeSetSystemGroupAffinityThread
+[028afc15] (13 bytes) ntoskrnl.exe
+[028afc6f] (8 bytes) HAL.dll
+[028afdd3] (23 bytes) RtlAddAccessAllowedAce
+[028b001f] (24 bytes) ACE-SSC-DRV
+[028b0093] (32 bytes) ACE-SSC-DRV.sys
+[028b00db] (32 bytes) ACE-SSC-DRV.sys
+[02a70121] (21 bytes) SystemTimeToFileTime
+[02a702bd] (24 bytes) GetSystemTimeAsFileTime
+[02a7d115] (32 bytes) SystemTimeToTzSpecificLocalTime
+[02a7ffab] (11 bytes) LdrLoadDll
+[02a8569f] (13 bytes) OLEAUT32.dll
+[02a8c469] (27 bytes) NtQuerySystemInformation
+[02a8cb35] (16 bytes) LdrGetDllHandle
+[02acb483] (23 bytes) GetSystemFirmwareTable
+[02ae0e4f] (10 bytes) ntdll.dll
+[02b35d19] (32 bytes) TzSpecificLocalTimeToSystemTime
+[02b40d0b] (21 bytes) EnumSystemLocalesW
+[02b49b0b] (31 bytes) GetSystemTimePreciseAsFileTime
+[02b540d1] (21 bytes) FileTimeToSystemTime
+[02b54491] (13 bytes) LdrAddRefDll
+[02e5a781] (13 bytes) ADVAPI32.dll
+[02e5ac6d] (14 bytes) GetSystemInfo
+[02e663c1] (11 bytes) USER32.dll
+[02e67f71] (13 bytes) KERNEL32.dll
+[02ee838f] (66 bytes) C:\Program Files\AntiCheatExpert\SGuard\x64\Plugins\ACE-SSC64.dll
+[02ee84df] (43 bytes) \Program Files\AntiCheatExpert\SGuard\x64\
+[02ee850a] (45 bytes) C:\Program Files\AntiCheatExpert\SGuard\x64\
+[02ee858e] (56 bytes) \Program Files\AntiCheatExpert\SGuard\x64\ACE-SSC64.dll
+[02ee85c6] (60 bytes) \Program Files\AntiCheatExpert\SGuard\x64\ACE-SSC-DRV64.sys
+[02ee8602] (53 bytes) \Program Files\AntiCheatExpert\SGuard\x64\sguard.dat
+[02ee8659] (13 bytes) kernel32.dll
+[02ee8666] (12 bytes) Shell32.dll
+[02ee8672] (13 bytes) Kernel32.dll
+[02ee867f] (11 bytes) msvcrt.dll
+[02ee868a] (13 bytes) advapi32.dll
+[02ee8697] (13 bytes) Advapi32.dll
+[02ee86a4] (12 bytes) shlwapi.dll
+[02eeadf1] (2643 bytes) <svg width="853" height="853" xmlns="http://www.w3.org/2000/svg" version="1.1" class="icon">
+ <g>
+  <title>Layer 1</title>
+  <rect fill="#ffffff" x="22" y="28" width="785.00001" height="775.00001" id="svg_3" stroke="#000" stroke-width="0" fill-opacity="0.7"/>
+  <path id="svg_1" d="m74.66667,0l704,0a74.66667,74.66667 0 0 1 74.66667,74.66667l0,704a74.66667,74.66667 0 0 1 -74.66667,74.66667l-704,0a74.66667,74.66667 0 0 1 -74.66667,-74.66667l0,-704a74.66667,74.66667 0 0 1 74.66667,-74.66667zm0,64a10.66667,10.66667 0 0 0 -10.66667,10.66667l0,704a10.66667,10.66667 0 0 0 10.66667,10.66667l704,0a10.66667,10.66667 0 0 0 10.66667,-10.66667l0,-704a10.66667,10.66667 0 0 0 -10.66667,-10.66667l-704,0zm118.18667,342.31467l150.82666,150.848a10.66667,10.66667 0 0 0 15.104,0l301.696,-301.696a32,32 0 1 1 45.248,45.26933l-301.67466,301.696a74.66667,74.66667 0 0 1 -105.6,0l-150.82667,-150.848a32,32 0 1 1 45.22667,-45.26933z" fill="#666666"/>
+ </g>
+
+</svg><svg xmlns="http://www.w3.org/2000/svg" width="796" height="796" class="icon" viewBox="0 0 796 796">
+ <g>
+  <title>Layer 1</title>
+  <rect fill-opacity="0.7" stroke-width="0" stroke="#000" id="svg_3" height="775.00001" width="785.00001" y="28" x="22" fill="#ffffff"/>
+  <path id="svg_1" d="m56.87855,56.87855l0,682.72869l682.72869,0l0,-682.72869l-682.72869,0zm0,-56.87855l682.72869,0c31.41821,0 56.87854,25.46037 56.87854,56.87855l0,682.72869c0,31.41821 -25.46033,56.87854 -56.87854,56.87854l-682.72869,0a56.87855,56.87855 0 0 1 -56.87855,-56.87854l0,-682.72869c0,-31.41818 25.46037,-56.87855 56.87855,-56.87855zm108.63709,165.51564m46.54546,0l372.36365,0q46.54547,0 46.54547,46.54546l0,372.36365q0,46.54541 -46.54547,46.54541l-372.36365,0q-46.54546,0 -46.54546,-46.54541l0,-372.36365q0,-46.54546 46.54546,-46.54546z" fill="#25affe"/>
+ </g>
+
+</svg><svg width="796" height="796" xmlns="http://www.w3.org/2000/svg" class="icon" version="1.1">
+ <g>
+  <title>Layer 1</title>
+     <rect fill="#ffffff" x="22" y="28" width="785.00001" height="775.00001" id="svg_3" stroke="#000" stroke-width="0" fill-opacity="0.7"/>
+  <path fill="#666666" d="m56.87855,56.87855l0,682.72872l682.72872,0l0,-682.72872l-682.72872,0zm0,-56.87855l682.72872,0c31.41819,0 56.87855,25.46037 56.87855,56.87855l0,682.72872c0,31.41819 -25.46036,56.87855 -56.87855,56.87855l-682.72872,0a56.87855,56.87855 0 0 1 -56.87855,-56.87855l0,-682.72872c0,-31.41818 25.46037,-56.87855 56.87855,-56.87855zm108.63709,165.51564m46.54545,0l372.36364,0q46.54545,0 46.54545,46.54545l0,372.36364q0,46.54545 -46.54545,46.54545l-372.36364,0q-46.54545,0 -46.54545,-46.54545l0,-372.36364q0,-46.54545 46.54545,-46.54545z" id="svg_1"/>
+ </g>
+
+</svg>
+[02eecfba] (2642 bytes) <svg width="853" height="853" xmlns="http://www.w3.org/2000/svg" version="1.1" class="icon">
+ <g>
+  <title>Layer 1</title>
+  <rect fill="#ffffff" x="22" y="28" width="785.00001" height="775.00001" id="svg_3" stroke="#000" stroke-width="0" fill-opacity="0.7"/>
+  <path id="svg_1" d="m74.66667,0l704,0a74.66667,74.66667 0 0 1 74.66667,74.66667l0,704a74.66667,74.66667 0 0 1 -74.66667,74.66667l-704,0a74.66667,74.66667 0 0 1 -74.66667,-74.66667l0,-704a74.66667,74.66667 0 0 1 74.66667,-74.66667zm0,64a10.66667,10.66667 0 0 0 -10.66667,10.66667l0,704a10.66667,10.66667 0 0 0 10.66667,10.66667l704,0a10.66667,10.66667 0 0 0 10.66667,-10.66667l0,-704a10.66667,10.66667 0 0 0 -10.66667,-10.66667l-704,0zm118.18667,342.31467l150.82666,150.848a10.66667,10.66667 0 0 0 15.104,0l301.696,-301.696a32,32 0 1 1 45.248,45.26933l-301.67466,301.696a74.66667,74.66667 0 0 1 -105.6,0l-150.82667,-150.848a32,32 0 1 1 45.22667,-45.26933z" fill="#666666"/>
+ </g>
+
+</svg><svg xmlns="http://www.w3.org/2000/svg" width="796" height="796" class="icon" viewBox="0 0 796 796">
+ <g>
+  <title>Layer 1</title>
+  <rect fill-opacity="0.7" stroke-width="0" stroke="#000" id="svg_3" height="775.00001" width="785.00001" y="28" x="22" fill="#ffffff"/>
+  <path id="svg_1" d="m56.87855,56.87855l0,682.72869l682.72869,0l0,-682.72869l-682.72869,0zm0,-56.87855l682.72869,0c31.41821,0 56.87854,25.46037 56.87854,56.87855l0,682.72869c0,31.41821 -25.46033,56.87854 -56.87854,56.87854l-682.72869,0a56.87855,56.87855 0 0 1 -56.87855,-56.87854l0,-682.72869c0,-31.41818 25.46037,-56.87855 56.87855,-56.87855zm108.63709,165.51564m46.54546,0l372.36365,0q46.54547,0 46.54547,46.54546l0,372.36365q0,46.54541 -46.54547,46.54541l-372.36365,0q-46.54546,0 -46.54546,-46.54541l0,-372.36365q0,-46.54546 46.54546,-46.54546z" fill="#25affe"/>
+ </g>
+
+</svg><svg width="796" height="796" xmlns="http://www.w3.org/2000/svg" class="icon" version="1.1">
+ <g>
+  <title>Layer 1</title>
+     <rect fill="#ffffff" x="22" y="28" width="785.00001" height="775.00001" id="svg_3" stroke="#000" stroke-width="0" fill-opacity="0.7"/>
+  <path fill="#666666" d="m56.87855,56.87855l0,682.72872l682.72872,0l0,-682.72872l-682.72872,0zm0,-56.87855l682.72872,0c31.41819,0 56.87855,25.46037 56.87855,56.87855l0,682.72872c0,31.41819 -25.46036,56.87855 -56.87855,56.87855l-682.72872,0a56.87855,56.87855 0 0 1 -56.87855,-56.87855l0,-682.72872c0,-31.41818 25.46037,-56.87855 56.87855,-56.87855zm108.63709,165.51564m46.54545,0l372.36364,0q46.54545,0 46.54545,46.54545l0,372.36364q0,46.54545 -46.54545,46.54545l-372.36364,0q-46.54545,0 -46.54545,-46.54545l0,-372.36364q0,-46.54545 46.54545,-46.54545z" id="svg_1"/>
+ </g>
+
+</svg>
+[02ef2920] (793 bytes) <svg width="939" height="939" xmlns="http://www.w3.org/2000/svg" version="1.1" class="icon">
+ <g>
+  <title>Layer 1</title>
+  <ellipse stroke="null" ry="444.00001" rx="444.99999" id="svg_2" cy="469.33334" cx="469.33332" fill="#ffffff"  fill-opacity="0.7"/>
+  <path id="svg_1" d="m469.33333,938.66666c259.2,0 469.33333,-210.13333 469.33333,-469.33333s-210.13333,-469.33333 -469.33333,-469.33333s-469.33333,210.13333 -469.33333,469.33333s210.13333,469.33333 469.33333,469.33333zm0,-64c-223.85067,0 -405.33333,-181.48266 -405.33333,-405.33333s181.48266,-405.33333 405.33333,-405.33333s405.33333,181.48266 405.33333,405.33333s-181.48266,405.33333 -405.33333,405.33333z" fill="#666666"/>
+  <ellipse stroke="null" ry="284" rx="284" id="svg_7" cy="469.50001" cx="469.5" fill="#666666"/>
+ </g>
+
+</svg>
+[02ef546b] (793 bytes) <svg width="939" height="939" xmlns="http://www.w3.org/2000/svg" version="1.1" class="icon">
+ <g>
+  <title>Layer 1</title>
+  <ellipse stroke="null" ry="444.00001" rx="444.99999" id="svg_2" cy="469.33334" cx="469.33332" fill="#ffffff"  fill-opacity="0.7"/>
+  <path id="svg_1" d="m469.33333,938.66666c259.2,0 469.33333,-210.13333 469.33333,-469.33333s-210.13333,-469.33333 -469.33333,-469.33333s-469.33333,210.13333 -469.33333,469.33333s210.13333,469.33333 469.33333,469.33333zm0,-64c-223.85067,0 -405.33333,-181.48266 -405.33333,-405.33333s181.48266,-405.33333 405.33333,-405.33333s405.33333,181.48266 405.33333,405.33333s-181.48266,405.33333 -405.33333,405.33333z" fill="#666666"/>
+  <ellipse stroke="null" ry="284" rx="284" id="svg_7" cy="469.50001" cx="469.5" fill="#666666"/>
+ </g>
+
+</svg>
+[02ef7fb7] (793 bytes) <svg width="939" height="939" xmlns="http://www.w3.org/2000/svg" version="1.1" class="icon">
+ <g>
+  <title>Layer 1</title>
+  <ellipse stroke="null" ry="444.00001" rx="444.99999" id="svg_2" cy="469.33334" cx="469.33332" fill="#ffffff"  fill-opacity="0.7"/>
+  <path id="svg_1" d="m469.33333,938.66666c259.2,0 469.33333,-210.13333 469.33333,-469.33333s-210.13333,-469.33333 -469.33333,-469.33333s-469.33333,210.13333 -469.33333,469.33333s210.13333,469.33333 469.33333,469.33333zm0,-64c-223.85067,0 -405.33333,-181.48266 -405.33333,-405.33333s181.48266,-405.33333 405.33333,-405.33333s405.33333,181.48266 405.33333,405.33333s-181.48266,405.33333 -405.33333,405.33333z" fill="#666666"/>
+  <ellipse stroke="null" ry="284" rx="284" id="svg_7" cy="469.50001" cx="469.5" fill="#666666"/>
+ </g>
+
+</svg>
+[02efaafd] (793 bytes) <svg width="939" height="939" xmlns="http://www.w3.org/2000/svg" version="1.1" class="icon">
+ <g>
+  <title>Layer 1</title>
+  <ellipse stroke="null" ry="444.00001" rx="444.99999" id="svg_2" cy="469.33334" cx="469.33332" fill="#ffffff"  fill-opacity="0.7"/>
+  <path id="svg_1" d="m469.33333,938.66666c259.2,0 469.33333,-210.13333 469.33333,-469.33333s-210.13333,-469.33333 -469.33333,-469.33333s-469.33333,210.13333 -469.33333,469.33333s210.13333,469.33333 469.33333,469.33333zm0,-64c-223.85067,0 -405.33333,-181.48266 -405.33333,-405.33333s181.48266,-405.33333 405.33333,-405.33333s405.33333,181.48266 405.33333,405.33333s-181.48266,405.33333 -405.33333,405.33333z" fill="#666666"/>
+  <ellipse stroke="null" ry="284" rx="284" id="svg_7" cy="469.50001" cx="469.5" fill="#666666"/>
+ </g>
+
+</svg>
+[02f9b650] (17 bytes) GetSystemMetrics
+[02f9b798] (13 bytes) COMCTL32.DLL
+[02f9c8e8] (7 bytes) System
+[02f9cc7c] (56 bytes) R6027
+- not enough space for lowio initialization
+
+[02f9ccb4] (56 bytes) R6026
+- not enough space for stdio initialization
+
+[02f9cd14] (56 bytes) R6024
+- not enough space for _onexit/atexit table
+
+[02f9cdcc] (44 bytes) R6016
+- not enough space for thread data
+
+[02f9ce1c] (44 bytes) R6009
+- not enough space for environment
+
+[02f9ce48] (44 bytes) R6008
+- not enough space for arguments
+
+[02f9d268] (22 bytes) Read-only file system
+[02f9d290] (24 bytes) No space left on device
+[02f9d2f0] (30 bytes) Too many open files in system
+[02f9d3b0] (17 bytes) Not enough space
+[02f9d558] (11 bytes) user32.dll
+[02fa486c] (13 bytes) iphlpapi.dll
+[02fa487a] (12 bytes) SHLWAPI.dll
+[02fa49e6] (10 bytes) WINMM.dll
+[02fa49f0] (11 bytes) WS2_32.dll
+[02fa4a52] (12 bytes) VERSION.dll
+[02fa4e82] (14 bytes) GetSystemInfo
+[02fa4f26] (20 bytes) GetSystemDirectoryA
+[02fa5050] (13 bytes) KERNEL32.dll
+[02fa50c8] (17 bytes) GetSystemMetrics
+[02fa5270] (12 bytes) GetSysColor
+[02fa5492] (14 bytes) GetSystemMenu
+[02fa5540] (22 bytes) SystemParametersInfoA
+[02fa57ec] (11 bytes) USER32.dll
+[02fa5ac0] (24 bytes) GetSystemPaletteEntries
+[02fa5b66] (10 bytes) GDI32.dll
+[02fa5c08] (13 bytes) ADVAPI32.dll
+[02fa5c90] (12 bytes) SHELL32.dll
+[02fa5cd0] (10 bytes) ole32.dll
+[02fa5cda] (13 bytes) OLEAUT32.dll
+[02fa5cfc] (13 bytes) COMCTL32.dll
+[02fa5d0a] (12 bytes) WININET.dll
+[02fa5d54] (21 bytes) FileTimeToSystemTime
+[02fa5f32] (14 bytes) GetSystemTime
+[02fa6210] (19 bytes) GetWindowPlacement
+[02fa63ee] (17 bytes) GetSysColorBrush
+[02fa65de] (13 bytes) comdlg32.dll
+[02faaa64] (12 bytes) Shell32.dll
+[02faaa70] (8 bytes) Mpr.dll
+[02faaa78] (13 bytes) Advapi32.dll
+[02faaa88] (11 bytes) User32.dll
+[02faaa94] (10 bytes) Gdi32.dll
+[02faaaa0] (13 bytes) Kernel32.dll
+[02faae90] (20 bytes) DllUnregisterServer
+[02faaea4] (18 bytes) DllRegisterServer
+[02fab660] (11 bytes) User32.dll
+[02fb15c0] (42 bytes) Gray color space not permitted on RGB PNG
+[02fb15ec] (47 bytes) RGB color space not permitted on grayscale PNG
+[02fb161c] (32 bytes) invalid ICC profile color space
+[02fb188c] (33 bytes) Unknown interlace method in IHDR
+[02fb1c90] (38 bytes) bad background index (internal error)
+[02fb1ee0] (65 bytes) a background color must be supplied to remove alpha/transparency
+[02fb1fb8] (23 bytes) unknown interlace type
+[02fb25b0] (13 bytes) out of place
+[02fb25c0] (19 bytes) bKGD must be after
+[02fb27a0] (33 bytes) No space in chunk cache for sPLT
+[02fb28c0] (24 bytes) no space in chunk cache
+[02fb2ae0] (49 bytes) Application must supply a known background gamma
+[02fb2b7c] (51 bytes) conflicting calls to set alpha mode and background
+[02fb2c3c] (30 bytes) invalid background gamma type
+[02fb2c5c] (53 bytes) libpng does not support gamma+background+rgb_to_gray
+[02fd2354] (19 bytes) SoftWare\ExuiLib32
+[02fd2368] (34 bytes) lib\ExuiKrnln\ExuiKrnln_Win32.lib
+[02fd238c] (20 bytes) ExuiKrnln_Win32.lib
+[02fd23a0] (29 bytes) ExuiKrnln_Win32_20251109.lib
+[02fd23c0] (23 bytes) ExuiKrnln_Win32_%d.lib
+[0301ba08] (26 bytes) ???? DLL ???

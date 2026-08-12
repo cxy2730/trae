@@ -40,33 +40,36 @@ static VOID GetTimeString(char* buffer, DWORD bufferSize) {
  */
 static VOID CheckAndCleanLog(VOID) {
     if (!g_LogFile) return;
-    
+
     // 获取当前文件大小
     fseek(g_LogFile, 0, SEEK_END);
     long fileSize = ftell(g_LogFile);
     fseek(g_LogFile, 0, SEEK_SET);
-    
+
     if (fileSize > KG_LOG_MAX_SIZE) {
         // 关闭当前文件
         fclose(g_LogFile);
         g_LogFile = NULL;
-        
-        // 重命名旧日志
+
+        // 重命名旧日志 (基于 logs/ 目录的运行时路径)
         char backupName[KG_MAX_PATH];
         char timeStr[KG_LOG_TIME_BUF];
         GetTimeString(timeStr, sizeof(timeStr));
-        
-        // 格式化备份文件名
-        sprintf_s(backupName, KG_MAX_PATH, "kg_assist_%s.log", 
-                  timeStr);
-        
-        // 重命名 (简单方式: 复制删除)
-        char oldPath[KG_MAX_PATH];
-        sprintf_s(oldPath, KG_MAX_PATH, "%s", KG_LOG_FILE);
-        MoveFileA(oldPath, backupName);
-        
+
+        // 备份文件名: <prefix>_YYYY-MM-DD_HH-MM-SS.log
+        const char* prefix = KgPathGetLogBackupPrefix();
+        snprintf(backupName, KG_MAX_PATH, "%s_%s.log",
+                 prefix ? prefix : "kg_assist", timeStr);
+        KgPathNormalizeSeparators(backupName);
+
+        // 把当前日志移动到带时间戳的备份
+        const char* curPath = KgPathGetLogFile();
+        if (curPath) {
+            MoveFileA(curPath, backupName);
+        }
+
         // 重新打开日志
-        g_LogFile = fopen(KG_LOG_FILE, "a");
+        g_LogFile = fopen(curPath ? curPath : KG_LOG_FILE_DEFAULT, "a");
         if (g_LogFile) {
             // 写入分割线
             fprintf(g_LogFile, "\n========== 新日志开始 ==========\n\n");
@@ -85,30 +88,35 @@ BOOL KgLogInit(VOID) {
         InitializeCriticalSection(&g_LogLock);
         g_LogLockInit = TRUE;
     }
-    
+
+    const char* logPath = KgPathGetLogFile();
+    if (!logPath || !*logPath) {
+        logPath = KG_LOG_FILE_DEFAULT;
+    }
+
     // 打开日志文件 (追加模式)
-    g_LogFile = fopen(KG_LOG_FILE, "a");
+    g_LogFile = fopen(logPath, "a");
     if (g_LogFile == NULL) {
         // 尝试创建新文件
-        g_LogFile = fopen(KG_LOG_FILE, "w");
+        g_LogFile = fopen(logPath, "w");
         if (g_LogFile == NULL) {
-            printf("[警告] 无法创建日志文件: %s\n", KG_LOG_FILE);
+            printf("[警告] 无法创建日志文件: %s\n", logPath);
             return FALSE;
         }
     }
-    
+
     // 写入启动分隔线
     char timeStr[KG_LOG_TIME_BUF];
     GetTimeString(timeStr, sizeof(timeStr));
-    
+
     fprintf(g_LogFile, "\n");
     fprintf(g_LogFile, "========================================\n");
     fprintf(g_LogFile, "KG Assist 启动 - %s\n", timeStr);
     fprintf(g_LogFile, "========================================\n");
     fprintf(g_LogFile, "\n");
     fflush(g_LogFile);
-    
-    printf("[信息] 日志文件已打开: %s\n", KG_LOG_FILE);
+
+    printf("[信息] 日志文件已打开: %s\n", logPath);
     return TRUE;
 }
 
