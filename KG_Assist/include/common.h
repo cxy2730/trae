@@ -385,16 +385,16 @@ typedef struct {
     float   distance[256];
 } KgGameState;
 
-// 辅助配置结构
+// 防封配置结构
 typedef struct {
-    BOOL espEnabled;          // ESP 透视
-    BOOL aimbotEnabled;       // 自瞄
-    BOOL speedHackEnabled;    // 加速
-    BOOL infiniteAmmoEnabled; // 无限弹药
-    BOOL noRecoilEnabled;     // 无后坐力
-    float aimbotSpeed;        // 自瞄速度 (0.1-1.0)
-    float espLineThickness;   // ESP 线宽
-} KgCheatConfig;
+    BOOL antiDebug;        // 反调试绕过 (IsDebuggerPresent / NtQueryInformationProcess)
+    BOOL windowSpoof;      // 窗口伪装 (标题/类名)
+    BOOL codeIntegrity;    // 代码段完整性校验
+    BOOL handleStealth;    // 句柄隐藏 (用户态过滤)
+    BOOL ntHook;           // NtQueryInformationProcess inline hook
+    BOOL antiVm;           // 反虚拟机检测
+    BOOL apiThrottle;      // API 调用节流 (行为模拟)
+} KgProtectConfig;
 
 /* ============================================================
  * 功能函数原型
@@ -466,11 +466,11 @@ BOOL KgUpdateGameState(KgGameState* state);
 BOOL KgGetLocalPlayerInfo(KgGameState* state);
 BOOL KgGetEntityList(KgGameState* state);
 BOOL KgCalcWorldToScreen(KgGameState* state, int index, float* screenX, float* screenY);
-VOID KgCheatMainLoop(VOID);
 
 // 配置管理
-const KgCheatConfig* KgGetConfig(VOID);
-VOID KgSetConfig(BOOL esp, BOOL aimbot, BOOL speed, BOOL ammo, BOOL recoil);
+const KgProtectConfig* KgGetConfig(VOID);
+VOID KgSetConfig(BOOL antiDebug, BOOL windowSpoof, BOOL codeIntegrity,
+                 BOOL handleStealth, BOOL ntHook, BOOL antiVm, BOOL apiThrottle);
 BOOL KgLoadConfig(const char* path);
 BOOL KgSaveConfig(const char* path);
 

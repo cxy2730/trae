@@ -66,14 +66,16 @@
 #define IDC_EDIT_DLL       2002
 #define IDC_BTN_BROWSE     2003
 #define IDC_BTN_DAEMON     2004
-#define IDC_CHK_ESP        2005
-#define IDC_CHK_AIMBOT     2006
-#define IDC_CHK_SPEED      2007
-#define IDC_CHK_AMMO       2008
-#define IDC_CHK_RECOIL     2009
-#define IDC_BTN_SAVECFG    2010
-#define IDC_LIST_PROC      2011
-#define IDC_BTN_REFRESH    2012
+#define IDC_CHK_ANTIDBG    2005
+#define IDC_CHK_WINSPOOF   2006
+#define IDC_CHK_INTEGRITY  2007
+#define IDC_CHK_HANDLE     2008
+#define IDC_CHK_NTHOOK     2009
+#define IDC_CHK_ANTIVM     2010
+#define IDC_CHK_THROTTLE   2011
+#define IDC_BTN_SAVECFG    2012
+#define IDC_LIST_PROC      2013
+#define IDC_BTN_REFRESH    2014
 
 /* ------------------------------------------------------------------
  * 全局状态
@@ -297,25 +299,30 @@ static void CreatePanel_Daemon(HWND parent) {
 
 static void CreatePanel_Config(HWND parent) {
     int x = 20, y = 80;
+
+    /* UTF-8 中文标签 */
     const char* labels[] = {
-        "ESP \xe9\x80\x8f\xe8\xa7\x86",      /* ESP 透视 */
-        "\xe8\x87\xaa\xe7\x9e\x84",          /* 自瞄 */
-        "\xe5\x8a\xa0\xe9\x80\x9f",          /* 加速 */
-        "\xe6\x97\xa0\xe9\x99\x90\xe5\xbc\xb9\xe8\x8d\xaf",  /* 无限弹药 */
-        "\xe6\x97\xa0\xe5\x90\x8e\xe5\x9d\x90",              /* 无后坐力 */
+        "\xe5\x8f\x8d\xe8\xb0\x83\xe8\xaf\x95\xe7\xbb\x95\xe8\xbf\x87",              /* 反调试绕过 */
+        "\xe7\xaa\x97\xe5\x8f\xa3\xe4\xbc\xaa\xe8\xa3\x85",                          /* 窗口伪装 */
+        "\xe4\xbb\xa3\xe7\xa0\x81\xe5\xae\x8c\xe6\x95\xb4\xe6\x80\xa7\xe6\xa0\xa1\xe9\xaa\x8c",  /* 代码完整性校验 */
+        "\xe5\x8f\xa5\xe6\x9f\x84\xe9\x9a\x90\xe8\x97\x8f",                          /* 句柄隐藏 */
+        "NtQueryInformationProcess Hook",                                            /* NtQueryInformationProcess Hook */
+        "\xe5\x8f\x8d\xe8\x99\x9a\xe6\x8b\x9f\xe6\x9c\xba\xe6\xa3\x80\xe6\xb5\x8b",  /* 反虚拟机检测 */
+        "API \xe8\xb0\x83\xe7\x94\xa8\xe8\x8a\x82\xe6\xb5\x81",                      /* API 调用节流 */
     };
-    DWORD ids[] = {IDC_CHK_ESP, IDC_CHK_AIMBOT, IDC_CHK_SPEED,
-                   IDC_CHK_AMMO, IDC_CHK_RECOIL};
+    DWORD ids[] = {IDC_CHK_ANTIDBG, IDC_CHK_WINSPOOF, IDC_CHK_INTEGRITY,
+                   IDC_CHK_HANDLE, IDC_CHK_NTHOOK, IDC_CHK_ANTIVM,
+                   IDC_CHK_THROTTLE};
 
-    const KgCheatConfig* cfg = KgGetConfig();
-    BOOL vals[] = {cfg->espEnabled, cfg->aimbotEnabled,
-                   cfg->speedHackEnabled, cfg->infiniteAmmoEnabled,
-                   cfg->noRecoilEnabled};
+    const KgProtectConfig* cfg = KgGetConfig();
+    BOOL vals[] = {cfg->antiDebug, cfg->windowSpoof, cfg->codeIntegrity,
+                   cfg->handleStealth, cfg->ntHook, cfg->antiVm,
+                   cfg->apiThrottle};
 
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 7; i++) {
         HWND chk = CreateWindowExA(0, "BUTTON", labels[i],
             WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX,
-            x, y, 200, 28, parent, (HMENU)(INT_PTR)ids[i], NULL, NULL);
+            x, y, 300, 28, parent, (HMENU)(INT_PTR)ids[i], NULL, NULL);
         SendMessageA(chk, WM_SETFONT, (WPARAM)g_hFont, TRUE);
         SendMessageA(chk, BM_SETCHECK, vals[i] ? BST_CHECKED : BST_UNCHECKED, 0);
         y += 34;
@@ -531,12 +538,15 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
                 }
 
                 case IDC_BTN_SAVECFG: {
-                    BOOL esp    = IsDlgButtonChecked(hwnd, IDC_CHK_ESP)    == BST_CHECKED;
-                    BOOL aim    = IsDlgButtonChecked(hwnd, IDC_CHK_AIMBOT) == BST_CHECKED;
-                    BOOL speed  = IsDlgButtonChecked(hwnd, IDC_CHK_SPEED)  == BST_CHECKED;
-                    BOOL ammo   = IsDlgButtonChecked(hwnd, IDC_CHK_AMMO)   == BST_CHECKED;
-                    BOOL recoil = IsDlgButtonChecked(hwnd, IDC_CHK_RECOIL) == BST_CHECKED;
-                    KgSetConfig(esp, aim, speed, ammo, recoil);
+                    BOOL antiDebug    = IsDlgButtonChecked(hwnd, IDC_CHK_ANTIDBG)   == BST_CHECKED;
+                    BOOL windowSpoof  = IsDlgButtonChecked(hwnd, IDC_CHK_WINSPOOF)  == BST_CHECKED;
+                    BOOL codeInteg    = IsDlgButtonChecked(hwnd, IDC_CHK_INTEGRITY) == BST_CHECKED;
+                    BOOL handleStealth= IsDlgButtonChecked(hwnd, IDC_CHK_HANDLE)    == BST_CHECKED;
+                    BOOL ntHook       = IsDlgButtonChecked(hwnd, IDC_CHK_NTHOOK)    == BST_CHECKED;
+                    BOOL antiVm       = IsDlgButtonChecked(hwnd, IDC_CHK_ANTIVM)    == BST_CHECKED;
+                    BOOL apiThrottle  = IsDlgButtonChecked(hwnd, IDC_CHK_THROTTLE)  == BST_CHECKED;
+                    KgSetConfig(antiDebug, windowSpoof, codeInteg,
+                                handleStealth, ntHook, antiVm, apiThrottle);
                     KgSaveConfig(KgPathGetConfigFile());
                     MessageBoxA(hwnd,
                         "\xe9\x85\x8d\xe7\xbd\xae\xe5\xb7\xb2\xe4\xbf\x9d\xe5\xad\x98",  /* 配置已保存 */

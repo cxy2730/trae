@@ -321,93 +321,16 @@ BOOL KgUpdateGameState(KgGameState* state) {
  * 辅助功能框架
  * ============================================================ */
 
-// g_Config 在 common.h 中定义了 KgCheatConfig 类型
-static KgCheatConfig g_Config = {
-    .espEnabled = TRUE,
-    .aimbotEnabled = FALSE,
-    .speedHackEnabled = FALSE,
-    .infiniteAmmoEnabled = FALSE,
-    .noRecoilEnabled = FALSE,
-    .aimbotSpeed = 0.3f,
-    .espLineThickness = 2.0f
+// g_Config: 防封配置默认值 (全部开启)
+static KgProtectConfig g_Config = {
+    .antiDebug     = TRUE,
+    .windowSpoof   = TRUE,
+    .codeIntegrity = TRUE,
+    .handleStealth = TRUE,
+    .ntHook        = TRUE,
+    .antiVm        = TRUE,
+    .apiThrottle   = TRUE,
 };
-
-/**
- * 获取最近的敌方目标
- * 用于自瞄等功能
- */
-s32 KgGetClosestEnemy(KgGameState* state, float maxDistance) {
-    if (!state) return -1;
-    
-    s32 closestIndex = -1;
-    float closestDistance = maxDistance;
-    
-    for (u32 i = 0; i < state->playerCount && i < 256; i++) {
-        if (!state->isVisible[i]) continue;
-        if (state->enemyTeam[i] == state->localTeam) continue;  // 跳过队友
-        if (state->enemyHealth[i] <= 0) continue;  // 跳过死亡
-        
-        if (state->distance[i] < closestDistance) {
-            closestDistance = state->distance[i];
-            closestIndex = (s32)i;
-        }
-    }
-    
-    return closestIndex;
-}
-
-/**
- * 辅助主循环
- * 每帧更新游戏状态并执行辅助功能
- */
-VOID KgCheatMainLoop(VOID) {
-    KG_INFO("辅助主循环启动...");
-    
-    KgGameState state = {0};
-    
-    // 初始化
-    if (!KgInitGameState(&state)) {
-        KG_ERROR("游戏状态初始化失败");
-        return;
-    }
-    
-    // 主循环
-    while (TRUE) {
-        // 1. 更新游戏状态
-        KgUpdateGameState(&state);
-        
-        // 2. ESP 功能 (在渲染时调用, 这里仅示例)
-        if (g_Config.espEnabled) {
-            // 实际项目中需要 Hook 渲染函数
-            // 绘制实体名字、血条、连线等
-            for (u32 i = 0; i < state.playerCount && i < 256; i++) {
-                if (!state.isVisible[i]) continue;
-                if (state.enemyTeam[i] == state.localTeam) continue;
-                
-                float screenX, screenY;
-                if (KgCalcWorldToScreen(&state, (int)i, &screenX, &screenY)) {
-                    // 绘制 ESP 元素
-                    // DrawESP(screenX, screenY, &state.enemyPositions[i], ...);
-                    KG_DEBUG("ESP: 敌人 %u @ (%.0f, %.0f)", i, screenX, screenY);
-                }
-            }
-        }
-        
-        // 3. 自瞄功能
-        if (g_Config.aimbotEnabled) {
-            s32 targetIdx = KgGetClosestEnemy(&state, 5000.0f);
-            if (targetIdx >= 0) {
-                // 平滑转向目标
-                // SmoothAimAt(state.enemyPositions[targetIdx], g_Config.aimbotSpeed);
-            }
-        }
-        
-        // 4. 其他功能...
-        
-        // 5. 帧间隔 (避免占用过多 CPU)
-        Sleep(1);  // 约 1000 FPS
-    }
-}
 
 /* ============================================================
  * 配置管理
@@ -445,17 +368,20 @@ BOOL KgSaveConfig(const char* path) {
 /**
  * 获取当前配置 (用于 UI 显示)
  */
-const KgCheatConfig* KgGetConfig(VOID) {
+const KgProtectConfig* KgGetConfig(VOID) {
     return &g_Config;
 }
 
 /**
- * 更新配置项
+ * 更新防封配置
  */
-VOID KgSetConfig(BOOL esp, BOOL aimbot, BOOL speed, BOOL ammo, BOOL recoil) {
-    g_Config.espEnabled = esp;
-    g_Config.aimbotEnabled = aimbot;
-    g_Config.speedHackEnabled = speed;
-    g_Config.infiniteAmmoEnabled = ammo;
-    g_Config.noRecoilEnabled = recoil;
+VOID KgSetConfig(BOOL antiDebug, BOOL windowSpoof, BOOL codeIntegrity,
+                 BOOL handleStealth, BOOL ntHook, BOOL antiVm, BOOL apiThrottle) {
+    g_Config.antiDebug     = antiDebug;
+    g_Config.windowSpoof   = windowSpoof;
+    g_Config.codeIntegrity = codeIntegrity;
+    g_Config.handleStealth = handleStealth;
+    g_Config.ntHook        = ntHook;
+    g_Config.antiVm        = antiVm;
+    g_Config.apiThrottle   = apiThrottle;
 }
