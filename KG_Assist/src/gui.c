@@ -1,17 +1,15 @@
 /**
- * KG Assist - Win11 风格 GUI 菜单
+ * KG Assist - Win11 风格 GUI 菜单 (精简版)
  *
  * 布局:
- *   [更新模式] [游戏模式]        <- 顶部模式选择
- *   ┌──────────────────────────┐
- *   │ 日志输出框 (只读)          │  <- 中间日志区域
- *   │ ...                       │
- *   └──────────────────────────┘
- *   [启动]  [停止]   状态: 待机   <- 底部操作栏
+ *   [更新模式] [游戏模式]            <- 顶部模式选择
+ *   ┌──────────────────────────────┐
+ *   │ 日志输出框 (只读)              │  <- 日志区域 (占满中间)
+ *   │ ...                           │
+ *   └──────────────────────────────┘
+ *   [启动]  [停止]                    <- 底部操作
  *
- * 模式说明:
- *   更新模式 - 扫描游戏更新后的反作弊特征码 / 反检测规则 / ACE 模块变化
- *   游戏模式 - 自动注入 bot 游戏脚本 DLL 到目标进程
+ * 窗口: 只有最小化 + 关闭, 无最大化, 无状态栏
  */
 
 #include "../include/common.h"
@@ -39,11 +37,9 @@
  * ------------------------------------------------------------------ */
 
 #define COL_BG          RGB(0x20, 0x20, 0x20)
-#define COL_BTN         RGB(0x2C, 0x2C, 0x2C)
 #define COL_TEXT        RGB(0xFF, 0xFF, 0xFF)
 #define COL_TEXT_DIM    RGB(0xB0, 0xB0, 0xB0)
 #define COL_LOG_BG      RGB(0x1A, 0x1A, 0x1A)
-#define COL_BORDER      RGB(0x40, 0x40, 0x40)
 
 /* ------------------------------------------------------------------
  * 控件 ID
@@ -54,7 +50,6 @@
 #define IDC_BTN_START      1003
 #define IDC_BTN_STOP       1004
 #define IDC_EDIT_LOG       1005
-#define IDC_STATIC_STATUS  1006
 
 /* ------------------------------------------------------------------
  * 全局状态
@@ -62,13 +57,12 @@
 
 static HWND g_hMain    = NULL;
 static HWND g_hLog     = NULL;
-static HWND g_hStatus  = NULL;
 static HFONT g_hFont   = NULL;
 static int  g_Mode     = 0;     /* 0=更新模式, 1=游戏模式 */
 static BOOL g_Running  = FALSE;
 static HANDLE g_hWorkThread = NULL;
 
-/* bot 脚本 DLL 路径 (EXE 同目录下的 bot.dll) */
+/* bot 脚本 DLL 路径 */
 static char g_BotDllPath[KG_MAX_PATH] = "";
 
 /* ------------------------------------------------------------------
@@ -122,7 +116,6 @@ void KgGuiAppendLog(const char* text) {
 static DWORD WINAPI UpdateModeThread(LPVOID param) {
     (void)param;
     g_Running = TRUE;
-    SetWindowTextA(g_hStatus, "状态: 正在扫描反作弊更新...");
     KgGuiAppendLog("======== 更新模式启动 ========");
     KgGuiAppendLog("目标: 扫描游戏更新后的反作弊特征码");
     KgGuiAppendLog("");
@@ -141,7 +134,6 @@ static DWORD WINAPI UpdateModeThread(LPVOID param) {
     if (!KgFindProcess(KG_LOL_PROCESS_NAME, &proc)) {
         KgGuiAppendLog("  [警告] 游戏未运行, 扫描已安装的 ACE 模块");
 
-        /* 即使游戏没运行, 也扫描 ACE 安装目录 */
         const char* acePath = "C:\\Program Files\\AntiCheatExpert\\SGuard\\x64\\";
         KgGuiAppendLog("  扫描 ACE 目录:");
         char pathLine[512];
@@ -240,19 +232,17 @@ static DWORD WINAPI UpdateModeThread(LPVOID param) {
     KgGuiAppendLog("");
     KgGuiAppendLog("======== 更新完成 ========");
     g_Running = FALSE;
-    SetWindowTextA(g_hStatus, "状态: 待机");
     return 0;
 }
 
 /* ------------------------------------------------------------------
  * 工作线程: 游戏模式
- * 自动注入 bot 游戏脚本 DLL 到目标进程
+ * 自动注入 bot 游戏脚本 DLL 到目标进程 (KG 式 NtCreateThreadEx)
  * ------------------------------------------------------------------ */
 
 static DWORD WINAPI GameModeThread(LPVOID param) {
     (void)param;
     g_Running = TRUE;
-    SetWindowTextA(g_hStatus, "状态: 游戏模式运行中...");
     KgGuiAppendLog("======== 游戏模式启动 ========");
     KgGuiAppendLog("目标: 自动注入 bot 游戏脚本");
     KgGuiAppendLog("");
@@ -268,7 +258,6 @@ static DWORD WINAPI GameModeThread(LPVOID param) {
     /* 2. 定位 bot 脚本 DLL */
     KgGuiAppendLog("[2/4] 定位 bot 脚本 DLL...");
     if (g_BotDllPath[0] == '\0') {
-        /* 默认路径: EXE 同目录下的 bot.dll */
         KgPathResolve("bot.dll", g_BotDllPath, sizeof(g_BotDllPath));
     }
     if (GetFileAttributesA(g_BotDllPath) == INVALID_FILE_ATTRIBUTES) {
@@ -276,7 +265,6 @@ static DWORD WINAPI GameModeThread(LPVOID param) {
         KgGuiAppendLog(g_BotDllPath);
         KgGuiAppendLog("  请将 bot.dll 放到程序同目录");
         g_Running = FALSE;
-        SetWindowTextA(g_hStatus, "状态: 失败");
         return 1;
     }
     char dllLine[KG_MAX_PATH + 64];
@@ -289,7 +277,6 @@ static DWORD WINAPI GameModeThread(LPVOID param) {
     if (!KgFindProcess(KG_LOL_PROCESS_NAME, &proc)) {
         KgGuiAppendLog("  [警告] 未找到游戏进程, 等待中...");
 
-        /* 等待游戏进程启动 (最多等 120 秒) */
         for (int i = 0; i < 60 && g_Running; i++) {
             Sleep(2000);
             if (KgFindProcess(KG_LOL_PROCESS_NAME, &proc)) break;
@@ -301,14 +288,12 @@ static DWORD WINAPI GameModeThread(LPVOID param) {
 
     if (!g_Running) {
         KgGuiAppendLog("======== 已停止 ========");
-        SetWindowTextA(g_hStatus, "状态: 已停止");
         return 0;
     }
 
     if (proc.pid == 0) {
         KgGuiAppendLog("  [错误] 等待超时, 未检测到游戏进程");
         g_Running = FALSE;
-        SetWindowTextA(g_hStatus, "状态: 失败");
         return 1;
     }
 
@@ -323,33 +308,17 @@ static DWORD WINAPI GameModeThread(LPVOID param) {
     if (!KgOpenProcess(&proc, KG_PROCESS_ALL_ACCESS)) {
         KgGuiAppendLog("  [错误] 打开进程失败 (需要管理员权限)");
         g_Running = FALSE;
-        SetWindowTextA(g_hStatus, "状态: 失败");
         return 1;
     }
     KgGuiAppendLog("  [OK] 已获取进程句柄");
 
-    /* 等待进程初始化完成 */
-    KgGuiAppendLog("  等待进程就绪...");
-    if (!KgWaitForProcessReady(proc.handle, 10000)) {
-        KgGuiAppendLog("  [警告] 进程未完全就绪, 继续注入");
-    } else {
-        KgGuiAppendLog("  [OK] 进程已就绪");
-    }
-
-    /* 注入 bot DLL */
-    KgGuiAppendLog("  正在注入 bot.dll...");
+    /* 注入 bot DLL (KG 式 NtCreateThreadEx) */
+    KgGuiAppendLog("  正在注入 bot.dll (NtCreateThreadEx)...");
     BOOL injectOk = KgAutoInject(proc.handle, g_BotDllPath);
     if (injectOk) {
         KgGuiAppendLog("  [OK] bot 脚本注入成功!");
     } else {
-        KgGuiAppendLog("  [错误] 注入失败, 尝试备用方式...");
-        /* 尝试手动映射 */
-        if (KgManualMap(proc.handle, g_BotDllPath)) {
-            KgGuiAppendLog("  [OK] 手动映射成功!");
-            injectOk = TRUE;
-        } else {
-            KgGuiAppendLog("  [错误] 手动映射也失败");
-        }
+        KgGuiAppendLog("  [错误] 注入失败");
     }
 
     KgCloseProcess(&proc);
@@ -358,14 +327,11 @@ static DWORD WINAPI GameModeThread(LPVOID param) {
         KgGuiAppendLog("");
         KgGuiAppendLog("======== bot 脚本已注入, 防封保护运行中 ========");
         KgGuiAppendLog("关闭窗口或点击停止以退出");
-        SetWindowTextA(g_hStatus, "状态: bot 运行中");
 
-        /* 保持运行, 等待用户停止 */
+        /* 保持运行 */
         while (g_Running) {
             Sleep(1000);
         }
-    } else {
-        SetWindowTextA(g_hStatus, "状态: 注入失败");
     }
 
     KgGuiAppendLog("======== 已停止 ========");
@@ -377,12 +343,13 @@ static DWORD WINAPI GameModeThread(LPVOID param) {
  * ------------------------------------------------------------------ */
 
 static void CreateControls(HWND hwnd) {
-    int W = 620;
+    int W = 560;
 
     /* --- 顶部: 模式选择 --- */
-    CreateWindowExA(0, "STATIC", "选择模式:",
+    HWND lbl = CreateWindowExA(0, "STATIC", "选择模式:",
         WS_CHILD | WS_VISIBLE,
         16, 14, 80, 22, hwnd, NULL, NULL, NULL);
+    SendMessageA(lbl, WM_SETFONT, (WPARAM)g_hFont, TRUE);
 
     HWND btnUpdate = CreateWindowExA(0, "BUTTON",
         "更新模式",
@@ -401,27 +368,20 @@ static void CreateControls(HWND hwnd) {
     HWND btnStart = CreateWindowExA(0, "BUTTON",
         "启动",
         WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON,
-        16, 470, 100, 34, hwnd, (HMENU)IDC_BTN_START, NULL, NULL);
+        16, 420, 100, 34, hwnd, (HMENU)IDC_BTN_START, NULL, NULL);
     SendMessageA(btnStart, WM_SETFONT, (WPARAM)g_hFont, TRUE);
 
     HWND btnStop = CreateWindowExA(0, "BUTTON",
         "停止",
         WS_CHILD | WS_VISIBLE,
-        126, 470, 100, 34, hwnd, (HMENU)IDC_BTN_STOP, NULL, NULL);
+        126, 420, 100, 34, hwnd, (HMENU)IDC_BTN_STOP, NULL, NULL);
     SendMessageA(btnStop, WM_SETFONT, (WPARAM)g_hFont, TRUE);
 
-    /* 状态标签 */
-    g_hStatus = CreateWindowExA(0, "STATIC",
-        "状态: 待机",
-        WS_CHILD | WS_VISIBLE | SS_LEFT,
-        250, 478, 350, 22, hwnd, (HMENU)IDC_STATIC_STATUS, NULL, NULL);
-    SendMessageA(g_hStatus, WM_SETFONT, (WPARAM)g_hFont, TRUE);
-
-    /* --- 中间: 日志框 --- */
+    /* --- 中间: 日志框 (占满) --- */
     g_hLog = CreateWindowExA(WS_EX_CLIENTEDGE, "EDIT", "",
         WS_CHILD | WS_VISIBLE | WS_VSCROLL |
         ES_MULTILINE | ES_READONLY | ES_AUTOVSCROLL,
-        16, 48, W - 32, 410, hwnd, (HMENU)IDC_EDIT_LOG, NULL, NULL);
+        16, 48, W - 32, 360, hwnd, (HMENU)IDC_EDIT_LOG, NULL, NULL);
     SendMessageA(g_hLog, WM_SETFONT, (WPARAM)g_hFont, TRUE);
 
     /* 初始日志 */
@@ -430,7 +390,6 @@ static void CreateControls(HWND hwnd) {
     snprintf(rootLine, sizeof(rootLine), "根目录: %s", KgPathGetRoot());
     KgGuiAppendLog(rootLine);
 
-    /* 检查 bot.dll 是否存在 */
     char botPath[KG_MAX_PATH];
     KgPathResolve("bot.dll", botPath, sizeof(botPath));
     if (GetFileAttributesA(botPath) != INVALID_FILE_ATTRIBUTES) {
@@ -460,13 +419,13 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 
             if (id == IDC_BTN_UPDATE) {
                 g_Mode = 0;
-                KgGuiAppendLog("[模式] 已切换到更新模式");
+                KgGuiAppendLog("[模式] 更新模式");
                 return 0;
             }
 
             if (id == IDC_BTN_GAME) {
                 g_Mode = 1;
-                KgGuiAppendLog("[模式] 已切换到游戏模式");
+                KgGuiAppendLog("[模式] 游戏模式");
                 return 0;
             }
 
@@ -514,10 +473,10 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
 
         case WM_GETMINMAXINFO: {
             MINMAXINFO* mmi = (MINMAXINFO*)lParam;
-            mmi->ptMinTrackSize.x = 640;
-            mmi->ptMinTrackSize.y = 560;
-            mmi->ptMaxTrackSize.x = 640;
-            mmi->ptMaxTrackSize.y = 560;
+            mmi->ptMinTrackSize.x = 580;
+            mmi->ptMinTrackSize.y = 500;
+            mmi->ptMaxTrackSize.x = 580;
+            mmi->ptMaxTrackSize.y = 500;
             return 0;
         }
 
@@ -564,11 +523,14 @@ int KgGuiRun(HINSTANCE hInstance, int nCmdShow) {
         return 1;
     }
 
+    /* WS_OVERLAPPEDWINDOW 去掉 WS_THICKFRAME (不可调整大小)
+     * 去掉 WS_MAXIMIZEBOX (无最大化按钮)
+     * 保留 WS_MINIMIZEBOX (最小化) + WS_SYSMENU (关闭) */
     g_hMain = CreateWindowExA(
         0, "KgAssistGui", "KG Assist v2.0",
-        WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME & ~WS_MAXIMIZEBOX,
+        WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
         CW_USEDEFAULT, CW_USEDEFAULT,
-        640, 560,
+        580, 500,
         NULL, NULL, hInstance, NULL);
 
     if (!g_hMain) {

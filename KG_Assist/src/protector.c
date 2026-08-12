@@ -243,6 +243,19 @@ BOOL KgInitIntegrity(VOID) {
  * 验证代码完整性
  * @return TRUE 表示未被修改
  */
+/* 后台完整性校验线程 */
+static DWORD WINAPI KgIntegrityMonitorThread(LPVOID param) {
+    (void)param;
+    while (1) {
+        Sleep(5000);  /* 每 5 秒校验一次 */
+        if (g_Integrity.initialized && !KgVerifyIntegrity()) {
+            KG_WARN("检测到代码段被篡改!");
+            /* 可选: 退出进程或采取其他措施 */
+        }
+    }
+    return 0;
+}
+
 BOOL KgVerifyIntegrity(VOID) {
     if (!g_Integrity.initialized) return FALSE;
     
@@ -409,7 +422,7 @@ BOOL KgInstallFullProtection(VOID) {
     
     // Step 6: 启动完整性校验线程
     KG_INFO("[6/6] 启动后台完整性校验...");
-    // CreateThread(NULL, 0, IntegrityMonitorThread, NULL, 0, NULL);
+    CreateThread(NULL, 0, KgIntegrityMonitorThread, NULL, 0, NULL);
     
     KG_INFO("========================================");
     KG_INFO("  防检测系统启动完成");
