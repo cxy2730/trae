@@ -124,9 +124,18 @@ fn wstr(s: &str) -> Vec<u16> {
     v
 }
 
-/// 停止并禁用所有 ACE 相关服务 — KG 的核心绕过步骤 #5
+/// 禁用 ACE 服务的自动启动 (但**绝不停止当前运行中的服务!**)
+///
+/// ⚠️ 关键修正 (用户指出的致命 bug):
+///   停止正在运行中的 ACE-SSC64 / SGuardSvc 服务 = 断 ACE 心跳 = 直接掉线封号!
+///
+/// KG 正确操作:
+///   - 只禁用"下次开机自动启动" (注册表 + ChangeServiceConfig)
+///   - 当前正在运行中的 ACE 服务保持不动, 心跳正常, 游戏不掉线
+///   - 后续靠 DLL 劫持 + IAT hook 拦截 ACE 的检测 API 返回"干净"数据
 pub fn stop_all_ace_services(cb: LogCallback) -> bool {
-    log(cb, "======== 停止 ACE 服务 ========");
+    log(cb, "======== 禁用 ACE 服务自动启动 (不停止当前运行!) ========");
+    log_warn(cb, "  [关键修正] 停止 ACE 服务会掉线! 只禁用下次开机启动");
     let mut all_ok = true;
 
     let h_scm = unsafe { OpenSCManagerW(core::ptr::null(), core::ptr::null(), SC_MANAGER_ALL_ACCESS) };
@@ -135,8 +144,7 @@ pub fn stop_all_ace_services(cb: LogCallback) -> bool {
         return false;
     }
 
-    let mut stopped = 0;
-    let mut disabled = 0;
+    let mut disabled_scm = 0;
 
     for svc_name in ACE_SERVICES {
         let name_w = wstr(svc_name);
@@ -147,24 +155,8 @@ pub fn stop_all_ace_services(cb: LogCallback) -> bool {
 
         log_debug(cb, &format!("  发现服务: {}", svc_name));
 
-        // 1. 先 ControlService(SERVICE_CONTROL_STOP) 停止
-        let mut status: SERVICE_STATUS = unsafe { core::mem::zeroed() };
-        if unsafe { ControlService(h_svc, SERVICE_CONTROL_STOP, &mut status) } != 0 {
-            log(cb, &format!("    [停止] {} 已发送停止指令", svc_name));
-            stopped += 1;
-
-            // 等待停止完成 (最多 10 秒)
-            let mut wait = 0;
-            while status.dwCurrentState != SERVICE_STOPPED && wait < 100 {
-                unsafe { Sleep_lite(100); }
-                unsafe { ControlService(h_svc, 0, &mut status); } // SERVICE_CONTROL_INTERROGATE
-                wait += 1;
-            }
-        } else if status.dwCurrentState == SERVICE_STOPPED {
-            log_debug(cb, &format!("    {} 已经是停止状态", svc_name));
-        }
-
-        // 2. ChangeServiceConfig 禁用自动启动 (Start = SERVICE_DISABLED)
+        // 只做一步: ChangeServiceConfig 禁用自动启动 (Start = SERVICE_DISABLED)
+        // 绝不调用 ControlService(SERVICE_CONTROL_STOP)
         let ok = unsafe {
             ChangeServiceConfigW(
                 h_svc,
@@ -181,8 +173,10 @@ pub fn stop_all_ace_services(cb: LogCallback) -> bool {
             )
         };
         if ok != 0 {
-            log(cb, &format!("    [禁用] {} 启动类型已改为 DISABLED", svc_name));
-            disabled += 1;
+            log(cb, &format!("    [OK] {} 启动类型已改为 DISABLED (下次不自动开)", svc_name));
+            disabled_scm += 1;
+        } else {
+            log_debug(cb, &format!("    [跳过] {} 禁用失败 (可能权限不足)", svc_name));
         }
 
         unsafe { CloseServiceHandle(h_svc); }
@@ -190,21 +184,19 @@ pub fn stop_all_ace_services(cb: LogCallback) -> bool {
 
     unsafe { CloseServiceHandle(h_scm); }
 
-    log(cb, &format!("  [汇总] 停止 {} 个, 禁用 {} 个", stopped, disabled));
-
-    // 3. 注册表兜底: 直接改 Start 值 (防止服务自愈)
-    log_debug(cb, "  注册表兜底禁用...");
+    // 注册表兜底: 直接改 Start 值
+    log_debug(cb, "  注册表兜底禁用启动项...");
     let reg_disabled = disable_via_registry(cb);
     if reg_disabled > 0 {
         log(cb, &format!("  [注册表] 禁用 {} 个服务项", reg_disabled));
     }
 
-    if stopped == 0 && disabled == 0 {
-        log_warn(cb, "  [警告] 未发现 ACE 服务, 可能未安装或已停止");
-        all_ok = false;
+    if disabled_scm == 0 && reg_disabled == 0 {
+        log_warn(cb, "  [跳过] 未发现可禁用的 ACE 服务 (权限或服务不存在)");
+    } else {
+        log(cb, &format!("  [汇总] SCM 禁用 {} 个 + 注册表禁用 {} 个 (当前 ACE 仍保持运行)", disabled_scm, reg_disabled));
     }
 
-    log(cb, "======== ACE 服务处理完成 ========");
     all_ok
 }
 
