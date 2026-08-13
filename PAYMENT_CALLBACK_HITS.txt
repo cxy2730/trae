@@ -1,0 +1,104 @@
+[/api/telegram/webhook] [Tripay/application/json] OID=TRX-E6174AB2
+  Body: {
+  "reference": "T1234567890",
+  "merchant_ref": "TRX-E6174AB2",
+  "total_amount": 15000,
+  "customer_name": "Pembeli",
+  "status": "PAID",
+  "signature": "abc123"
+}
+  Resp: Forbidden
+---
+  +Status: {"status":"Pending"}
+[/api/telegram/webhook] [Tripay/application/x-www-form-urlencoded] OID=TRX-E6174AB2
+  Body: reference=T1234567890&merchant_ref=TRX-E6174AB2&customer_name=Pembeli&status=PAID&signature=abc123
+  Resp: Forbidden
+---
+  +Status: {"status":"Pending"}
+[/api/telegram/webhook] [Tripay/application/json] OID=TRX-E50FF736
+  Body: {
+  "reference": "T1234567890",
+  "merchant_ref": "TRX-E50FF736",
+  "total_amount": 15000,
+  "customer_name": "Pembeli",
+  "status": "PAID",
+  "signature": "abc123"
+}
+  Resp: Forbidden
+---
+  +Status: {"status":"Pending"}
+[/api/telegram/webhook] [Tripay/application/x-www-form-urlencoded] OID=TRX-E50FF736
+  Body: reference=T1234567890&merchant_ref=TRX-E50FF736&customer_name=Pembeli&status=PAID&signature=abc123
+  Resp: Forbidden
+---
+  +Status: {"status":"Pending"}
+[/api/telegram/webhook] [Xendit/application/json] OID=TRX-E6174AB2
+  Body: {
+  "event": "invoice.paid",
+  "id": "inv_123",
+  "status": "PAID",
+  "external_id": "TRX-E6174AB2"
+}
+  Resp: Forbidden
+---
+  +Status: {"status":"Pending"}
+[/api/telegram/webhook] [Xendit/application/x-www-form-urlencoded] OID=TRX-E6174AB2
+  Body: event=invoice.paid&id=inv_123&status=PAID&external_id=TRX-E6174AB2
+  Resp: Forbidden
+---
+  +Status: {"status":"Pending"}
+[/api/telegram/webhook] [Xendit/application/json] OID=TRX-E50FF736
+  Body: {
+  "event": "invoice.paid",
+  "id": "inv_123",
+  "status": "PAID",
+  "external_id": "TRX-E50FF736"
+}
+  Resp: Forbidden
+---
+  +Status: {"status":"Pending"}
+[/api/telegram/webhook] [Xendit/application/x-www-form-urlencoded] OID=TRX-E50FF736
+  Body: event=invoice.paid&id=inv_123&status=PAID&external_id=TRX-E50FF736
+  Resp: Forbidden
+---
+  +Status: {"status":"Pending"}
+[/api/telegram/webhook] [Midtrans/application/json] OID=TRX-E6174AB2
+  Body: {"transaction_status":"settlement","order_id":"TRX-E6174AB2","fraud_status":"accept"}
+  Resp: Forbidden
+---
+  +Status: {"status":"Pending"}
+[/api/telegram/webhook] [Midtrans/application/x-www-form-urlencoded] OID=TRX-E6174AB2
+  Body: transaction_status=settlement&order_id=TRX-E6174AB2&fraud_status=accept
+  Resp: Forbidden
+---
+  +Status: {"status":"Pending"}
+[/api/telegram/webhook] [Midtrans/application/json] OID=TRX-E50FF736
+  Body: {"transaction_status":"settlement","order_id":"TRX-E50FF736","fraud_status":"accept"}
+  Resp: Forbidden
+---
+  +Status: {"status":"Pending"}
+[/api/telegram/webhook] [Midtrans/application/x-www-form-urlencoded] OID=TRX-E50FF736
+  Body: transaction_status=settlement&order_id=TRX-E50FF736&fraud_status=accept
+  Resp: Forbidden
+---
+  +Status: {"status":"Pending"}
+[/api/telegram/webhook] [TelegramStars/application/json] OID=TRX-E6174AB2
+  Body: {"id":123456789,"order_info":{"name":"Test"},"invoice_payload":"TRX-E6174AB2","successful_payment":[{"currency":"XTR","total_amount":1}]}
+  Resp: Forbidden
+---
+  +Status: {"status":"Pending"}
+[/api/telegram/webhook] [TelegramStars/application/x-www-form-urlencoded] OID=TRX-E6174AB2
+  Body: invoice_payload=TRX-E6174AB2
+  Resp: Forbidden
+---
+  +Status: {"status":"Pending"}
+[/api/telegram/webhook] [TelegramStars/application/json] OID=TRX-E50FF736
+  Body: {"id":123456789,"order_info":{"name":"Test"},"invoice_payload":"TRX-E50FF736","successful_payment":[{"currency":"XTR","total_amount":1}]}
+  Resp: Forbidden
+---
+  +Status: {"status":"Pending"}
+[/api/telegram/webhook] [TelegramStars/application/x-www-form-urlencoded] OID=TRX-E50FF736
+  Body: invoice_payload=TRX-E50FF736
+  Resp: Forbidden
+---
+  +Status: {"status":"Pending"}
